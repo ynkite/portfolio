@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>정상연 포트폴리오 — 디자인 선택</title>
+  <meta name="description" content="백엔드 개발자 정상연 — 5가지 디자인의 포트폴리오">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    :root {
+      --bg: #F5F4F0;
+      --ink: #171613;
+      --muted: #84806f;
+      --line: #e3e1d8;
+      --sans: 'Pretendard Variable', Pretendard, sans-serif
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%
+    }
+
+    header {
+      padding: 80px 0 40px
+    }
+
+    header .tag {
+      font-size: 12px;
+      letter-spacing: .26em;
+      color: var(--muted);
+      text-transform: uppercase
+    }
+
+    header h1 {
+      font-size: clamp(30px, 5vw, 54px);
+      font-weight: 900;
+      letter-spacing: -.04em;
+      margin-top: 12px;
+      line-height: 1.15
+    }
+
+    header p {
+      color: var(--muted);
+      margin-top: 14px;
+      max-width: 56ch;
+      font-size: 16px
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      padding-bottom: 40px
+    }
+
+    .card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+      transition: transform .35s cubic-bezier(.32, .72, 0, 1), box-shadow .35s;
+      display: flex;
+      flex-direction: column
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 24px 44px -26px rgba(23, 22, 19, .3)
+    }
+
+    .thumb {
+      aspect-ratio: 16/10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .thumb .t {
+      font-weight: 900;
+      letter-spacing: -.03em;
+      font-size: clamp(22px, 2.6vw, 32px)
+    }
+
+    .card .body {
+      padding: 20px 22px 24px;
+      border-top: 1px solid var(--line)
+    }
+
+    .card .body h2 {
+      font-size: 17px;
+      font-weight: 800
+    }
+
+    .card .body p {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-top: 5px
+    }
+
+    .card .body .go {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 800
+    }
+
+    /* thumbs */
+    .th-mag {
+      background: #F6F4EF
+    }
+
+    .th-mag .t {
+      font-family: 'Noto Serif KR', serif;
+      color: #191714
+    }
+
+    .th-mag .t em {
+      color: #C8371E;
+      font-style: normal
+    }
+
+    .th-gal {
+      background: #FAFAF8
+    }
+
+    .th-gal .t {
+      color: #1c1c1a
+    }
+
+    .th-gal .t em {
+      color: #2E5E4E;
+      font-style: normal
+    }
+
+    .th-ben {
+      background: #F7F6F3
+    }
+
+    .th-ben .t {
+      color: #2F3437
+    }
+
+    .th-ben .t mark {
+      background: linear-gradient(transparent 60%, #FBF3DB 60%);
+      color: inherit
+    }
+
+    .th-pos {
+      background: #EFEDE7
+    }
+
+    .th-pos .t {
+      text-transform: uppercase;
+      color: #111
+    }
+
+    .th-pos .t em {
+      color: #1D46E0;
+      font-style: normal
+    }
+
+    .th-sto {
+      background: #FFF9F0
+    }
+
+    .th-sto .t {
+      color: #26221C
+    }
+
+    .th-sto .t em {
+      color: #FF6B35;
+      font-style: normal
+    }
+
+    .thumb .mini {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      font-size: 10.5px;
+      letter-spacing: .18em;
+      color: var(--muted);
+      text-transform: uppercase
+    }
+
+    @media(max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:620px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--line);
+      padding: 20px 0;
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px
+    }
+
+    footer a {
+      border-bottom: 1px solid var(--line)
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <span class="tag">Jeong Sangyeon — Backend Developer</span>
+      <h1>하나의 포트폴리오,<br>여섯 가지 디자인.</h1>
+      <p>마음에 드는 디자인을 골라 들어가세요. 내용은 같고, 분위기가 다릅니다. 최종 선택한 디자인의 index.html을 저장소 루트로 옮기면 그 디자인이 대표 페이지가 됩니다.</p>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <a class="card" href="./first/">
+      <div class="thumb th-mag"><span class="t">FIRST<em>.</em></span><span class="mini">Portfolio Design</span></div>
+      <div class="body">
+        <h2>⑥ First Design</h2>
+        <p>새로운 디자인. Triplan 여행 플래너 프로젝트.</p><span class="go">들어가기 →</span>
+      </div>
+    </a>
+    <a class="card" href="./magazine/">
+      <div class="thumb th-mag"><span class="t">JSY<em>.</em>Press</span><span class="mini">Editorial Magazine</span>
+      </div>
+      <div class="body">
+        <h2>① 매거진</h2>
+        <p>잡지 커버 스타일. 세리프 헤드라인, 목차, 인터뷰 형식의 소개.</p><span class="go">들어가기 →</span>
+      </div>
+    </a>
+    <a class="card" href="./gallery/">
+      <div class="thumb th-gal"><span class="t">개인전<em>.</em></span><span class="mini">Museum Gallery</span></div>
+      <div class="body">
+        <h2>② 갤러리</h2>
+        <p>미술관 전시 컨셉. 프로젝트를 작품처럼, 명판과 수장고까지.</p><span class="go">들어가기 →</span>
+      </div>
+    </a>
+    <a class="card" href="./bento/">
+      <div class="thumb th-ben"><span class="t"><mark>정상연.dev</mark></span><span class="mini">Soft Bento
+          Workspace</span></div>
+      <div class="body">
+        <h2>③ 벤토</h2>
+        <p>차분한 워크스페이스 감성. 벤토 그리드, 파스텔 태그, 키보드 내비.</p><span class="go">들어가기 →</span>
+      </div>
+    </a>
+    <a class="card" href="./poster/">
+      <div class="thumb th-pos"><span class="t">백엔드 <em>정상연</em></span><span class="mini">Swiss Poster</span></div>
+      <div class="body">
+        <h2>④ 포스터</h2>
+        <p>스위스 타이포그래피 포스터. 큰 글자, 강한 그리드, 코발트 블루.</p><span class="go">들어가기 →</span>
+      </div>
+    </a>
+    <a class="card" href="./story/">
+      <div class="thumb th-sto"><span class="t">이야기 <em>한 편</em></span><span class="mini">Interactive Story</span></div>
+      <div class="body">
+        <h2>⑤ 스토리</h2>
+        <p>스크롤로 읽는 이야기. 말풍선, 스티커 카드, 카운트업 숫자.</p><span class="go">들어가기 →</span>
+      </div>
+    </a>
+    <div class="card"
+      style="justify-content:center;align-items:center;padding:30px;text-align:center;background:transparent;border-style:dashed">
+      <p style="font-size:14px;color:var(--muted)">README.md에 GitHub Pages 배포와<br>Docker 상시 서버 구동 방법을 적어뒀습니다.</p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 정상연</span>
+      <span><a href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub</a> · <a
+          href="https://my-commit.tistory.com" target="_blank" rel="noopener">Blog</a> · <a
+          href="mailto:j.sangyeon6@gmail.com">j.sangyeon6@gmail.com</a></span>
+    </div>
+  </footer>
+</body>
+
+</html>

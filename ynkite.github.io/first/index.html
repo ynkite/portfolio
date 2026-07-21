@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정상연 — 백엔드 개발자 포트폴리오</title>
+  <meta name="description" content="Java·Spring Boot 백엔드 개발자 정상연의 포트폴리오. TripLinker, omong 등 실전 프로젝트와 기술 스택을 소개합니다." />
+  <meta property="og:title" content="정상연 — 백엔드 개발자 포트폴리오" />
+  <meta property="og:description" content="Java·Spring Boot 기반 백엔드 개발자. 원인을 끝까지 파고드는 개발자 정상연입니다." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232C49DE'/%3E%3Ctext x='16' y='21.5' font-family='monospace' font-size='14' font-weight='bold' fill='white' text-anchor='middle'%3ESY%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== Nav ===== -->
+  <div class="nav-outer">
+    <nav class="nav">
+      <a class="nav-brand" href="#top">jeong<em>sangyeon</em>.dev</a>
+      <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기" aria-expanded="false">MENU</button>
+      <div class="nav-links" id="navLinks">
+        <a href="#about">소개</a>
+        <a href="#skills">기술</a>
+        <a href="#featured">프로젝트</a>
+        <a href="#awards">수상·자격</a>
+        <a class="nav-cta" href="#contact">연락하기</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ===== Hero ===== -->
+  <header class="hero" id="top">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="hero-eyebrow"><span class="dot"></span>BACKEND · JAVA / SPRING</span>
+          <h1>원인을 끝까지 파고드는<br /><em>백엔드 개발자</em>, 정상연입니다.</h1>
+          <p class="hero-desc">
+            에러 하나를 만나면 해결될 때까지 놓지 않습니다.
+            Java와 Spring Boot로 REST API를 설계하고, 인증·보안부터 외부 API 연동까지
+            서버의 처음과 끝을 직접 만들어 왔습니다.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#featured">프로젝트 보기 <span class="arr">→</span></a>
+            <a class="btn btn-ghost" href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+
+        <!-- Signature: API response card -->
+        <div class="api-shell reveal">
+          <div class="api-card">
+            <div class="api-head">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="req"><b>GET</b> /api/developers/sangyeon</span>
+              <span class="status">200 OK</span>
+            </div>
+            <div class="api-body">
+<span class="ln"><span class="p">{</span></span>
+<span class="ln">  <span class="k">"name"</span><span class="p">:</span> <span class="s">"정상연"</span><span class="p">,</span></span>
+<span class="ln">  <span class="k">"role"</span><span class="p">:</span> <span class="s">"Backend Developer"</span><span class="p">,</span></span>
+<span class="ln">  <span class="k">"core"</span><span class="p">:</span> <span class="p">[</span><span class="s">"Java"</span><span class="p">,</span> <span class="s">"Spring Boot"</span><span class="p">,</span> <span class="s">"JPA"</span><span class="p">],</span></span>
+<span class="ln">  <span class="k">"security"</span><span class="p">:</span> <span class="p">[</span><span class="s">"Spring Security"</span><span class="p">,</span> <span class="s">"JWT"</span><span class="p">,</span> <span class="s">"OAuth 2.0"</span><span class="p">],</span></span>
+<span class="ln">  <span class="k">"recent"</span><span class="p">:</span> <span class="s">"TripLinker — 팀장 · 백엔드 리드"</span><span class="p">,</span></span>
+<span class="ln">  <span class="k">"training"</span><span class="p">:</span> <span class="s">"대우능력개발원 백엔드 과정 (~2026.08)"</span><span class="p">,</span></span>
+<span class="ln">  <span class="k">"contact"</span><span class="p">:</span> <span class="s">"tkddus3521@naver.com"</span></span>
+<span class="ln"><span class="p">}</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metrics reveal">
+        <div class="metric"><b>4<i>회</i></b><span>경진대회 수상 (DBMS·Laravel·AWS·React)</span></div>
+        <div class="metric"><b>200<i>+</i></b><span>기술 블로그 포스트, 배운 것을 꾸준히 기록</span></div>
+        <div class="metric"><b>9<i>+</i></b><span>직접 설계하고 완성한 프로젝트</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== About ===== -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <span class="eyebrow reveal">About</span>
+      <h2 class="section-title reveal">문제를 해결하는 순간이<br />가장 즐거운 개발자</h2>
+
+      <div class="about-grid">
+        <div class="about-copy reveal">
+          <p class="lead">
+            웹이 어떻게 동작하는지 궁금해서 코딩을 시작했고,
+            지금은 Java와 Spring Boot로 서버를 만드는 일이 가장 재미있습니다.
+          </p>
+          <p>
+            개발하다 에러를 만나면 <strong>원인을 찾을 때까지 파고드는 편</strong>입니다.
+            검색과 디버깅 끝에 문제가 풀리는 순간의 희열이 저를 계속 성장하게 만드는 원동력이고,
+            그 과정을 기술 블로그에 200개가 넘는 글로 기록해 왔습니다.
+          </p>
+          <p>
+            전공 동아리 <strong>'코드어택' 회장</strong>, 스터디 팀장, 전공 멘토를 맡으며
+            팀으로 개발하는 시간에 익숙해졌습니다. 특히 7개월간의 그래픽 디자인 실무 경험 덕분에
+            기획자·디자이너와 협업할 때 <strong>상대의 언어로 소통</strong>할 수 있다는 점이 저만의 무기입니다.
+          </p>
+          <p>
+            지금은 대우능력개발원에서 Spring 생태계를 집중적으로 학습하며,
+            REST API 설계와 데이터베이스 연동 프로젝트를 반복해 실무 감각을 다지고 있습니다.
+          </p>
+        </div>
+
+        <ul class="timeline reveal">
+          <li>
+            <span class="t-date">2024.03 —</span>
+            <div class="t-title">인덕대학교 컴퓨터소프트웨어학과</div>
+            <div class="t-sub">전공 동아리 '코드어택' 회장 · 스터디 팀장</div>
+          </li>
+          <li>
+            <span class="t-date">2025.04 — 2025.10</span>
+            <div class="t-title">JS무역 · 그래픽 디자이너 (프리랜서)</div>
+            <div class="t-sub">설명서 번역·재디자인, 상세페이지 제작 — 7개월</div>
+          </li>
+          <li>
+            <span class="t-date">2025.11 — 2026.08</span>
+            <div class="t-title">대우능력개발원 백엔드 과정</div>
+            <div class="t-sub">Java · Spring Boot · JPA · Security · DB 설계</div>
+          </li>
+          <li>
+            <span class="t-date">2026.03 —</span>
+            <div class="t-title">컴퓨터소프트웨어학과 전공 멘토</div>
+            <div class="t-sub">PHP 쇼핑몰 프로젝트 후배 멘토링 · 디버깅 리드</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Skills ===== -->
+  <section class="section" id="skills">
+    <div class="wrap">
+      <span class="eyebrow reveal">Skills</span>
+      <h2 class="section-title reveal">기술 스택</h2>
+      <p class="section-desc reveal">직접 프로젝트에 적용해 본 기술 위주로 정리했습니다.</p>
+
+      <div class="skill-rows">
+        <div class="skill-row reveal">
+          <div>
+            <span class="lv">Core</span>
+            <h3>주력 기술</h3>
+          </div>
+          <div>
+            <p>백엔드 개발의 중심이 되는 스택입니다. REST API 설계, 도메인 모델링, 인증·보안 구현까지 실제 서비스 수준으로 다뤄 왔습니다.</p>
+            <div class="tags">
+              <span class="tag hi">Java</span>
+              <span class="tag hi">Spring Boot</span>
+              <span class="tag hi">Spring Data JPA</span>
+              <span class="tag hi">Spring Security</span>
+              <span class="tag hi">Spring MVC</span>
+              <span class="tag hi">Spring WebFlux</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-row reveal">
+          <div>
+            <span class="lv">Familiar</span>
+            <h3>지식이 있는 기술</h3>
+          </div>
+          <div>
+            <p>프로젝트에 적용해 봤거나 SQLD 등 자격증으로 이론을 다진 기술입니다.</p>
+            <div class="tags">
+              <span class="tag">MariaDB</span>
+              <span class="tag">MySQL</span>
+              <span class="tag">Oracle</span>
+              <span class="tag">MyBatis</span>
+              <span class="tag">OAuth 2.0</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">React (초급)</span>
+              <span class="tag">JSP / Thymeleaf</span>
+              <span class="tag">Laravel</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-row reveal">
+          <div>
+            <span class="lv">Tools</span>
+            <h3>협업 · 도구</h3>
+          </div>
+          <div>
+            <p>버전 관리와 협업, 문서화에 사용하는 도구입니다. 디자인 실무 경험 덕분에 Figma로 디자이너와 직접 소통할 수 있습니다.</p>
+            <div class="tags">
+              <span class="tag">Git / GitHub</span>
+              <span class="tag">GitHub Pages</span>
+              <span class="tag">IntelliJ IDEA</span>
+              <span class="tag">Figma</span>
+              <span class="tag">Notion</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Featured ===== -->
+  <section class="section" id="featured">
+    <div class="wrap">
+      <span class="eyebrow reveal">Featured Projects</span>
+      <h2 class="section-title reveal">대표 프로젝트</h2>
+      <p class="section-desc reveal">설계부터 구현까지 백엔드를 책임진 두 개의 프로젝트입니다.</p>
+
+      <div class="featured-list">
+
+        <!-- TripLinker -->
+        <article class="feature reveal">
+          <div class="feature-body">
+            <span class="feature-meta">Team Project · 4인 · 팀장 / 백엔드 리드</span>
+            <h3>TripLinker</h3>
+            <p class="sub">AI 챗봇 기반 여행 일정 플래너</p>
+            <p class="desc">
+              여행 계획의 '선택 피로'를 줄이는 서비스입니다. 4단계 플래너 플로우로 조건을 입력하면
+              AI가 일정을 생성하고, 기상청 단기·중기 예보를 결합해 여행 날짜별 날씨까지 반영합니다.
+            </p>
+            <ul class="points">
+              <li><b>AI 이중화</b> — Spring AI 기반 Groq Llama 3.3 70B 우선, 장애 시 Gemini Flash 폴백</li>
+              <li><b>인증·보안</b> — JWT + OAuth 2.0 소셜 로그인, 계정 잠금 · 보안 이력 관리</li>
+              <li><b>기여</b> — 63 커밋, 백엔드 아키텍처 설계와 핵심 기능 구현 주도</li>
+            </ul>
+            <div class="tags">
+              <span class="tag">Spring Boot 3.5</span>
+              <span class="tag">Spring Data JPA</span>
+              <span class="tag">Spring Security</span>
+              <span class="tag">Spring AI</span>
+              <span class="tag">OAuth 2.0</span>
+              <span class="tag">MariaDB</span>
+            </div>
+            <div class="feature-links">
+              <a class="btn btn-primary" href="triplinker.html">자세히 보기 <span class="arr">→</span></a>
+              <a class="btn btn-ghost" href="https://github.com/seolgi100/trip-linker" target="_blank" rel="noopener">GitHub</a>
+            </div>
+          </div>
+          <div class="feature-visual">
+            <div class="flow">
+              <div class="flow-node"><b>Client</b><span>4단계 플래너 · 챗봇 UI</span></div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-node accent"><b>Spring Boot REST API</b><span>Security · JWT · OAuth 2.0</span></div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-split">
+                <div class="flow-node"><b>Spring AI</b><span>Groq → Gemini 폴백</span></div>
+                <div class="flow-node"><b>기상청 API</b><span>단기 + 중기 예보 결합</span></div>
+              </div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-node"><b>MariaDB</b><span>JPA · REFRESH_TOKENS · 보안 이력</span></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- omong -->
+        <article class="feature flip reveal">
+          <div class="feature-body">
+            <span class="feature-meta">Hackathon Project</span>
+            <h3>omong (오몽)</h3>
+            <p class="sub">배리어프리 AI 키오스크 도우미</p>
+            <p class="desc">
+              키오스크 사용이 어려운 사용자를 위한 서비스입니다. 키오스크 화면을 사진으로 찍으면
+              비전 AI가 화면을 읽어 설명해 주고, 자유로운 질문과 번역까지 지원합니다.
+            </p>
+            <ul class="points">
+              <li><b>비전 AI</b> — Ollama llava 모델로 사진 속 화면을 인식하고 설명</li>
+              <li><b>폴백 설계</b> — AI 응답 실패 시 RuleEngine(규칙 기반)으로 전환해 서비스 유지</li>
+              <li><b>접근성</b> — 5개 다국어 지원, 화면 속 개인정보 마스킹 처리</li>
+            </ul>
+            <div class="tags">
+              <span class="tag">Java 25</span>
+              <span class="tag">Spring Boot</span>
+              <span class="tag">Ollama (llava)</span>
+              <span class="tag">REST API</span>
+            </div>
+            <div class="feature-links">
+              <a class="btn btn-primary" href="omong.html">자세히 보기 <span class="arr">→</span></a>
+              <a class="btn btn-ghost" href="https://github.com/ynkite/omong" target="_blank" rel="noopener">GitHub</a>
+            </div>
+          </div>
+          <div class="feature-visual">
+            <div class="flow">
+              <div class="flow-node"><b>사진 · 음성 입력</b><span>키오스크 화면 촬영</span></div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-node accent"><b>Spring Boot REST API</b><span>/api/analyze · /api/chat · /api/translate</span></div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-split">
+                <div class="flow-node"><b>Ollama llava</b><span>비전 모델 · 화면 읽기</span></div>
+                <div class="flow-node"><b>RuleEngine</b><span>AI 실패 시 폴백</span></div>
+              </div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-node"><b>응답 생성</b><span>5개 다국어 · 개인정보 마스킹</span></div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Project grid ===== -->
+  <section class="section" id="projects">
+    <div class="wrap">
+      <span class="eyebrow reveal">More Projects</span>
+      <h2 class="section-title reveal">그 외 프로젝트</h2>
+
+      <div class="proj-grid">
+        <article class="proj-card reveal">
+          <span class="award-chip">최우수상</span>
+          <div class="proj-top"><h3>stage-pass</h3><span class="yr">2025</span></div>
+          <p>공연 예매를 주제로 만든 React SPA. 8개 컴포넌트로 화면을 구성하고 TypeScript로 타입 안정성을 확보했습니다.</p>
+          <div class="tags"><span class="tag">React 18</span><span class="tag">TypeScript</span><span class="tag">Vite</span></div>
+        </article>
+
+        <article class="proj-card reveal">
+          <div class="proj-top"><h3>DEVICE SHOP</h3><span class="yr">2025</span></div>
+          <p>Laravel 기반 판매 관리 시스템. 상품·매입·매출 관리와 로그인 권한 제어까지 MVC 구조로 구현했습니다.</p>
+          <div class="tags"><span class="tag">Laravel</span><span class="tag">PHP</span><span class="tag">MariaDB</span></div>
+        </article>
+
+        <article class="proj-card reveal">
+          <div class="proj-top"><h3>Analyze Festa</h3><span class="yr">2025</span></div>
+          <p>서울시 공공데이터로 기상·대기오염과 대중교통 이용량의 관계를 분석하고, SARIMA 모델로 2026년 수요를 예측해 논문으로 정리했습니다.</p>
+          <div class="tags"><span class="tag">Python</span><span class="tag">PCA</span><span class="tag">SARIMA</span></div>
+        </article>
+
+        <article class="proj-card reveal">
+          <div class="proj-top"><h3>WindyCamp</h3><span class="yr">2025</span></div>
+          <p>캠핑용품 쇼핑몰. 카테고리·검색·필터와 관리자 상품/주문 관리 기능을 갖춘 반응형 웹입니다.</p>
+          <div class="tags"><span class="tag">PHP</span><span class="tag">MariaDB</span><span class="tag">Bootstrap</span></div>
+        </article>
+
+        <article class="proj-card reveal">
+          <div class="proj-top"><h3>PetVillage</h3><span class="yr">2025</span></div>
+          <p>유기동물 입양 활성화를 위한 정보 제공 사이트. 동물 목록·입양 안내와 관리자 등록/수정 기능을 구현했습니다.</p>
+          <div class="tags"><span class="tag">PHP</span><span class="tag">Bootstrap</span><span class="tag">MariaDB</span></div>
+        </article>
+
+        <article class="proj-card reveal">
+          <div class="proj-top"><h3>shop-hno</h3><span class="yr">2025</span></div>
+          <p>온라인 쇼핑몰 구현 프로젝트. 상품 목록부터 주문까지 쇼핑몰의 핵심 흐름을 직접 만들어 봤습니다.</p>
+          <div class="tags"><span class="tag">Web</span><span class="tag">DB 연동</span></div>
+        </article>
+
+        <article class="proj-card reveal">
+          <div class="proj-top"><h3>Space Scroll</h3><span class="yr">2024</span></div>
+          <p>Unity 2D 종스크롤 슈팅 게임. 무한 스크롤 배경, 아이템 4종, 패턴형 보스 AI와 게임 루프를 완성했습니다.</p>
+          <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Awards & Certs ===== -->
+  <section class="section" id="awards">
+    <div class="wrap">
+      <span class="eyebrow reveal">Awards & Certificates</span>
+      <h2 class="section-title reveal">수상 · 자격증</h2>
+
+      <div class="ac-grid">
+        <div class="ac-col reveal">
+          <h3>Awards</h3>
+          <ul>
+            <li><b>DBMS 경진대회 <em>금상</em></b><span>2024.11</span></li>
+            <li><b>Laravel 웹 솔루션 경진대회 <em>금상</em></b><span>2025.12</span></li>
+            <li><b>AWS 서비스 활용능력 경진대회 <em>최우수상</em></b><span>2025.12</span></li>
+            <li><b>React 프로젝트(stage-pass) <em>최우수상</em></b><span>2025</span></li>
+          </ul>
+        </div>
+        <div class="ac-col reveal">
+          <h3>Certificates</h3>
+          <ul>
+            <li><b>SQLD (SQL 개발자)</b><span>2026.05</span></li>
+            <li><b>정보처리산업기사 (필기)</b><span>2026.05</span></li>
+            <li><b>MOS Word Expert</b><span>2025.04</span></li>
+            <li><b>MOS Access Expert</b><span>2025.06</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section class="section contact" id="contact">
+    <div class="wrap">
+      <span class="eyebrow reveal">Contact</span>
+      <h2 class="reveal">끝까지 파고드는 개발자가 필요하다면,<br /><em>지금 연락 주세요.</em></h2>
+      <p class="section-desc reveal">이메일을 보내주시면 하루 안에 답장드립니다.</p>
+
+      <div class="contact-links">
+        <a class="contact-link reveal" href="mailto:tkddus3521@naver.com">
+          <span class="cl-label">Email</span>
+          <span class="cl-value">tkddus3521@naver.com</span>
+        </a>
+        <a class="contact-link reveal" href="https://github.com/ynkite" target="_blank" rel="noopener">
+          <span class="cl-label">GitHub</span>
+          <span class="cl-value">github.com/ynkite</span>
+        </a>
+        <a class="contact-link reveal" href="#" id="blogLink">
+          <span class="cl-label">Tech Blog</span>
+          <span class="cl-value">Tistory — 200+ 포스트</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap footer-in">
+      <span>© <span id="year"></span> Jeong Sangyeon</span>
+      <span>Java · Spring Boot · Backend</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

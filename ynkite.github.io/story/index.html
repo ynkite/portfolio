@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정상연 — 백엔드 개발자 | Story</title>
+<meta name="description" content="스크롤로 읽는 정상연의 개발 이야기">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --cream:#FFF9F0; --ink:#26221C; --muted:#8c8375; --line:#eee4d4;
+  --tang:#FF6B35; --teal:#0F7B6C; --sun:#F7C948; --sky:#3D8BFD;
+  --sans:'Pretendard Variable',Pretendard,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--sun)}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+.reveal{opacity:0;transform:translateY(22px);transition:all .85s cubic-bezier(.16,1,.3,1)}
+.reveal.on{opacity:1;transform:none}
+
+/* progress bar */
+#bar{position:fixed;top:0;left:0;height:4px;background:var(--tang);z-index:60;width:0;transition:width .1s linear}
+
+nav{position:fixed;top:16px;right:16px;z-index:50;display:flex;gap:8px}
+nav a{background:#fff;border:2px solid var(--ink);border-radius:99px;padding:8px 16px;font-size:13px;font-weight:700;box-shadow:3px 3px 0 var(--ink);transition:transform .2s,box-shadow .2s}
+nav a:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+nav a:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+nav a.hot{background:var(--tang);color:#fff}
+@media(max-width:700px){nav a.hide{display:none}}
+
+/* chapter marker */
+.chap{display:inline-flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:99px;padding:7px 18px;font-size:13px;font-weight:800;box-shadow:3px 3px 0 var(--ink);margin-bottom:28px}
+.chap .c{width:10px;height:10px;border-radius:50%}
+
+/* prologue */
+.prologue{min-height:100dvh;display:flex;align-items:center;position:relative;overflow:hidden}
+.prologue .deco{position:absolute;border-radius:50%;pointer-events:none}
+.prologue .d1{width:300px;height:300px;background:var(--sun);opacity:.25;top:-80px;right:-60px;animation:float1 9s ease-in-out infinite alternate}
+.prologue .d2{width:190px;height:190px;background:var(--teal);opacity:.16;bottom:10%;left:-60px;animation:float1 11s ease-in-out infinite alternate-reverse}
+@keyframes float1{to{transform:translate(24px,30px)}}
+.prologue h1{font-size:clamp(34px,6.2vw,72px);font-weight:900;letter-spacing:-.04em;line-height:1.22}
+.prologue h1 .hl{display:inline-block;position:relative;padding:0 6px}
+.prologue h1 .hl::before{content:"";position:absolute;inset:58% -2px 4px;background:var(--sun);z-index:-1;transform:skew(-6deg)}
+.prologue h1 .o{color:var(--tang)}
+.prologue .sub{margin-top:26px;font-size:17.5px;color:var(--muted);max-width:52ch}
+.prologue .scroll{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);font-size:12.5px;font-weight:700;letter-spacing:.2em;color:var(--muted);animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,8px)}}
+
+section.ch{padding:130px 0}
+.ch h2{font-size:clamp(28px,4.4vw,48px);font-weight:900;letter-spacing:-.035em;line-height:1.25;margin-bottom:20px}
+.ch .lead{font-size:17px;color:var(--muted);max-width:58ch;margin-bottom:44px}
+.ch .lead b{color:var(--ink)}
+
+/* speech bubbles chapter 1 */
+.bubbles{display:flex;flex-direction:column;gap:18px;max-width:640px}
+.bub{border:2px solid var(--ink);border-radius:18px;padding:16px 22px;font-size:15.5px;background:#fff;box-shadow:4px 4px 0 var(--ink);max-width:78%}
+.bub.me{align-self:flex-end;background:var(--ink);color:var(--cream);box-shadow:4px 4px 0 var(--tang)}
+.bub .who{display:block;font-size:11.5px;font-weight:800;letter-spacing:.08em;opacity:.6;margin-bottom:4px;text-transform:uppercase}
+
+/* project cards — sticker sheet */
+.stickers{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.stk{background:#fff;border:2.5px solid var(--ink);border-radius:20px;padding:28px;box-shadow:6px 6px 0 var(--ink);transition:transform .3s cubic-bezier(.32,.72,0,1),box-shadow .3s;position:relative}
+.stk:hover{transform:translate(-3px,-3px) rotate(-.4deg);box-shadow:9px 9px 0 var(--ink)}
+.stk.big{grid-column:span 2}
+.stk .rib{position:absolute;top:-13px;right:20px;background:var(--tang);color:#fff;border:2px solid var(--ink);border-radius:99px;font-size:11.5px;font-weight:800;padding:4px 14px;letter-spacing:.04em}
+.stk .rib.teal{background:var(--teal)}
+.stk .rib.sun{background:var(--sun);color:var(--ink)}
+.stk .rib.sky{background:var(--sky)}
+.stk .date{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em}
+.stk h3{font-size:23px;font-weight:900;letter-spacing:-.02em;margin:6px 0 10px}
+.stk p{font-size:14.5px;color:#5a5347}
+.stk ul{list-style:none;margin-top:14px}
+.stk li{font-size:13.8px;padding:7px 0;border-top:1.5px dashed var(--line);display:flex;gap:9px;color:#5a5347}
+.stk li::before{content:"✦";color:var(--tang)}
+.stk .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.stk .chips span{border:1.5px solid var(--ink);border-radius:99px;font-size:11.5px;font-weight:700;padding:3px 11px;background:var(--cream)}
+.stk a.gh{display:inline-block;margin-top:16px;font-size:13.5px;font-weight:800;color:var(--tang)}
+.stk a.gh:hover{text-decoration:underline}
+@media(max-width:760px){.stickers{grid-template-columns:1fr}.stk.big{grid-column:span 1}}
+
+/* counting numbers */
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:60px}
+.cnt{background:#fff;border:2.5px solid var(--ink);border-radius:18px;padding:26px 14px;text-align:center;box-shadow:5px 5px 0 var(--ink)}
+.cnt .v{font-size:clamp(30px,4.5vw,46px);font-weight:900;letter-spacing:-.03em;color:var(--tang)}
+.cnt:nth-child(2) .v{color:var(--teal)}
+.cnt:nth-child(3) .v{color:var(--sky)}
+.cnt:nth-child(4) .v{color:#c9930a}
+.cnt .l{font-size:12.5px;font-weight:700;color:var(--muted);margin-top:4px}
+@media(max-width:700px){.count{grid-template-columns:1fr 1fr}}
+
+/* skill shelves */
+.shelf{margin-bottom:26px}
+.shelf h3{display:inline-block;font-size:15px;font-weight:900;background:var(--ink);color:var(--cream);border-radius:8px;padding:5px 14px;margin-bottom:14px}
+.shelf .row{display:flex;flex-wrap:wrap;gap:9px}
+.shelf .row span{background:#fff;border:2px solid var(--ink);border-radius:10px;font-size:13.5px;font-weight:600;padding:7px 14px;box-shadow:2.5px 2.5px 0 var(--ink);transition:transform .18s,box-shadow .18s;cursor:default}
+.shelf .row span:hover{transform:translate(-1.5px,-1.5px);box-shadow:4px 4px 0 var(--ink)}
+.shelf .row span.hot{background:var(--sun)}
+
+/* timeline road */
+.road{position:relative;padding-left:34px;max-width:660px}
+.road::before{content:"";position:absolute;left:10px;top:8px;bottom:8px;width:3px;background:var(--ink);border-radius:3px}
+.stop{position:relative;padding-bottom:36px}
+.stop::before{content:"";position:absolute;left:-31px;top:5px;width:15px;height:15px;border-radius:50%;background:var(--tang);border:3px solid var(--ink)}
+.stop:nth-child(2)::before{background:var(--sun)}
+.stop:nth-child(3)::before{background:var(--teal)}
+.stop:nth-child(4)::before{background:var(--sky)}
+.stop .d{font-size:12.5px;font-weight:800;color:var(--muted);letter-spacing:.06em}
+.stop h3{font-size:19px;font-weight:900;margin:4px 0 6px}
+.stop p{font-size:14.5px;color:#5a5347;max-width:56ch}
+
+/* awards marquee */
+.mq{border-top:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink);background:var(--sun);overflow:hidden;white-space:nowrap;padding:14px 0}
+.mq span{display:inline-block;font-weight:900;font-size:15px;letter-spacing:.04em;padding-right:48px;animation:mqa 30s linear infinite}
+@keyframes mqa{to{transform:translateX(-50%)}}
+
+/* epilogue */
+.epi{padding:130px 0 90px;text-align:center;position:relative;overflow:hidden}
+.epi .deco{position:absolute;border-radius:50%;pointer-events:none}
+.epi .e1{width:260px;height:260px;background:var(--tang);opacity:.14;bottom:-90px;left:-60px}
+.epi .e2{width:180px;height:180px;background:var(--sky);opacity:.14;top:-40px;right:-40px}
+.epi h2{font-size:clamp(30px,5.5vw,60px);font-weight:900;letter-spacing:-.04em;line-height:1.25}
+.epi p{color:var(--muted);margin:20px 0 36px;font-size:16.5px}
+.epi .mail{display:inline-block;background:var(--tang);color:#fff;border:2.5px solid var(--ink);border-radius:99px;padding:16px 34px;font-size:17px;font-weight:900;box-shadow:6px 6px 0 var(--ink);transition:transform .2s,box-shadow .2s}
+.epi .mail:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink)}
+.epi .mail:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.epi .links{margin-top:34px;font-size:14px;font-weight:700}
+.epi .links a{border-bottom:2.5px solid var(--sun);margin:0 10px;padding-bottom:2px}
+.epi .links a:hover{border-color:var(--tang)}
+.foot{border-top:2px solid var(--line);padding:22px 0;text-align:center;font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+
+<nav>
+  <a href="#ch1" class="hide">이야기</a>
+  <a href="#ch2" class="hide">프로젝트</a>
+  <a href="#ch3" class="hide">스킬</a>
+  <a class="hot" href="mailto:j.sangyeon6@gmail.com">연락하기</a>
+</nav>
+
+<header class="prologue">
+  <div class="deco d1"></div><div class="deco d2"></div>
+  <div class="wrap">
+    <span class="chap reveal on"><span class="c" style="background:var(--tang)"></span>PROLOGUE</span>
+    <h1 class="reveal on">키오스크 앞에서 막막했던 할머니를 위해<br><span class="hl">2박 3일 만에 서비스를 만든</span><br>백엔드 개발자, <span class="o">정상연</span>입니다.</h1>
+    <p class="sub reveal on">그 서비스는 해커톤 아이디어상을 받았고, 팀원들은 저를 '다시 함께 일하고 싶은 사람'으로 뽑아줬습니다. 스크롤을 내리면, 제가 왜 이런 개발자가 되었는지 이야기가 시작됩니다.</p>
+  </div>
+  <span class="scroll">SCROLL ↓</span>
+</header>
+
+<section class="ch" id="ch1">
+  <div class="wrap">
+    <span class="chap reveal"><span class="c" style="background:var(--sun)"></span>CHAPTER 1 — 시작</span>
+    <h2 class="reveal">"이 화면 뒤에서는<br>무슨 일이 일어나고 있을까?"</h2>
+    <p class="lead reveal">게임을 달고 살던 아이는 어느 순간 게임보다 <b>그 뒤의 구조</b>가 더 궁금해졌습니다. 처음 웹 게시판을 만들고 내 글이 서버를 거쳐 DB에 저장되는 걸 봤을 때, 방향이 정해졌습니다. 그날부터 Java와 Spring을 팠습니다.</p>
+    <div class="bubbles">
+      <div class="bub reveal"><span class="who">전공 수업의 나</span>내가 쓴 글이 진짜 DB에 저장됐다가 다시 나온다고…?</div>
+      <div class="bub me reveal"><span class="who">지금의 나</span>네. 그리고 이제 그 서버에 JWT 인증도 달고, Redis 캐싱도 하고, AWS에 배포까지 합니다.</div>
+      <div class="bub reveal"><span class="who">팀원들</span>에러 났어요… 이거 왜 이래요?</div>
+      <div class="bub me reveal"><span class="who">나 (새벽 2시)</span>로그 다 찍어봤어? 같이 잡자. 원인 알 때까지는 못 자요, 우리.</div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="ch2" style="background:#fff;border-top:2.5px solid var(--ink);border-bottom:2.5px solid var(--ink)">
+  <div class="wrap">
+    <span class="chap reveal"><span class="c" style="background:var(--teal)"></span>CHAPTER 2 — 만든 것들</span>
+    <h2 class="reveal">이야기는 결과물로 증명해야 하니까.</h2>
+    <p class="lead reveal">기획부터 배포까지 완주한 프로젝트들입니다. 두 개의 메인 프로젝트와, 기본기를 다져준 작업들.</p>
+    <div class="stickers">
+      <article class="stk big reveal">
+        <span class="rib">MAIN · 팀장</span>
+        <span class="date">2026.04 – 06 · 4인 팀 · 팀장/백엔드 리드</span>
+        <h3>TripLinker — AI 여행 플래너</h3>
+        <p>조건을 입력하면 AI 챗봇이 취향을 추출해 일자별 동선과 예산까지 완성하는 서비스. 요구사항 정의부터 AWS 배포까지 팀장으로 완주했습니다.</p>
+        <ul>
+          <li>JWT 이중 토큰(AT 30분/RT 7일) + Redis 블랙리스트 · 로그인 5회 실패 시 계정 잠금</li>
+          <li>Spring AI 멀티 LLM 체인 — 주 모델이 죽으면 예비 모델로 자동 전환</li>
+          <li>기상청 예보 연동, 악천후엔 실내 일정으로 자동 대체</li>
+          <li>인기 경로 10분 배치 캐싱 · 테스트 169건 · AWS EC2/RDS 배포</li>
+        </ul>
+        <div class="chips"><span>Java</span><span>Spring Boot</span><span>Spring AI</span><span>Redis</span><span>MariaDB</span><span>OAuth 2.0</span><span>AWS</span></div>
+        <a class="gh" href="https://github.com/seolgi100/trip-linker" target="_blank" rel="noopener">GitHub에서 보기 →</a>
+      </article>
+
+      <article class="stk reveal">
+        <span class="rib teal">아이디어상 · MVP</span>
+        <span class="date">2026.06.30 – 07.03 · 6인 팀 '징검다리'</span>
+        <h3>오몽 — 키오스크 도우미</h3>
+        <p>프롤로그의 그 이야기. 어르신·외국인·시각장애인이 사진·음성·버튼으로 주문을 끝내게 돕는 배리어프리 서비스. 기획 주도 + 구현 대부분 담당.</p>
+        <ul>
+          <li>Ollama 비전 모델로 키오스크 화면 읽기</li>
+          <li>Claude→GPT→Gemini 체인 + 규칙 기반 폴백</li>
+          <li>5개국어 · 음성 안내 · 큰글씨 모드</li>
+        </ul>
+        <div class="chips"><span>Spring Boot</span><span>Ollama</span><span>Multi-AI</span></div>
+        <a class="gh" href="https://github.com/ynkite/omong" target="_blank" rel="noopener">GitHub에서 보기 →</a>
+      </article>
+
+      <article class="stk reveal">
+        <span class="rib sky">최우수상</span>
+        <span class="date">2026.05 – 06 · 개인</span>
+        <h3>StagePass</h3>
+        <p>콘서트 티켓 예매 SPA. 컴포넌트 6개·라우트 5개, Context API 전역 상태와 localStorage 유지, useSeats 커스텀 훅.</p>
+        <div class="chips"><span>React 18</span><span>TypeScript</span><span>Vite</span></div>
+        <a class="gh" href="https://github.com/ynkite/stage-pass" target="_blank" rel="noopener">GitHub에서 보기 →</a>
+      </article>
+
+      <article class="stk reveal">
+        <span class="rib sun">시각화상 + 논문</span>
+        <span class="date">2025.11 – 12 · 개인</span>
+        <h3>Analyze Festa</h3>
+        <p>서울시 공공데이터로 대중교통 수요를 분석·예측. PCA 주성분 2개가 변동성 80%+ 설명, SARIMA로 2026년 예측. 논문 제출까지.</p>
+        <div class="chips"><span>Python</span><span>PCA</span><span>SARIMA</span></div>
+      </article>
+
+      <article class="stk reveal">
+        <span class="rib sun">금상 ×2</span>
+        <span class="date">2025 · 개인</span>
+        <h3>PHP 3부작</h3>
+        <p>WindyCamp(쇼핑몰·금상), DEVICE SHOP(판매 관리·Laravel 금상), PetVillage(입양 정보). 서버 사이드 기본기를 반복해서 다졌습니다.</p>
+        <div class="chips"><span>PHP</span><span>Laravel</span><span>MariaDB</span><span>Linux</span></div>
+        <a class="gh" href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub에서 보기 →</a>
+      </article>
+
+      <article class="stk reveal">
+        <span class="date">2025.11 – 2026.03 · 개인</span>
+        <h3>Triplan</h3>
+        <p>TripLinker의 전신. CLI → Servlet/JSP → Spring+MyBatis, 아키텍처를 세 번 갈아엎으며 구조 설계를 손으로 배웠습니다.</p>
+        <div class="chips"><span>Java</span><span>Spring</span><span>MyBatis</span><span>JSP</span></div>
+      </article>
+    </div>
+
+    <div class="count">
+      <div class="cnt reveal"><div class="v" data-n="8">0</div><div class="l">경진대회 수상</div></div>
+      <div class="cnt reveal"><div class="v" data-n="200" data-suffix="+">0</div><div class="l">블로그 게시글</div></div>
+      <div class="cnt reveal"><div class="v" data-n="169">0</div><div class="l">테스트 케이스</div></div>
+      <div class="cnt reveal"><div class="v" data-n="10" data-suffix="+">0</div><div class="l">완주 프로젝트</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="ch3">
+  <div class="wrap">
+    <span class="chap reveal"><span class="c" style="background:var(--sky)"></span>CHAPTER 3 — 도구함</span>
+    <h2 class="reveal">손에 익은 도구들.</h2>
+    <p class="lead reveal">노란색이 가장 자신 있는 주력 도구입니다.</p>
+    <div class="shelf reveal"><h3>Backend</h3><div class="row"><span class="hot">Java</span><span class="hot">Spring Boot</span><span class="hot">Spring Security</span><span class="hot">Spring Data JPA</span><span>Spring AI</span><span>JWT · OAuth 2.0</span><span>PHP · Laravel</span><span>JSP · Servlet</span></div></div>
+    <div class="shelf reveal"><h3>DB · Infra</h3><div class="row"><span class="hot">MariaDB</span><span class="hot">MySQL</span><span>Redis</span><span>MyBatis</span><span>Oracle</span><span>AWS EC2·RDS·S3</span><span>Linux · Tomcat</span></div></div>
+    <div class="shelf reveal"><h3>Frontend · Etc.</h3><div class="row"><span>JavaScript</span><span>React (TS)</span><span>HTML/CSS</span><span>Thymeleaf</span><span>Python</span><span>C# Unity</span><span>Figma</span><span>Photoshop</span><span>Git/GitHub</span></div></div>
+  </div>
+</section>
+
+<section class="ch" id="ch4" style="padding-top:0">
+  <div class="wrap">
+    <span class="chap reveal"><span class="c" style="background:var(--tang)"></span>CHAPTER 4 — 걸어온 길</span>
+    <h2 class="reveal">쉬지 않고 걸었습니다.</h2>
+    <p class="lead reveal">학교, 실무, 연수, 그리고 사람들. 길 위의 정거장들.</p>
+    <div class="road">
+      <div class="stop reveal"><span class="d">2024.03 – 2027.02</span><h3>인덕대 컴퓨터소프트웨어학과</h3><p>학점 3.63/4.5. 동아리 '코드어택' 회장, 스터디 '컴파일러'·'DevUp', PHP 쇼핑몰 전공 멘토. 팀원과 후배들의 에러를 함께 잡으며 코드를 넓게 읽는 눈을 얻었습니다.</p></div>
+      <div class="stop reveal"><span class="d">2025.04 – 10</span><h3>JS무역 · 프리랜서 디자이너 (7개월)</h3><p>중국어 조립 설명서를 번역·재디자인하고 상세페이지를 만들었습니다. 기획자·디자이너의 언어를 여기서 배웠습니다.</p></div>
+      <div class="stop reveal"><span class="d">2025.11 – 2026.08</span><h3>대우능력개발원 KDT</h3><p>클라우드 기반 Java 웹개발자 시큐어코딩 과정. Spring MVC·Security·JPA·WebFlux를 한 번에 다루고, 팀 프로젝트 팀장으로 TripLinker를 이끌었습니다.</p></div>
+      <div class="stop reveal"><span class="d">2026.05 –</span><h3>자격증과 다음 목표</h3><p>SQLD, 정보처리산업기사(필기) 취득. 다음 목표는 클라우드와 CI/CD — 코드가 실제로 배포되고 운영되는 곳까지 이해하는 개발자.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="mq" aria-hidden="true"><span>🏆 AI Re-Local 해커톤 아이디어상 & 팀 MVP — 웹 프론트엔드 최우수상 — Laravel 금상 — AWS 최우수상 — DBMS 금상 — 온라인쇼핑몰 금상 — 데이터시각화상 — C++ 은상 — 🏆 AI Re-Local 해커톤 아이디어상 & 팀 MVP — 웹 프론트엔드 최우수상 — Laravel 금상 — AWS 최우수상 — DBMS 금상 — 온라인쇼핑몰 금상 — 데이터시각화상 — C++ 은상 —</span></div>
+
+<section class="epi">
+  <div class="deco e1"></div><div class="deco e2"></div>
+  <div class="wrap">
+    <span class="chap reveal"><span class="c" style="background:var(--teal)"></span>EPILOGUE</span>
+    <h2 class="reveal">다음 챕터는,<br>당신의 팀에서 쓰고 싶습니다.</h2>
+    <p class="reveal">트래픽이 몰려도 안 죽고, 반년 뒤 남이 봐도 읽히는 서버. 그걸 만드는 이야기요.</p>
+    <a class="mail reveal" href="mailto:j.sangyeon6@gmail.com">이야기 시작하기 ✉</a>
+    <p class="links reveal"><a href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub</a><a href="https://my-commit.tistory.com" target="_blank" rel="noopener">기술 블로그 (200편+)</a><a href="tel:01042113521">010-4211-3521</a></p>
+  </div>
+</section>
+
+<footer class="foot">© 2026 정상연 — 스크롤해 주셔서 감사합니다.</footer>
+
+<script>
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+// progress bar
+addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  document.getElementById('bar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+},{passive:true});
+// count up
+const cio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;cio.unobserve(e.target);
+  const el=e.target,n=+el.dataset.n,suf=el.dataset.suffix||'';let t0=null;
+  const step=t=>{if(!t0)t0=t;const p=Math.min((t-t0)/1200,1);
+    el.textContent=Math.round(n*(1-Math.pow(1-p,3)))+suf;
+    if(p<1)requestAnimationFrame(step)};
+  requestAnimationFrame(step);
+}),{threshold:.5});
+document.querySelectorAll('[data-n]').forEach(el=>cio.observe(el));
+</script>
+</body>
+</html>

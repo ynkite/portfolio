@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omong (오몽) — 배리어프리 AI 키오스크 도우미 | 정상연</title>
+  <meta name="description" content="키오스크가 어려운 사용자를 위한 배리어프리 AI 도우미 omong. Java 25 + Spring Boot, Ollama llava 비전 모델, AI/RuleEngine 폴백 설계." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232C49DE'/%3E%3Ctext x='16' y='21.5' font-family='monospace' font-size='14' font-weight='bold' fill='white' text-anchor='middle'%3ESY%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="nav-outer">
+    <nav class="nav">
+      <a class="nav-brand" href="index.html">jeong<em>sangyeon</em>.dev</a>
+      <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기" aria-expanded="false">MENU</button>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html#about">소개</a>
+        <a href="index.html#skills">기술</a>
+        <a href="index.html#featured">프로젝트</a>
+        <a href="index.html#awards">수상·자격</a>
+        <a class="nav-cta" href="index.html#contact">연락하기</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ===== Hero ===== -->
+  <header class="detail-hero">
+    <div class="wrap">
+      <a class="back-link" href="index.html#featured">← 프로젝트 목록으로</a>
+      <span class="eyebrow">Featured Project 02</span>
+      <h1>omong (오몽)</h1>
+      <p class="lead">
+        키오스크 사용이 어려운 사용자를 위한 배리어프리 AI 도우미.
+        화면을 사진으로 찍으면 AI가 화면을 읽고, 무엇을 눌러야 하는지 알려줍니다.
+      </p>
+
+      <div class="detail-meta">
+        <div class="dm"><span>Type</span><b>해커톤 프로젝트</b></div>
+        <div class="dm"><span>Stack</span><b>Java 25 · Spring Boot</b></div>
+        <div class="dm"><span>AI</span><b>Ollama llava (Vision)</b></div>
+        <div class="dm"><span>Repository</span><b><a href="https://github.com/ynkite/omong" target="_blank" rel="noopener">ynkite/omong ↗</a></b></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Overview ===== -->
+  <section class="detail-section">
+    <div class="wrap detail-copy">
+      <h2 class="reveal">왜 만들었나</h2>
+      <p class="reveal">
+        키오스크는 이제 어디에나 있지만, 모두에게 쉬운 건 아닙니다.
+        글자가 작아 읽기 힘든 어르신, 한국어가 익숙하지 않은 외국인에게 키오스크 앞의 몇 분은
+        꽤 큰 장벽입니다. omong은 그 장벽을 낮추기 위해 만든 서비스입니다.
+      </p>
+      <p class="reveal">
+        사용법은 단순합니다. <strong>키오스크 화면을 사진으로 찍으면</strong>, 비전 AI가 화면 구성을 읽어
+        지금 어떤 화면인지, 다음에 무엇을 누르면 되는지 설명해 줍니다.
+        자유롭게 질문을 던질 수도 있고, 5개 언어로 번역도 지원합니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== Architecture ===== -->
+  <section class="detail-section">
+    <div class="wrap">
+      <h2 class="reveal">아키텍처</h2>
+      <div class="arch reveal">
+        <div class="arch-flow">
+          <div class="flow-node"><b>사진 · 질문 입력</b><span>키오스크 화면 촬영 / 자유 발화</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node accent"><b>Spring Boot REST API</b><span>요청 라우팅 · 응답 조립</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><b>Ollama llava</b><span>비전 모델 · 화면 인식/설명</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><b>RuleEngine</b><span>AI 실패 · 지연 시 규칙 기반 폴백</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><b>응답</b><span>5개 다국어 · 개인정보 마스킹</span></div>
+        </div>
+        <p class="arch-note">AI 계층과 규칙 계층을 분리해, AI가 실패해도 서비스가 멈추지 않는 구조</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== API ===== -->
+  <section class="detail-section">
+    <div class="wrap">
+      <h2 class="reveal">REST API</h2>
+      <div class="endpoints">
+        <div class="endpoint reveal">
+          <span class="method">POST</span>
+          <span class="path">/api/analyze</span>
+          <span class="what">키오스크 화면 사진을 받아 화면 내용을 읽고 설명</span>
+        </div>
+        <div class="endpoint reveal">
+          <span class="method">POST</span>
+          <span class="path">/api/chat</span>
+          <span class="what">자유 발화 질문에 대한 대화형 응답</span>
+        </div>
+        <div class="endpoint reveal">
+          <span class="method">POST</span>
+          <span class="path">/api/translate</span>
+          <span class="what">응답·안내 문구의 다국어 번역 (5개 언어)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Key implementations ===== -->
+  <section class="detail-section">
+    <div class="wrap">
+      <h2 class="reveal">핵심 구현</h2>
+      <div class="impl-grid">
+        <div class="impl reveal">
+          <span class="num">01 · 비전 화면 읽기</span>
+          <h3>사진 한 장으로 화면 이해</h3>
+          <p>
+            Ollama에서 구동하는 <code>llava</code> 비전 모델로 키오스크 화면 사진을 분석합니다.
+            메뉴·버튼 같은 화면 요소를 읽어, 사용자가 지금 어떤 단계에 있고
+            무엇을 선택할 수 있는지 말로 풀어 설명합니다.
+          </p>
+        </div>
+        <div class="impl reveal">
+          <span class="num">02 · 폴백 설계</span>
+          <h3>AI와 RuleEngine의 분리</h3>
+          <p>
+            AI 응답이 실패하거나 늦어질 때를 대비해 <code>RuleEngine</code>(규칙 기반 응답)을
+            별도 계층으로 두었습니다. 도움을 청한 사용자가 빈 화면을 마주하는 일이 없도록,
+            AI가 무너져도 서비스는 응답하게 만들었습니다.
+          </p>
+        </div>
+        <div class="impl reveal">
+          <span class="num">03 · 다국어</span>
+          <h3>5개 언어 지원</h3>
+          <p>
+            한국어가 익숙하지 않은 사용자도 쓸 수 있도록 <code>/api/translate</code>를 통해
+            5개 언어로 안내를 제공합니다. 배리어프리라는 목표에 맞게
+            언어 장벽까지 함께 낮추는 데 집중했습니다.
+          </p>
+        </div>
+        <div class="impl reveal">
+          <span class="num">04 · 개인정보 보호</span>
+          <h3>화면 속 개인정보 마스킹</h3>
+          <p>
+            키오스크 화면에는 이름·전화번호 같은 개인정보가 노출될 수 있습니다.
+            분석 응답에서 개인정보를 <code>마스킹</code> 처리해,
+            편의를 위해 찍은 사진이 정보 유출로 이어지지 않게 했습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Learnings ===== -->
+  <section class="detail-section">
+    <div class="wrap detail-copy">
+      <h2 class="reveal">이 프로젝트에서 배운 것</h2>
+      <p class="reveal">
+        해커톤이라는 짧은 시간 안에서 <strong>'AI가 실패하면 어떻게 되는가'</strong>를 먼저 설계한 것이
+        가장 잘한 선택이었습니다. TripLinker에서 폴백 구조를 다뤄 본 경험이 그대로 이어졌고,
+        접근성 서비스일수록 안정성이 곧 기능이라는 걸 배웠습니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== Stack ===== -->
+  <section class="detail-section">
+    <div class="wrap">
+      <h2 class="reveal">기술 스택</h2>
+      <div class="tags reveal">
+        <span class="tag hi">Java 25</span>
+        <span class="tag hi">Spring Boot</span>
+        <span class="tag hi">REST API</span>
+        <span class="tag">Ollama</span>
+        <span class="tag">llava (Vision)</span>
+        <span class="tag">RuleEngine</span>
+        <span class="tag">다국어 (5개 언어)</span>
+        <span class="tag">개인정보 마스킹</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-cta">
+    <div class="wrap">
+      <div class="row">
+        <a class="btn btn-primary" href="https://github.com/ynkite/omong" target="_blank" rel="noopener">GitHub에서 코드 보기 <span class="arr">→</span></a>
+        <a class="btn btn-ghost" href="triplinker.html">이전 프로젝트: TripLinker</a>
+        <a class="btn btn-ghost" href="index.html#featured">목록으로</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap footer-in">
+      <span>© <span id="year"></span> Jeong Sangyeon</span>
+      <span>Java · Spring Boot · Backend</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
