@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>정상연 — 백엔드 개발자</title>
-  <meta name="description" content="백엔드 개발자 정상연의 프로젝트 · TripLinker · COGI · 오몽">
+  <meta name="description" content="백엔드 개발자 정상연의 프로젝트 · COGI · TripLinker · 오몽">
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <style>
@@ -109,7 +109,21 @@
 
     nav .lks {
       display: flex;
-      gap: 24px
+      align-items: center;
+      gap: 18px
+    }
+
+    /* 섹션 링크와 연락처를 가르는 선 */
+    nav .lks .sep {
+      width: 1px;
+      height: 13px;
+      background: var(--line);
+      flex: none
+    }
+
+    nav .lks .ct {
+      color: var(--blue);
+      font-weight: 600
     }
 
     nav .lks a {
@@ -358,6 +372,56 @@
       margin-top: 52px
     }
 
+    /* 브라우저 창 + 완성 폰 목업을 나란히 (COGI).
+       폰 목업은 프레임까지 그려진 이미지(900x1917)라 .phone 프레임을 씌우지 않는다.
+       폰은 오몽 목업과 같은 높이(681px)가 되게 320px. 브라우저는 상단 바 55px를 빼고
+       캡처 비율(1725x1064)로 역산해 1015px — 74.25% : 23.41%.
+       px가 아니라 %로 잡아 화면이 줄어도 둘이 같은 비율로 함께 줄어든다. */
+    .feat .device.duo {
+      display: flex;
+      gap: 2.34%;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: nowrap;
+      /* transform은 쓰지 않는다 — .rv 리빌 애니메이션의 `transform: none`이 덮어쓴다 */
+      width: min(1367px, calc(100vw - 40px));
+      margin-left: calc(50% - min(684px, 50vw - 20px))
+    }
+
+    .feat .device.duo .browser {
+      flex: 0 0 74.25%;
+      max-width: none;
+      margin: 0
+    }
+
+    .feat .device.duo .mockimg {
+      flex: 0 0 23.41%;
+      max-width: none;
+      margin: 0;
+      /* img는 min-width가 auto면 원본 너비(900px)가 최소값이 되어 flex-basis를 무시한다 */
+      min-width: 0;
+      height: auto
+    }
+
+    /* 좁은 화면에선 나란히 두면 둘 다 못 알아보게 작아진다 — 세로로 쌓는다 */
+    @media(max-width:760px) {
+      .feat .device.duo {
+        flex-wrap: wrap;
+        gap: 28px
+      }
+
+      .feat .device.duo .browser {
+        flex: 0 0 100%
+      }
+
+      /* flex-basis가 width를 이기므로 basis를 auto로 풀어야 폭 제한이 먹는다 */
+      .feat .device.duo .mockimg {
+        flex: 0 0 auto;
+        width: min(320px, 78vw);
+        margin: 0 auto
+      }
+    }
+
     /* browser */
     .browser {
       max-width: 1000px;
@@ -502,7 +566,8 @@
 
     .feat .tech li b {
       color: var(--ink);
-      font-weight: 600
+      font-weight: 600;
+      white-space: nowrap
     }
 
     .projbtns {
@@ -1027,7 +1092,13 @@
   <nav>
     <div class="in"><a class="brand" href="#top">정상연 포트폴리오</a>
       <div class="lks"><a class="h" href="#top">소개</a><a class="h" href="#work">프로젝트</a><a class="h" href="#more">추가
-          작업</a><a class="h" href="#edu">교육</a><a class="h" href="#skills">기술 스택</a><a href="#archiving">링크</a></div>
+          작업</a><a class="h" href="#edu">교육</a><a class="h" href="#skills">기술 스택</a><a href="#archiving">링크</a>
+        <span class="sep" aria-hidden="true"></span>
+        <a class="ct h" href="tel:01042113521">010-4211-3521</a><a class="ct h"
+          href="mailto:j.sangyeon6@gmail.com">j.sangyeon6@gmail.com</a><a class="ct"
+          href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub</a><a class="ct"
+          href="https://my-commit.tistory.com/" target="_blank" rel="noopener">티스토리</a>
+      </div>
     </div>
   </nav>
 
@@ -1043,15 +1114,14 @@
   <!-- ABOUT -->
   <section class="about" id="about">
     <div class="wrap">
-      <p class="lead rv">인덕대학교 컴퓨터소프트웨어학과에 재학 중입니다.<br>대우능력개발원 KDT 과정에서 Java·Spring·AWS·시큐어코딩·Spring AI를 수료했습니다.<br>메인
-        프로젝트 2개(TripLinker, COGI) 팀 프로젝트에서 팀장을 맡아서 서비스를 만들고<br>AWS · Docker에 배포해 운영했습니다.</p>
+      <p class="lead rv">인덕대학교 컴퓨터소프트웨어학과에 재학 중입니다.<br>대우능력개발원 KDT 과정에서 Java·Spring·AWS·시큐어코딩·Spring AI를 수료했습니다.<br>메인 팀 프로젝트 COGI와 TripLinker에서 팀장을 맡아 서비스를 만들고<br>AWS · Docker에 배포해 운영했습니다.</p>
       <div class="abgrid rv d1">
         <div class="abcell"><span class="k">이름</span><span class="v">정상연 (Jeong Sangyeon)</span></div>
         <div class="abcell"><span class="k">생년월일</span><span class="v">2001.08.02</span></div>
         <div class="abcell"><span class="k">지역</span><span class="v">경기도 양주</span></div>
         <a class="abcell" href="#skills"><span class="k">주요 스킬</span><span class="v kw">Java · Spring · AWS · Spring
             AI</span></a>
-        <a class="abcell" href="#work"><span class="k">대표 프로젝트</span><span class="v kw">TripLinker · COGI ·
+        <a class="abcell" href="#work"><span class="k">대표 프로젝트</span><span class="v kw">COGI · TripLinker ·
             오몽</span></a>
         <div class="abcell"><span class="k">자격증</span><span class="v">정보처리산업기사(필기)</span></div>
       </div>
@@ -1066,13 +1136,55 @@
     </div>
   </section>
 
-  <!-- FEATURED: TripLinker (web) -->
+  <!-- FEATURED: COGI (web) -->
   <section class="feat gray" id="work">
     <div class="wrap">
       <div class="shead">
         <div class="kick rv">Featured · Web</div>
+        <h2 class="rv"><a href="./projects/cogi.html">COGI</a></h2>
+        <p class="rv">AI가 GitHub PR을 리뷰합니다. 반복된 지적은 약점으로 모아 학습 카드로 돌려줍니다.</p>
+      </div>
+      <div class="device duo rv d1">
+        <div class="browser">
+          <div class="bar"><i></i><i></i><i></i><span class="u">43.202.36.123</span></div>
+          <div class="cap"><img src="assets/cogi-dash.png" alt="COGI 대시보드 화면" loading="lazy"></div>
+        </div>
+        <img class="mockimg" src="assets/cogi-dash-m.png" alt="COGI 모바일 대시보드 목업" loading="lazy">
+      </div>
+      <div class="txt rv d1">
+        <ul class="tech">
+          <li><b>AI 연동</b> — 벤더 4곳(Claude · GPT · Gemini · Groq)을 한 클라이언트로 호출, 타임아웃·코드펜스·스키마 방어를 그 안에 모음</li>
+          <li><b>약점 통계</b> — 리뷰 지적을 카테고리·언어로 묶어 3회 이상만 집계, 조회 시점에 계산해 쓰기 경합을 없앰</li>
+          <li><b>학습카드·퀴즈</b> — 약점에서 카드와 퀴즈를 생성, 크레딧을 먼저 차감하고 응답 파싱이 깨지면 롤백으로 되돌림</li>
+          <li><b>주간 리포트</b> — 지난주 발생·해결 건수를 집계해 HTML 메일로 발송, 전주 대비 증감을 함께 표기</li>
+        </ul>
+        <div class="projbtns">
+          <button class="pbtn" data-lb="cogi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <rect x="3" y="4" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="9" r="1.5" />
+              <path d="M21 15l-5-4-8 6" />
+            </svg>미리보기</button>
+          <a class="pbtn" href="https://github.com/Leeuswa/COGI" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="pbtn blue" href="http://43.202.36.123/" target="_blank" rel="noopener">사이트 바로가기 ↗</a>
+          <a class="pbtn dark" href="./projects/cogi.html">상세보기 ↗</a>
+        </div>
+      </div>
+      <div class="hl rv">
+        <div class="c"><b>67</b><span>내 커밋 / 전체 300</span></div>
+        <div class="c"><b>4인 팀 (팀장)</b><span>Spring Boot · React</span></div>
+        <div class="c"><b>47</b><span>담당 도메인 테스트</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED: TripLinker (web) -->
+  <section class="feat" id="triplinker">
+    <div class="wrap">
+      <div class="shead">
+        <div class="kick rv">Featured · Web</div>
         <h2 class="rv"><a href="./projects/triplinker.html">TripLinker</a></h2>
-        <p class="rv">AI가 취향을 분석해 일자별 동선과 예산까지 짜주는 웹 여행 플래너.</p>
+        <p class="rv">AI가 취향을 분석해 일자별 동선과 예산을 짜는 웹 여행 플래너.</p>
       </div>
       <div class="device rv d1">
         <div class="browser">
@@ -1085,7 +1197,7 @@
           <li><b>인증</b> — JWT 이중 토큰(AT 30분·RT 7일)·Redis 블랙리스트로 로그아웃·탈취 대응</li>
           <li><b>AI</b> — Spring AI 멀티 LLM 체인, 주 모델 장애 시 예비 모델로 자동 전환</li>
           <li><b>성능</b> — 인기 경로를 10분 주기 배치로 캐싱해 응답 속도 개선</li>
-          <li><b>품질·운영</b> — 테스트 169건 작성, AWS EC2·RDS 배포·운영</li>
+          <li><b>품질·운영</b> — 테스트 케이스 169건을 문서로 정리·검증, AWS EC2·RDS 배포·운영</li>
         </ul>
         <div class="projbtns">
           <button class="pbtn" data-lb="tl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1099,7 +1211,7 @@
         </div>
       </div>
       <div class="hl rv">
-        <div class="c"><b>169</b><span>테스트 케이스</span></div>
+        <div class="c"><b>169</b><span>테스트 케이스 (문서)</span></div>
         <div class="c"><b>4인 팀 (팀장)</b><span>백엔드 리드 / 프론트엔드 총괄</span></div>
         <div class="c"><b>AWS</b><span>EC2 · RDS 배포</span></div>
       </div>
@@ -1107,20 +1219,20 @@
   </section>
 
   <!-- FEATURED: 오몽 (app) -->
-  <section class="feat" id="omong">
+  <section class="feat gray" id="omong">
     <div class="wrap">
       <div class="shead">
         <div class="kick rv">Featured · App</div>
         <h2 class="rv"><a href="./projects/omong.html">오몽</a></h2>
-        <p class="rv">사진·음성·큰 버튼으로 누구나 키오스크 주문을 마치도록 돕는 배리어프리 서비스.</p>
+        <p class="rv">누구나 사진·음성·큰 버튼으로 키오스크 주문을 마치도록 돕는 배리어프리 서비스.</p>
       </div>
       <div class="device rv d1">
-        <img class="mockimg" src="assets/omong-mockup.jpg" alt="오몽 앱 메인 화면" loading="lazy">
+        <img class="mockimg" src="assets/omong-mockup.png" alt="오몽 앱 메인 화면" loading="lazy">
       </div>
       <div class="txt rv d1">
         <ul class="tech">
           <li><b>화면 인식</b> — Ollama 비전 모델이 키오스크 화면을 대신 읽어 메뉴를 파악</li>
-          <li><b>AI 체인</b> — Claude → GPT → Gemini 순서로 이어지는 체인, 실패 시 규칙 기반 폴백</li>
+          <li><b>AI 체인</b> — Claude → GPT → Groq → Gemini 순으로 시도해 첫 성공을 쓰고, 모두 실패하면 규칙 기반으로 폴백</li>
           <li><b>접근성</b> — 5개국어 · 음성 안내 · 큰글씨 모드, 언제든 직원 연결 안전망</li>
           <li><b>성과</b> — 2박 3일 만에 개발, AI Re-Local 해커톤 아이디어상 · 팀 MVP</li>
         </ul>
@@ -1162,7 +1274,7 @@
         <div class="tile rv">
           <div class="rowtop"><span class="yr">2025.06 · 약 1개월 · 개인</span><span class="badge">금상</span></div>
           <h3>WindyCamp</h3>
-          <p>캠핑용품 쇼핑몰. 상품·장바구니·주문 흐름을<br>PHP로 설계·구현하며 서버 사이드 기본기를 다졌습니다.</p>
+          <p>캠핑용품 쇼핑몰. 상품·장바구니·주문 흐름을<br>PHP로 직접 설계하고 구현했습니다.</p>
           <div class="st">PHP · MariaDB</div>
           <div class="tbtns"><button class="tbtn" data-lb="windycamp">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite/PHP_vscode" target="_blank" rel="noopener">GitHub ↗</a></div>
@@ -1170,7 +1282,7 @@
         <div class="tile rv">
           <div class="rowtop"><span class="yr">2025 · 개인</span><span class="badge">프로젝트</span></div>
           <h3>DEVICE SHOP</h3>
-          <p>전자기기 판매·재고 관리 시스템.<br>Laravel의 MVC·ORM·인증을 활용해 관리 기능을 구성했습니다.</p>
+          <p>전자기기 판매·재고 관리 시스템.<br>Laravel의 MVC·ORM·인증으로 관리 기능을 구성했습니다.</p>
           <div class="st">PHP · Laravel · MariaDB</div>
           <div class="tbtns"><button class="tbtn" data-lb="deviceshop">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
@@ -1178,7 +1290,7 @@
         <div class="tile rv">
           <div class="rowtop"><span class="yr">2025.12 · 약 1개월 · 개인</span><span class="badge">Laravel 금상</span></div>
           <h3>PetVillage</h3>
-          <p>반려동물 입양 정보 사이트. 입양 공고 등록·조회를 중심으로<br>웹 서비스를 설계·개발했습니다.</p>
+          <p>입양 공고 등록·조회를 중심으로 반려동물 입양 정보 사이트를<br>설계하고 개발했습니다.</p>
           <div class="st">PHP · MariaDB · Linux</div>
           <div class="tbtns"><button class="tbtn" data-lb="petvillage">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite/php" target="_blank" rel="noopener">GitHub ↗</a></div>
@@ -1194,7 +1306,7 @@
         <div class="tile rv">
           <div class="rowtop"><span class="yr">2025.11–12 · 개인</span><span class="badge">시각화상</span></div>
           <h3>Analyze Festa</h3>
-          <p>서울시 공공데이터로 대중교통 수요를 분석·예측.<br>PCA 두 성분이 변동성의 80% 이상을 설명했습니다.</p>
+          <p>서울시 공공데이터로 대중교통 수요를 분석하고 예측했습니다.<br>PCA 두 성분이 변동성의 80% 이상을 설명했습니다.</p>
           <div class="st">Python · PCA · SARIMA</div>
           <div class="tbtns"><button class="tbtn" data-lb="festa">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
@@ -1329,12 +1441,12 @@
         <a class="acard" href="https://github.com/ynkite" target="_blank" rel="noopener">
           <span class="ic">💻</span>
           <h4>GitHub</h4>
-          <p>프로젝트 소스와 커밋 기록입니다.<br>프로젝트들의 코드를 공개하고 있습니다.</p><span class="go">github.com/ynkite ↗</span>
+          <p>프로젝트 소스와 커밋 기록입니다.<br>코드를 공개합니다.</p><span class="go">github.com/ynkite ↗</span>
         </a>
         <a class="acard" href="https://my-commit.tistory.com" target="_blank" rel="noopener">
           <span class="ic">✍️</span>
           <h4>기술 블로그</h4>
-          <p>트러블슈팅과 학습 정리를 200편 넘게 꾸준히 기록해 왔습니다.</p><span class="go">my-commit.tistory.com ↗</span>
+          <p>트러블슈팅과 학습 정리를 200편 넘게 기록했습니다.</p><span class="go">my-commit.tistory.com ↗</span>
         </a>
       </div>
       <div class="archline rv">연락처 <a href="mailto:j.sangyeon6@gmail.com">j.sangyeon6@gmail.com</a> · <a
@@ -1361,6 +1473,7 @@
 
     // gallery data
     const GALLERY = {
+      cogi: { title: 'COGI — 실제 화면', note: '로그인 후 대시보드입니다. 학습일·크레딧·약점 집계와 주간 이슈 추이를 한 화면에서 봅니다.', shot: 'assets/cogi-dash.png', live: 'http://43.202.36.123/' },
       tl: { title: 'TripLinker — 실제 화면', note: '배포된 사이트의 메인 화면입니다.', shot: 'assets/triplinker-shot.png', live: 'http://43.201.154.80:8081/' },
       om: { title: '오몽 — 실제 화면', note: '배포된 사이트의 메인 화면입니다.', phone: true, shot: 'assets/omong-shot.png', live: 'https://omong.o-r.kr/' },
       stagepass: { title: 'StagePass — 이미지', slots: [['🎫', '예매 화면'], ['💺', '좌석 선택'], ['🧾', '주문 내역']] },
