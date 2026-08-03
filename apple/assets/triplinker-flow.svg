@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 900" width="1240" height="900"
+  font-family="Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, sans-serif" role="img"
+  aria-label="TripLinker 경로 생성 흐름 — 조건 입력부터 카카오 후보 수집, Claude 생성, Groq 폴백, 코드 거리 보정, 지도 출력까지">
+  <defs>
+    <linearGradient id="tSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fdfaf5" />
+      <stop offset="1" stop-color="#f4ece1" />
+    </linearGradient>
+    <filter id="tCard" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#6b4423" flood-opacity=".12" />
+    </filter>
+    <filter id="tLift" x="-25%" y="-25%" width="150%" height="170%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#6b4423" flood-opacity=".20" />
+    </filter>
+    <marker id="tArrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1.4 L9 5 L0 8.6 Z" fill="#b08a63" />
+    </marker>
+    <marker id="tArrowT" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1.4 L9 5 L0 8.6 Z" fill="#c4763a" />
+    </marker>
+  </defs>
+
+  <rect width="1240" height="900" fill="url(#tSky)" />
+
+  <text x="64" y="74" font-size="30" font-weight="700" fill="#4a3421" letter-spacing="-.8">TripLinker 경로 생성 흐름</text>
+  <text x="64" y="104" font-size="14.5" fill="#8a6c4d">조건 한 번으로 일자별 동선과 예산이 나오기까지</text>
+  <g transform="translate(1176 62)">
+    <circle r="7" fill="#c4763a" />
+    <circle r="7" cx="-22" fill="#d9a05b" />
+    <circle r="7" cx="-44" fill="#7d9b6a" />
+  </g>
+
+  <g font-size="11.5" font-weight="700" letter-spacing="1.4" fill="#b39877">
+    <text x="64" y="158">01 · 조건을 받는다</text>
+    <text x="64" y="330">02 · 실제 있는 장소만 모은다</text>
+    <text x="64" y="556">03 · 생성하고 보정한다</text>
+    <text x="64" y="782">04 · 지도에 올린다</text>
+  </g>
+  <g stroke="#dcc5a8" stroke-width="2" stroke-linecap="round">
+    <line x1="64" y1="132" x2="104" y2="132" />
+    <line x1="64" y1="304" x2="104" y2="304" />
+    <line x1="64" y1="530" x2="104" y2="530" />
+    <line x1="64" y1="756" x2="104" y2="756" />
+  </g>
+
+  <!-- ── 01 입력 ─────────────────────────────────────────── -->
+  <g filter="url(#tCard)">
+    <rect x="64" y="192" width="404" height="104" rx="14" fill="#fff" stroke="#6b4423" stroke-opacity=".14" />
+    <rect x="500" y="192" width="304" height="104" rx="14" fill="#fff" stroke="#6b4423" stroke-opacity=".14" />
+    <rect x="836" y="192" width="340" height="104" rx="14" fill="#fff" stroke="#6b4423" stroke-opacity=".14" />
+  </g>
+  <g font-size="15" font-weight="700" fill="#4a3421">
+    <text x="88" y="226">여행 조건 입력</text>
+    <text x="524" y="226">취향 · MBTI</text>
+    <text x="860" y="226">예산</text>
+  </g>
+  <g font-size="12.5" fill="#8a6c4d">
+    <text x="88" y="250">목적지 · 기간 · 인원 · 이동수단 · 추가 요청</text>
+    <text x="524" y="250">가중치 정렬과 일정 밀도에 쓰인다</text>
+    <text x="860" y="250">초과하면 대체 장소를 다시 고른다</text>
+  </g>
+  <g font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#94501f">
+    <rect x="88" y="262" width="126" height="21" rx="6" fill="#6b4423" fill-opacity=".08" />
+    <text x="97" y="277">PlanInputForm</text>
+    <rect x="524" y="262" width="176" height="21" rx="6" fill="#6b4423" fill-opacity=".08" />
+    <text x="533" y="277">parseExtraNotesToPrompt()</text>
+    <rect x="860" y="262" width="146" height="21" rx="6" fill="#6b4423" fill-opacity=".08" />
+    <text x="869" y="277">ExpenseRepository</text>
+  </g>
+
+  <g fill="none" stroke="#b08a63" stroke-width="1.6">
+    <path d="M266 296 V336" />
+    <path d="M652 296 V336" />
+    <path d="M1006 296 V336" />
+    <path d="M266 336 H1006" />
+    <path d="M620 336 V378" marker-end="url(#tArrow)" />
+  </g>
+
+  <!-- ── 02 후보 수집 (LLM 미사용) ────────────────────────── -->
+  <g filter="url(#tCard)">
+    <rect x="64" y="382" width="536" height="126" rx="16" fill="#fffdf9" stroke="#c4763a" stroke-opacity=".5" />
+    <rect x="640" y="382" width="536" height="126" rx="16" fill="#fff" stroke="#6b4423" stroke-opacity=".14" />
+  </g>
+  <text x="88" y="412" font-size="15" font-weight="700" fill="#94501f">후보 수집 — 이 단계는 LLM을 부르지 않는다</text>
+  <text x="88" y="436" font-size="12.5" fill="#8a6c4d">AI가 없는 장소를 지어내는 걸 막으려고, 후보는 카카오 검색 결과에서만 뽑는다.</text>
+  <text x="88" y="454" font-size="12.5" fill="#8a6c4d">관광지 · 맛집 · 카페로 부적절한 항목은 수집 단계에서 걸러 낸다.</text>
+  <g font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#94501f">
+    <text x="88" y="482">generateCandidates()</text>
+    <text x="264" y="482">KakaoPlaceController</text>
+  </g>
+  <text x="88" y="500" font-size="11" fill="#a8895f">후보 목록 자체를 카카오에서 가져온다</text>
+
+  <text x="664" y="412" font-size="15" font-weight="700" fill="#4a3421">좌표 확정 · 동명 지역 방어</text>
+  <text x="664" y="436" font-size="12.5" fill="#8a6c4d">이름만으로 조회하면 같은 이름의 다른 지역이 잡힌다.</text>
+  <text x="664" y="454" font-size="12.5" fill="#8a6c4d">지역명을 앞에 붙여 조회하고, 실패하면 표기를 바꿔 재시도한다.</text>
+  <g font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#94501f">
+    <text x="664" y="482">geocodeOnce()</text>
+    <text x="794" y="482">withRegion()</text>
+    <text x="924" y="482">extractSigungu()</text>
+  </g>
+  <text x="664" y="500" font-size="11" fill="#a8895f">좌표는 여기서 한 번만 박고 이후 단계가 재사용한다</text>
+  <path d="M600 445 H634" fill="none" stroke="#b08a63" stroke-width="1.6" marker-end="url(#tArrow)" />
+
+  <path d="M332 508 V590" fill="none" stroke="#b08a63" stroke-width="1.6" marker-end="url(#tArrow)" />
+
+  <!-- ── 03 AI 3단 ───────────────────────────────────────── -->
+  <g filter="url(#tLift)">
+    <rect x="64" y="594" width="740" height="140" rx="18" fill="#4a3421" />
+  </g>
+  <text x="92" y="624" font-size="13" font-weight="700" fill="#e8b887" letter-spacing=".6">생성은 AI, 보정은 코드</text>
+
+  <g font-size="13.5" font-weight="600" fill="#fff">
+    <text x="92" y="662">Claude — 1차 생성</text>
+    <text x="330" y="662">Groq — 폴백</text>
+    <text x="596" y="662">코드 — 순서 · 거리 보정</text>
+  </g>
+  <g font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#e0b98f">
+    <text x="92" y="682">buildRouteWithAI()</text>
+    <text x="330" y="682">catch → primaryClient</text>
+    <text x="596" y="682">postProcessRoute()</text>
+  </g>
+  <g font-size="11" fill="#c7b39c">
+    <text x="92" y="706">카카오 후보를 받아 일자별</text>
+    <text x="92" y="720">동선 초안을 만든다</text>
+    <text x="330" y="706">Claude 호출이 실패하면</text>
+    <text x="330" y="720">Groq가 그대로 이어받는다</text>
+    <text x="596" y="706">AI 재검증은 없는 장소를 만들어</text>
+    <text x="596" y="720">빼고, 보정은 코드로 옮겼다</text>
+  </g>
+  <g stroke="#7a5f42" stroke-width="1">
+    <line x1="314" y1="642" x2="314" y2="726" />
+    <line x1="580" y1="642" x2="580" y2="726" />
+  </g>
+  <g fill="none" stroke="#c4763a" stroke-width="1.6" marker-end="url(#tArrowT)">
+    <path d="M300 652 H324" />
+    <path d="M566 652 H590" />
+  </g>
+
+  <!-- 후처리 -->
+  <g filter="url(#tCard)">
+    <rect x="836" y="594" width="340" height="140" rx="16" fill="#fff" stroke="#6b4423" stroke-opacity=".14" />
+  </g>
+  <text x="860" y="624" font-size="14.5" font-weight="700" fill="#4a3421">동선 후처리</text>
+  <g font-size="12" fill="#8a6c4d">
+    <text x="860" y="650">시간대 안에서 방문 순서를 다시 맞추고</text>
+    <text x="860" y="668">먼 장소와 밀도 초과분을 덜어 낸다</text>
+  </g>
+  <g font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#94501f">
+    <text x="860" y="694">reorderWithinTimeBlocks()</text>
+    <text x="860" y="712">postProcessRoute()</text>
+  </g>
+  <text x="860" y="730" font-size="11" fill="#c0563f">40km 넘는 AI 장소는 삭제 · 사용자 요청은 알림</text>
+  <path d="M804 664 H830" fill="none" stroke="#b08a63" stroke-width="1.6" marker-end="url(#tArrow)" />
+
+  <!-- ── 04 출력 ─────────────────────────────────────────── -->
+  <g filter="url(#tCard)">
+    <rect x="64" y="806" width="356" height="72" rx="14" fill="#fff" stroke="#6b4423" stroke-opacity=".14" />
+    <rect x="452" y="806" width="356" height="72" rx="14" fill="#fff" stroke="#6b4423" stroke-opacity=".14" />
+    <rect x="840" y="806" width="336" height="72" rx="14" fill="#f7f0e6" stroke="#c4763a" stroke-opacity=".45" />
+  </g>
+  <text x="88" y="834" font-size="14" font-weight="700" fill="#4a3421">이동 거리 · 시간 · 비용</text>
+  <text x="88" y="856" font-size="11.5" fill="#8a6c4d">앞서 박아 둔 좌표를 재사용해 API를 다시 부르지 않는다</text>
+  <text x="88" y="872" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#94501f">recalcTransitWithKakao()</text>
+
+  <text x="476" y="834" font-size="14" font-weight="700" fill="#4a3421">지도 · 일정표</text>
+  <text x="476" y="856" font-size="11.5" fill="#8a6c4d">프론트가 이 좌표로 마커와 동선을 그리고 드래그로 재정렬한다</text>
+  <text x="476" y="872" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#94501f">saveAiRouteToDb()</text>
+
+  <text x="864" y="834" font-size="14" font-weight="700" fill="#94501f">외부 API 호출 절감</text>
+  <text x="864" y="856" font-size="11.5" fill="#8a6c4d">20km 이하는 직선거리로 걸러 도로 거리를 묻지 않는다</text>
+  <text x="864" y="872" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#94501f">haversine() → carDirections()</text>
+
+  <g fill="none" stroke="#b08a63" stroke-width="1.6" marker-end="url(#tArrow)">
+    <path d="M1006 734 V770 H242 V800" />
+    <path d="M420 842 H446" />
+    <path d="M808 842 H834" />
+  </g>
+</svg>
