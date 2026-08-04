@@ -1,0 +1,11 @@
+# 원본 캡처 모음 — 갤러리용으로 가공한 assets/image 만 올린다
+assets/프로젝트 사진/
+
+# 작업 부산물
+tools/_backup/
+tools/_workspace/
+tools/__pycache__/
+*.pyc
+
+# 렌더 확인용 임시 파일
+_t*.html

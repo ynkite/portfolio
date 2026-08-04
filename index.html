@@ -28,7 +28,107 @@
     }
 
     html {
-      scroll-behavior: smooth
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      /* 한 화면에 한 섹션. 스냅 지점은 sticky 네비 아래로 잡는다 */
+      scroll-snap-type: y mandatory;
+      scroll-padding-top: 48px
+    }
+
+    /* 스냅 페이지 — 뷰포트를 채우되 넘치면 그 안에서 스크롤된다 */
+    .snap {
+      min-height: calc(100vh - 48px);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      flex-direction: column;
+      justify-content: center
+    }
+
+    /* 화면이 너무 낮으면 스냅이 콘텐츠를 가둔다. 그때는 그냥 흐르게 둔다 */
+    @media (max-height:660px) {
+      html {
+        scroll-snap-type: none
+      }
+
+      .snap {
+        min-height: 0
+      }
+    }
+
+    /* 스텝 인디케이터 — .rv와 같은 IntersectionObserver를 쓴다 */
+    .steps {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      gap: 13px
+    }
+
+    .steps {
+      padding: 12px 9px;
+      border-radius: 980px;
+      background: rgba(255, 255, 255, .72);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border: 1px solid rgba(0, 0, 0, .08);
+      box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .3)
+    }
+
+    .steps a {
+      /* 빈 인라인 요소는 width·height가 안 먹는다 */
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .3);
+      position: relative;
+      transition: background .3s, transform .3s var(--ease)
+    }
+
+    .steps a:hover {
+      background: rgba(0, 0, 0, .55)
+    }
+
+    .steps a.on {
+      background: var(--blue);
+      transform: scale(1.5)
+    }
+
+    .steps a::after {
+      content: attr(data-t);
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%) translateX(4px);
+      white-space: nowrap;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, .07);
+      border-radius: 980px;
+      padding: 4px 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s var(--ease), transform .25s var(--ease)
+    }
+
+    .steps a:hover::after,
+    .steps a.on::after {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0)
+    }
+
+    @media(max-width:1100px) {
+      .steps {
+        display: none
+      }
     }
 
     body {
@@ -37,10 +137,22 @@
       background: var(--bg);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
       word-break: keep-all;
       overflow-wrap: break-word;
-      letter-spacing: -.01em
+      /* 트래킹은 크기별로 갈라야 한다. 전역 음수값은 작은 글씨에서 자간이 무너진다 */
+      letter-spacing: -.003em
+    }
+
+    /* 작은 글씨는 오히려 살짝 벌려야 읽힌다 */
+    .abcell .k,
+    .tile .yr,
+    .tile .badge,
+    .tile .st,
+    .shot-slot .s,
+    .awrow .dt,
+    .edurow .hr,
+    .foot {
+      letter-spacing: .01em
     }
 
     h1,
@@ -74,6 +186,15 @@
       display: block
     }
 
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9em;
+      background: #eef2f7;
+      border-radius: 5px;
+      padding: 1px 5px;
+      letter-spacing: 0
+    }
+
     .wrap {
       max-width: 1000px;
       margin: 0 auto;
@@ -98,19 +219,30 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 24px;
       padding: 0 22px;
       font-size: 12.5px
     }
 
     nav .brand {
       font-weight: 600;
-      font-size: 14px
+      font-size: 14px;
+      white-space: nowrap;
+      flex: none
     }
 
     nav .lks {
       display: flex;
       align-items: center;
-      gap: 18px
+      gap: 14px;
+      /* min-width auto면 nowrap한 링크 폭이 최소값이 되어 문서 전체를 밀어낸다 */
+      min-width: 0
+    }
+
+    /* 링크가 두 줄로 접히면 48px 바를 넘는다 */
+    nav .lks a,
+    nav .lks span {
+      white-space: nowrap
     }
 
     /* 섹션 링크와 연락처를 가르는 선 */
@@ -126,6 +258,33 @@
       font-weight: 600
     }
 
+    /* PDF 버튼 — 링크가 아니라 파일이라는 걸 테두리로 구분한다 */
+    nav .lks .pdf {
+      border: 1px solid var(--line);
+      border-radius: 980px;
+      padding: 4.5px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background .3s, border-color .3s, transform .1s ease-out
+    }
+
+    nav .lks a.pdf:hover {
+      background: #eef4ff;
+      border-color: #b8d0f0;
+      opacity: 1
+    }
+
+    nav .lks a.pdf:active {
+      transform: scale(.97)
+    }
+
+    nav .lks .pdf.soon {
+      color: var(--muted);
+      cursor: default;
+      opacity: .8
+    }
+
     nav .lks a {
       opacity: .85;
       transition: opacity .3s
@@ -136,9 +295,16 @@
       color: var(--blue)
     }
 
-    @media(max-width:640px) {
-      nav .lks a.h {
+    /* 섹션 링크는 좁아지면 접는다. 이력서 버튼은 남긴다 */
+    @media(max-width:720px) {
+
+      nav .lks a.h,
+      nav .lks .sep {
         display: none
+      }
+
+      nav .in {
+        gap: 12px
       }
     }
 
@@ -170,11 +336,53 @@
       animation-delay: .2s
     }
 
+    /* 모션을 줄여 달라고 한 사용자에겐 이동을 빼고 페이드만 남긴다 */
+    @keyframes rvfade {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto
+      }
+
+      .js .rv.on {
+        animation: rvfade .25s ease both
+      }
+
+      .pbtn:hover,
+      .tile:hover,
+      .acard:hover {
+        transform: none
+      }
+
+      .lb.open,
+      .lb.open .box {
+        animation: none
+      }
+    }
+
     /* hero */
     .hero {
       text-align: center;
-      padding: 74px 0 0;
-      background: linear-gradient(180deg, #fbfbfd, #fff 80%)
+      padding: 0 0 clamp(20px, 3.5vh, 46px)
+    }
+
+    /* 프로필 표 머리 — 큰 h2를 세우면 한 화면에 안 들어간다 */
+    .glabel {
+      margin: clamp(18px, 3vh, 34px) 0 10px;
+      text-align: left;
+      padding-left: 2px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .06em
     }
 
     .hero .eyebrow {
@@ -184,7 +392,7 @@
     }
 
     .hero h1 {
-      font-size: clamp(64px, 13vw, 140px);
+      font-size: clamp(52px, min(13vw, 12vh), 140px);
       font-weight: 700;
       letter-spacing: -.055em;
       line-height: .92;
@@ -214,11 +422,12 @@
 
     /* about card */
     .about {
-      padding: 66px 0 40px
+      padding: clamp(24px, 4vh, 56px) 0;
+      background: linear-gradient(180deg, #fbfbfd, #fff 60%)
     }
 
     .about .lead {
-      max-width: 60ch;
+      max-width: 64ch;
       margin: 0 auto;
       text-align: center;
       font-size: 18px;
@@ -227,19 +436,20 @@
     }
 
     .abgrid {
-      margin-top: 40px;
+      margin-top: clamp(14px, 2.4vh, 40px);
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 1px;
       background: var(--line);
       border: 1px solid var(--line);
-      border-radius: 20px 20px 0 0;
+      border-radius: 20px;
       overflow: hidden
     }
 
     .abcell {
+      grid-column: span 2;
       background: #fff;
-      padding: 22px 24px;
+      padding: clamp(12px, 1.8vh, 22px) 24px;
       display: flex;
       flex-direction: column;
       gap: 4px
@@ -267,8 +477,8 @@
       grid-column: 1/-1
     }
 
-    .abcell.span2 {
-      grid-column: span 2
+    .abcell.half {
+      grid-column: span 3
     }
 
     a.abcell {
@@ -297,37 +507,16 @@
       font-weight: 600
     }
 
-    @media(max-width:720px) {
+    /* 3칸을 최대한 유지한다 — 주요 스킬·자격증·수상·대표 프로젝트가 한 줄에 있어야 한다 */
+    @media(max-width:620px) {
       .abgrid {
-        grid-template-columns: 1fr 1fr
+        grid-template-columns: 1fr
       }
 
+      .abcell,
+      .abcell.half,
       .abcell.full {
-        grid-column: 1/-1
-      }
-    }
-
-    @media(max-width:460px) {
-      .abgrid {
-        grid-template-columns: 1fr
-      }
-    }
-
-    .abgrid2 {
-      margin-top: 1px;
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 1px;
-      background: var(--line);
-      border: 1px solid var(--line);
-      border-top: 0;
-      border-radius: 0 0 20px 20px;
-      overflow: hidden
-    }
-
-    @media(max-width:600px) {
-      .abgrid2 {
-        grid-template-columns: 1fr
+        grid-column: 1 / -1
       }
     }
 
@@ -345,7 +534,7 @@
     }
 
     .shead h2 {
-      font-size: clamp(34px, 5.4vw, 60px);
+      font-size: clamp(30px, min(5.4vw, 5.6vh), 60px);
       font-weight: 700;
       letter-spacing: -.035em;
       line-height: 1.02;
@@ -355,13 +544,14 @@
     .shead p {
       font-size: 19px;
       color: var(--sub);
-      margin-top: 14px;
+      margin-top: clamp(8px, 1.2vh, 14px);
       font-weight: 500
     }
 
     /* featured */
+    /* 스냅 페이지 안에서는 여백을 화면 높이에 맞춰 줄인다 */
     .feat {
-      padding: 110px 0
+      padding: clamp(26px, 3.6vh, 60px) 0
     }
 
     .feat.gray {
@@ -369,7 +559,14 @@
     }
 
     .feat .device {
-      margin-top: 52px
+      margin-top: clamp(16px, 2.4vh, 36px)
+    }
+
+    /* 목업은 세로가 682px 기준이다. 한 화면에 담아야 하니 화면이 낮으면
+       높이 여유만큼 폭을 줄인다 — 폭으로 계산해야 가로세로 비율이 그대로 간다.
+       duo 1367×682(2.005) · 브라우저 1015×682(1.488) · 폰 340×682(0.4985) */
+    .feat {
+      --mockh: clamp(320px, calc(100vh - 640px), 682px)
     }
 
     /* 브라우저 창 + 완성 폰 목업을 나란히 (COGI).
@@ -384,8 +581,8 @@
       justify-content: center;
       flex-wrap: nowrap;
       /* transform은 쓰지 않는다 — .rv 리빌 애니메이션의 `transform: none`이 덮어쓴다 */
-      width: min(1367px, calc(100vw - 40px));
-      margin-left: calc(50% - min(684px, 50vw - 20px))
+      width: min(1367px, calc(100vw - 40px), calc(var(--mockh) * 2.005));
+      margin-left: calc(50% - min(684px, 50vw - 20px, var(--mockh) * 1.0025))
     }
 
     .feat .device.duo .browser {
@@ -424,13 +621,13 @@
 
     /* browser */
     .browser {
-      max-width: 1000px;
+      max-width: min(1000px, calc(var(--mockh, 682px) * 1.488));
       margin: 0 auto;
       border-radius: 16px;
       overflow: hidden;
       background: #fff;
       border: 1px solid var(--line);
-      box-shadow: 0 60px 120px -50px rgba(0, 0, 0, .42), 0 10px 30px -18px rgba(0, 0, 0, .16)
+      box-shadow: 0 60px 120px -50px rgba(0, 0, 0, .21), 0 10px 30px -18px rgba(0, 0, 0, .08)
     }
 
     .browser .bar {
@@ -505,7 +702,7 @@
     }
 
     .mockimg {
-      max-width: 340px;
+      max-width: min(340px, calc(var(--mockh, 682px) * .4985));
       width: 100%;
       margin: 0 auto;
       display: block
@@ -524,8 +721,8 @@
     }
 
     .feat .txt {
-      max-width: 760px;
-      margin: 44px auto 0;
+      max-width: 900px;
+      margin: clamp(16px, 2.2vh, 32px) auto 0;
       text-align: center
     }
 
@@ -537,12 +734,13 @@
       margin: 0 auto
     }
 
+    /* 불릿 한 줄이 접히지 않게 폭을 넉넉히 준다 */
     .feat .tech {
-      margin: 26px auto 0;
-      max-width: 720px;
+      margin: clamp(12px, 2vh, 26px) auto 0;
+      max-width: 900px;
       text-align: left;
       display: grid;
-      gap: 10px
+      gap: clamp(6px, 1vh, 10px)
     }
 
     .feat .tech li {
@@ -571,7 +769,7 @@
     }
 
     .projbtns {
-      margin-top: 32px;
+      margin-top: clamp(14px, 2.2vh, 32px);
       display: flex;
       gap: 12px;
       justify-content: center;
@@ -583,7 +781,7 @@
       align-items: center;
       gap: 8px;
       border-radius: 980px;
-      padding: 12px 22px;
+      padding: clamp(9px, 1.4vh, 12px) 22px;
       font-size: 15px;
       font-weight: 500;
       border: 1px solid var(--line);
@@ -595,16 +793,19 @@
       transform: scale(1.03)
     }
 
+    /* 상세보기 — 프로젝트 브랜드 색 */
     .pbtn.dark {
+      background: var(--pb, var(--blue));
+      color: #fff;
+      border-color: var(--pb, var(--blue));
+      font-weight: 600
+    }
+
+    /* 사이트 바로가기 — 검정 */
+    .pbtn.blue {
       background: var(--ink);
       color: #fff;
       border-color: var(--ink)
-    }
-
-    .pbtn.blue {
-      background: var(--blue);
-      color: #fff;
-      border-color: var(--blue)
     }
 
     .pbtn svg {
@@ -616,7 +817,7 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      margin-top: 52px;
+      margin-top: clamp(14px, 1.8vh, 32px);
       border-top: 1px solid var(--line);
       max-width: 760px;
       margin-left: auto;
@@ -625,8 +826,8 @@
 
     .hl .c {
       flex: 1;
-      min-width: 160px;
-      padding: 30px 20px;
+      min-width: 150px;
+      padding: clamp(10px, 1.5vh, 30px) 18px;
       border-right: 1px solid var(--line)
     }
 
@@ -636,15 +837,15 @@
 
     .hl .c b {
       display: block;
-      font-size: 34px;
+      font-size: clamp(21px, 2.8vh, 34px);
       font-weight: 700;
       letter-spacing: -.03em
     }
 
     .hl .c span {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--sub);
-      margin-top: 6px;
+      margin-top: 3px;
       display: block
     }
 
@@ -659,20 +860,20 @@
 
     /* work grid */
     .grid-sec {
-      padding: 110px 0
+      padding: clamp(32px, 5vh, 88px) 0
     }
 
     .tiles {
-      margin-top: 50px;
+      margin-top: clamp(16px, 2.8vh, 50px);
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 1.6vh, 18px)
     }
 
     .tile {
       background: var(--gray);
       border-radius: 24px;
-      padding: 34px;
+      padding: clamp(18px, 2.4vh, 34px);
       display: flex;
       flex-direction: column;
       transition: transform .4s var(--ease)
@@ -705,7 +906,7 @@
       font-size: 24px;
       font-weight: 700;
       letter-spacing: -.02em;
-      margin: 12px 0 8px
+      margin: clamp(6px, 1.2vh, 12px) 0 8px
     }
 
     .tile p {
@@ -721,7 +922,7 @@
     }
 
     .tile .tbtns {
-      margin-top: 18px;
+      margin-top: clamp(10px, 1.6vh, 18px);
       display: flex;
       gap: 10px;
       flex-wrap: wrap
@@ -745,55 +946,153 @@
       background: #eef4ff
     }
 
+    @media(max-width:1040px) {
+      .tiles {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
     @media(max-width:700px) {
       .tiles {
         grid-template-columns: 1fr
       }
     }
 
-    /* edu */
-    .edu {
-      padding: 110px 0;
-      background: var(--gray)
+    /* 자격증 · 수상 · 교육 */
+    .credits {
+      padding: clamp(32px, 5vh, 88px) 0
     }
 
-    .edu .period {
-      text-align: center;
-      font-size: 15px;
-      color: var(--sub);
-      margin-top: 12px
+    .folds {
+      margin-top: clamp(16px, 2.8vh, 44px)
     }
 
-    .edutable {
-      margin-top: 44px;
-      background: #fff;
+    /* details/summary — JS 없이 접히고 펴진다 */
+    .fold {
       border: 1px solid var(--line);
-      border-radius: 20px;
+      border-radius: 18px;
+      background: #fff;
       overflow: hidden
     }
 
+    .fold+.fold {
+      margin-top: 12px
+    }
+
+    .fold>summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 20px 24px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      transition: background .3s
+    }
+
+    .fold>summary::-webkit-details-marker {
+      display: none
+    }
+
+    .fold>summary:hover {
+      background: #f7f9fd
+    }
+
+    .fold>summary .ft {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -.015em
+    }
+
+    .fold>summary .fs {
+      font-size: 13.5px;
+      color: var(--sub);
+      margin-top: 4px
+    }
+
+    .fold>summary .more {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--blue);
+      white-space: nowrap;
+      flex: none
+    }
+
+    .fold[open]>summary .more::after {
+      content: "접기 ⌃"
+    }
+
+    .fold:not([open])>summary .more::after {
+      content: "펼치기 ⌄"
+    }
+
+    .frows {
+      display: grid;
+      grid-template-columns: 1fr 1fr
+    }
+
+    .frows>*:nth-child(2n) {
+      border-left: 1px solid var(--line)
+    }
+
+    /* 홀수 개면 마지막 칸이 빈 채로 남는다. 가로로 늘려 메운다 */
+    .frows>*:last-child:nth-child(odd) {
+      grid-column: 1 / -1
+    }
+
+    @media(max-width:820px) {
+      .frows {
+        grid-template-columns: 1fr
+      }
+
+      .frows>*:nth-child(2n) {
+        border-left: 0
+      }
+    }
+
+    .awrow,
     .edurow {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 16px;
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--line);
-      align-items: center
+      gap: 14px;
+      padding: clamp(9px, 1.4vh, 14px) 22px;
+      border-top: 1px solid var(--line);
+      align-items: baseline
     }
 
-    .edurow:last-child {
-      border-bottom: 0
-    }
-
+    .awrow .nm,
     .edurow .nm {
-      font-size: 15.5px;
+      font-size: 15px;
       font-weight: 600
     }
 
+    .awrow .og,
     .edurow .kw {
       font-size: 13px;
       color: var(--muted);
       margin-top: 3px
+    }
+
+    .awrow .og a {
+      color: var(--blue)
+    }
+
+    .awrow .og a:hover {
+      text-decoration: underline
+    }
+
+    .awrow .dt {
+      font-size: 13.5px;
+      color: var(--sub);
+      white-space: nowrap;
+      text-align: right
+    }
+
+    .awrow .pz {
+      display: block;
+      color: var(--blue);
+      font-weight: 600;
+      font-size: 14px
     }
 
     .edurow .hr {
@@ -803,30 +1102,50 @@
       white-space: nowrap
     }
 
-    .edutotal {
-      margin-top: 22px;
-      text-align: center;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--ink)
+    /* 실무형 프로젝트 행만 강조 — 업체 협약 과제라 성격이 다르다 */
+    .edurow.hi {
+      background: #fbfcfe
+    }
+
+    .edurow.hi .nm {
+      color: var(--blue)
+    }
+
+    .foldnote {
+      padding: 15px 24px;
+      border-top: 1px solid var(--line);
+      font-size: 13.5px;
+      color: var(--sub)
     }
 
     @media(max-width:600px) {
-      .edurow {
-        padding: 14px 18px
+
+      .awrow,
+      .edurow,
+      .foldnote,
+      .fold>summary {
+        padding-left: 18px;
+        padding-right: 18px
       }
     }
 
     /* skills */
     .skills-sec {
-      padding: 110px 0;
-      text-align: center
+      padding: clamp(32px, 5vh, 88px) 0;
+      text-align: center;
+      background: var(--gray)
+    }
+
+    /* 4열이 좁으면 칩이 한 줄에 하나씩 떨어져 어색하다. 이 섹션만 폭을 넓힌다.
+       모니터를 반으로 갈라 보는 경우(약 960px)까지 4열을 유지한다 */
+    .skills-sec .wrap {
+      max-width: 1280px
     }
 
     .skcols {
-      margin-top: 44px;
+      margin-top: clamp(18px, 3vh, 40px);
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 1px;
       background: var(--line);
       border-radius: 20px;
@@ -848,24 +1167,111 @@
     }
 
     .skcol .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px
+      display: grid;
+      gap: 6px
     }
 
-    .skcol .row span {
-      font-size: 14px;
+    /* 기술 칩 — 누르면 아래 패널에 활용 수준과 근거가 뜬다.
+       무게는 두 단계만 준다. 세 단계로 갈랐더니 칩밭이 어지러웠다 */
+    .sk {
+      font-size: 13.5px;
       background: var(--gray);
       border-radius: 9px;
-      padding: 8px 13px
+      padding: 8px 12px;
+      text-align: left;
+      transition: background .3s, transform .1s ease-out
     }
 
-    .skcol .row span.key {
+    .sk.core {
       background: var(--ink);
-      color: #fff
+      color: #fff;
+      font-weight: 600
     }
 
-    @media(max-width:700px) {
+    .sk:hover {
+      background: #e7eef8
+    }
+
+    .sk.core:hover {
+      background: #33333a
+    }
+
+    /* 반응은 hover가 아니라 눌림에 준다 */
+    .sk:active {
+      transform: scale(.97)
+    }
+
+    .sk.on {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px
+    }
+
+    .skpanel {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 24px 26px;
+      text-align: left
+    }
+
+    .skp b {
+      font-size: 16px;
+      font-weight: 600;
+      display: block
+    }
+
+    .skp b i {
+      font-style: normal;
+      font-size: 13px;
+      color: var(--blue);
+      font-weight: 600;
+      margin-left: 7px
+    }
+
+    .skp p {
+      font-size: 15px;
+      color: var(--sub);
+      margin-top: 7px
+    }
+
+    .js .skpanel {
+      display: grid
+    }
+
+    /* 전부 같은 칸에 겹쳐 두면 컨테이너 높이가 가장 긴 설명에 맞춰 고정된다.
+       display:none으로 갈아 끼우면 설명 길이마다 높이가 출렁인다 */
+    .js .skp {
+      grid-area: 1 / 1;
+      visibility: hidden;
+      opacity: 0
+    }
+
+    .js .skp.on {
+      visibility: visible;
+      opacity: 1
+    }
+
+    /* JS가 죽으면 전 패널이 그대로 보여야 한다. 그때만 사이를 벌린다 */
+    .skp+.skp {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line)
+    }
+
+    .js .skp+.skp {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0
+    }
+
+    @media(max-width:860px) {
+      .skcols {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:600px) {
       .skcols {
         grid-template-columns: 1fr
       }
@@ -873,12 +1279,21 @@
 
     /* archiving */
     .arch {
-      padding: 110px 0;
-      background: var(--gray)
+      padding: clamp(32px, 5vh, 72px) 0 0;
+      background: var(--gray);
+      /* 내용은 남는 공간 가운데, 푸터는 바닥에 붙인다 */
+      justify-content: flex-start
+    }
+
+    .arch>.wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center
     }
 
     .archcards {
-      margin-top: 44px;
+      margin-top: clamp(16px, 2.8vh, 44px);
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px
@@ -888,7 +1303,7 @@
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 22px;
-      padding: 34px;
+      padding: clamp(18px, 2.4vh, 34px);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -938,12 +1353,161 @@
       }
     }
 
+    .arch .foot {
+      margin-top: clamp(24px, 4vh, 48px);
+      background: #fff;
+      border-top: 1px solid var(--line)
+    }
+
     .foot {
       padding: 24px 0;
       text-align: center;
       font-size: 12px;
       color: var(--muted);
       border-top: 1px solid var(--line)
+    }
+
+
+    /* ── apple-design ─────────────────────────────────────── */
+    /* §15 큰 제목은 광학 사이즈를 켜고 어절이 한쪽으로 몰리지 않게 균형을 잡는다 */
+    .hero h1,
+    .shead h2,
+    .tile h3,
+    .acard h4 {
+      font-optical-sizing: auto;
+      text-wrap: balance
+    }
+
+    .about .lead,
+    .shead p {
+      text-wrap: pretty
+    }
+
+    /* §12 재질 — 네비 위쪽에 빛을 받는 밝은 모서리 */
+    nav {
+      border-top: 1px solid rgba(255, 255, 255, .5)
+    }
+
+    /* §12 스크롤 경계는 1px 선이 아니라 옅은 페이드로. 콘텐츠가 유리 밑으로 들어가는 느낌 */
+    nav::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 14px;
+      pointer-events: none;
+      background: linear-gradient(rgba(0, 0, 0, .045), transparent)
+    }
+
+    /* §1 응답 — 누르는 순간 반응한다. hover가 아니라 press */
+    .pbtn:active,
+    .tbtn:active,
+    .acard:active,
+    .fold>summary:active,
+    nav .lks a:active {
+      transform: scale(.985);
+      transition-duration: .1s
+    }
+
+    /* §16 craft — 키보드 사용자에게도 초점이 보이게 */
+    a:focus-visible,
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 6px
+    }
+
+    /* §12 떠 있는 표면은 클수록 두껍게 읽힌다 — 카드가 떠오를 때 그림자도 함께 깊어진다 */
+    .tile,
+    .acard {
+      transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .04)
+    }
+
+    .tile:hover,
+    .acard:hover {
+      box-shadow: 0 22px 44px -26px rgba(0, 0, 0, .28)
+    }
+
+    /* §12 눌러서 여는 표면 — 열릴 때 재질이 도착하듯 */
+    .fold[open] .frows,
+    .fold[open] .foldnote {
+      animation: foldin .3s var(--ease) forwards
+    }
+
+    @keyframes foldin {
+      from {
+        opacity: 0;
+        transform: translateY(-6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    /* §16 simplicity — 스킬 패널이 바뀔 때 내용만 조용히 교체된다 */
+    .js .skp.on {
+      animation: skin .26s var(--ease) forwards
+    }
+
+    @keyframes skin {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .fold[open] .frows,
+      .fold[open] .foldnote,
+      .js .skp.on {
+        animation: none
+      }
+
+      .pbtn:active,
+      .tbtn:active,
+      .acard:active,
+      .fold>summary:active,
+      nav .lks a:active,
+      .tile:hover,
+      .acard:hover {
+        transform: none
+      }
+    }
+
+    /* §14 대비를 높여 달라고 하면 반투명을 걷고 경계를 뚜렷하게 */
+    @media (prefers-contrast: more) {
+      nav {
+        background: #fff;
+        backdrop-filter: none;
+        border-bottom-color: rgba(0, 0, 0, .35)
+      }
+
+      .steps {
+        background: #fff
+      }
+
+      .sk {
+        outline: 1px solid rgba(0, 0, 0, .25)
+      }
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+
+      nav,
+      .steps {
+        background: #fff;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none
+      }
     }
 
     /* lightbox */
@@ -961,7 +1525,41 @@
     }
 
     .lb.open {
-      display: flex
+      display: flex;
+      animation: lbveil .32s var(--ease) forwards
+    }
+
+    /* 재질이 도착하는 것처럼 blur 반경과 배경을 함께 올린다. 제스처가 없으니 오버슈트는 없다 */
+    @keyframes lbveil {
+      from {
+        background: rgba(20, 20, 25, 0);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px)
+      }
+
+      to {
+        background: rgba(20, 20, 25, .6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px)
+      }
+    }
+
+    .lb.open .box {
+      animation: lbrise .32s var(--ease) forwards
+    }
+
+    @keyframes lbrise {
+      from {
+        opacity: 0;
+        transform: scale(.94);
+        filter: blur(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+        filter: none
+      }
     }
 
     .lb .box {
@@ -1009,11 +1607,106 @@
     .lb .shotimg {
       border: 1px solid var(--line);
       border-radius: 14px;
-      overflow: hidden
+      overflow: hidden;
+      margin: 0;
+      background: var(--gray)
     }
 
     .lb .shotimg img {
-      width: 100%
+      width: 100%;
+      display: block
+    }
+
+    /* 어떤 화면인지 한 줄로 붙인다. 사진만 늘어놓으면 무슨 페이지인지 알 수 없다 */
+    .lb .shotimg figcaption {
+      padding: 9px 12px;
+      font-size: 12.5px;
+      color: var(--sub);
+      background: #fff;
+      border-top: 1px solid var(--line);
+      letter-spacing: .01em
+    }
+
+    .lb .shotimg img {
+      cursor: zoom-in
+    }
+
+    /* 사진 원본 크기로 다시 띄우는 층 — 상세페이지와 같은 동작 */
+    .imglb {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      background: rgba(20, 20, 25, .78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: zoom-out
+    }
+
+    .imglb.open {
+      display: flex;
+      animation: imgveil .3s var(--ease) forwards
+    }
+
+    @keyframes imgveil {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .imglb img {
+      max-width: 96vw;
+      max-height: 92vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 14px;
+      box-shadow: 0 40px 100px -40px rgba(0, 0, 0, .7);
+      animation: imgrise2 .3s var(--ease) forwards
+    }
+
+    @keyframes imgrise2 {
+      from {
+        opacity: 0;
+        transform: scale(.95);
+        filter: blur(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+        filter: none
+      }
+    }
+
+    .imglb .x {
+      position: absolute;
+      top: 22px;
+      right: 26px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .9);
+      color: var(--ink);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .imglb.open,
+      .imglb img {
+        animation: none
+      }
     }
 
     .lb .open-real {
@@ -1029,14 +1722,29 @@
       font-weight: 500
     }
 
+    /* 사진 비율이 제각각이라 그대로 깔면 카드 높이가 다 달라 정신없다.
+       썸네일 비율을 고정해 카드를 같은 크기로 맞추고, 원본은 눌러서 크게 본다 */
     .lb .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
       gap: 14px
     }
 
+    .lb .shotimg img {
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top center
+    }
+
+    /* 폰 목업 사진은 428×882 원본 그대로 넣었다. 카드도 같은 비율이라
+       잘리는 곳도, 남는 여백도 없다 */
     .lb.phoneset .grid {
-      grid-template-columns: repeat(3, 1fr)
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr))
+    }
+
+    .lb.phoneset .shotimg img {
+      aspect-ratio: 428 / 882;
+      object-position: center
     }
 
     .shot-slot {
@@ -1055,7 +1763,7 @@
     }
 
     .lb.phoneset .shot-slot {
-      aspect-ratio: 9/16
+      aspect-ratio: 428/882
     }
 
     .shot-slot .ico {
@@ -1091,56 +1799,469 @@
 <body>
   <nav>
     <div class="in"><a class="brand" href="#top">정상연 포트폴리오</a>
-      <div class="lks"><a class="h" href="#top">소개</a><a class="h" href="#work">프로젝트</a><a class="h" href="#more">추가
-          작업</a><a class="h" href="#edu">교육</a><a class="h" href="#skills">기술 스택</a><a href="#archiving">링크</a>
+      <div class="lks"><a class="h" href="#skills">스킬</a><a class="h" href="#credits">자격증 · 수상</a><a class="h"
+          href="#work">프로젝트</a><a class="h" href="#more">추가 작업</a>
         <span class="sep" aria-hidden="true"></span>
-        <a class="ct h" href="tel:01042113521">010-4211-3521</a><a class="ct h"
-          href="mailto:j.sangyeon6@gmail.com">j.sangyeon6@gmail.com</a><a class="ct"
-          href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub</a><a class="ct"
-          href="https://my-commit.tistory.com/" target="_blank" rel="noopener">티스토리</a>
+        <a class="ct pdf"
+          href="assets/%EC%9D%B4%EB%A0%A5%EC%84%9C_%EC%A0%95%EC%83%81%EC%97%B0_%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4%EC%82%AC%EC%9D%B4%ED%8A%B8%EC%9A%A9.pdf"
+          target="_blank" rel="noopener">이력서 PDF ↗</a>
+        <span class="ct pdf soon" title="준비 중입니다">포트폴리오 PDF</span>
       </div>
     </div>
   </nav>
 
-<header class="hero" id="top">
-    <div class="eyebrow">Backend Developer</div>
-    <h1>정상연</h1>
-    <div class="sub">Java · Spring · Spring AI · AWS</div>
-  </header>
+  <div class="steps" role="navigation" aria-label="섹션 이동">
+    <a href="#top" data-t="프로필" class="on"></a>
+    <a href="#skills" data-t="스킬"></a>
+    <a href="#credits" data-t="자격증 · 수상"></a>
+    <a href="#work" data-t="COGI"></a>
+    <a href="#triplinker" data-t="TripLinker"></a>
+    <a href="#omong" data-t="오몽"></a>
+    <a href="#more" data-t="추가 작업"></a>
+    <a href="#archiving" data-t="링크 · 연락처"></a>
+  </div>
 
-  
-  <!-- ABOUT -->
-  <section class="about" id="about">
-    <div class="wrap">
-      <p class="lead rv">인덕대학교 컴퓨터소프트웨어학과에 재학 중입니다.<br>대우능력개발원 KDT 과정에서 Java·Spring·AWS·시큐어코딩·Spring AI를 수료했습니다.<br>메인 팀 프로젝트 COGI와 TripLinker에서 팀장을 맡아 서비스를 만들고<br>AWS · Docker에 배포해 운영했습니다.</p>
+  <!-- PROFILE -->
+  <section class="about snap" id="top">
+    <div class="hero">
+      <div class="eyebrow">Backend Developer</div>
+      <h1>정상연</h1>
+      <div class="sub">Java · Spring · Spring AI · AWS</div>
+    </div>
+    <div class="wrap" id="about">
+      <p class="lead rv">인덕대학교 컴퓨터소프트웨어학과에 재학 중입니다.<br>대우능력개발원 KDT 과정에서
+        Java·Spring·AWS·시큐어코딩·Spring AI를 다뤘습니다.<br>팀 프로젝트 COGI와 TripLinker에서 팀장을 맡아 AWS 배포까지 마쳤습니다.</p>
+      <div class="glabel rv">프로필</div>
       <div class="abgrid rv d1">
         <div class="abcell"><span class="k">이름</span><span class="v">정상연 (Jeong Sangyeon)</span></div>
         <div class="abcell"><span class="k">생년월일</span><span class="v">2001.08.02</span></div>
-        <div class="abcell"><span class="k">지역</span><span class="v">경기도 양주</span></div>
-        <a class="abcell" href="#skills"><span class="k">주요 스킬</span><span class="v kw">Java · Spring · AWS · Spring
-            AI</span></a>
+        <div class="abcell"><span class="k">학력</span><span class="v">인덕대학교 컴퓨터소프트웨어학과</span></div>
+        <a class="abcell" href="#skills"><span class="k">스킬</span><span class="v kw">Java · Spring Boot · Spring AI ·
+            AWS</span></a>
+        <a class="abcell" href="#credits"><span class="k">자격증 · 수상</span><span class="v kw">정보처리산업기사(필기) · 경진대회
+            8회</span></a>
         <a class="abcell" href="#work"><span class="k">대표 프로젝트</span><span class="v kw">COGI · TripLinker ·
             오몽</span></a>
-        <div class="abcell"><span class="k">자격증</span><span class="v">정보처리산업기사(필기)</span></div>
+        <div class="abcell"><span class="k">경력</span><span class="v">JS무역 프리랜서 디자인 (7개월)</span></div>
+        <a class="abcell" href="https://github.com/ynkite" target="_blank" rel="noopener"><span
+            class="k">GitHub</span><span class="v kw">github.com/ynkite</span></a>
+        <a class="abcell" href="https://my-commit.tistory.com/" target="_blank" rel="noopener"><span class="k">기술
+            블로그</span><span class="v kw">my-commit.tistory.com</span></a>
+        <div class="abcell half"><span class="k">연락처</span><span class="v">j.sangyeon6@gmail.com ·
+            010-4211-3521</span></div>
+        <a class="abcell half" href="#credits"><span class="k">교육</span><span class="v kw">대우능력개발원 KDT 수료 · 2025.11 –
+            2026.08 (1024h)</span></a>
       </div>
-      <div class="abgrid2 rv d1">
-        <div class="abcell"><span class="k">학력</span><span class="v">인덕대학교 컴퓨터소프트웨어학과</span></div>
-        <div class="abcell"><span class="k">연락처</span><span class="v">j.sangyeon6@gmail.com · 010-4211-3521</span></div>
-        <div class="abcell"><span class="k">수상</span><span class="v">경진대회 8회</span></div>
-        <div class="abcell"><span class="k">경력</span><span class="v">JS무역 프리랜서 디자인(7개월) · 백엔드 개발자 (신입)</span></div>
-        <a class="abcell" href="#archiving"><span class="k">Link</span><span class="v kw">GitHub · 기술 블로그</span></a>
-        <a class="abcell" href="#edu"><span class="k">교육</span><span class="v kw">클라우드 기반 Java 웹개발자 시큐어코딩 과정</span></a>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="skills-sec snap" id="skills">
+    <div class="wrap">
+      <div class="shead">
+        <div class="kick rv">Skills</div>
+        <h2 class="rv">스킬</h2>
+        <p class="rv">주력 스킬은 검정으로 표시했고, 각 스킬을 누르면 아래에 설명이 나옵니다.</p>
+      </div>
+      <div class="skcols rv d1">
+        <div class="skcol">
+          <h4>Backend</h4>
+          <div class="row">
+            <button class="sk core" data-sk="java">Java</button>
+            <button class="sk core" data-sk="boot">Spring Boot</button>
+            <button class="sk core" data-sk="security">Spring Security</button>
+            <button class="sk core" data-sk="jpa">Spring Data JPA</button>
+            <button class="sk" data-sk="mvc">Spring MVC</button>
+            <button class="sk" data-sk="oauth">OAuth 2.0</button>
+            <button class="sk" data-sk="webflux">Spring WebFlux</button>
+            <button class="sk" data-sk="php">PHP</button>
+            <button class="sk" data-sk="laravel">Laravel</button>
+          </div>
+        </div>
+        <div class="skcol">
+          <h4>AI</h4>
+          <div class="row">
+            <button class="sk core" data-sk="springai">Spring AI</button>
+            <button class="sk core" data-sk="llm">LLM 연동</button>
+            <button class="sk core" data-sk="router">멀티 LLM 라우팅</button>
+            <button class="sk core" data-sk="prompt">프롬프트 설계</button>
+            <button class="sk" data-sk="rag">RAG</button>
+            <button class="sk" data-sk="tool">Tool Calling</button>
+            <button class="sk" data-sk="ollama">Ollama 로컬모델</button>
+            <button class="sk" data-sk="mcp">MCP</button>
+          </div>
+        </div>
+        <div class="skcol">
+          <h4>DB · Infra</h4>
+          <div class="row">
+            <button class="sk core" data-sk="mariadb">MariaDB</button>
+            <button class="sk core" data-sk="aws">AWS EC2 · RDS</button>
+            <button class="sk" data-sk="dbms">DB 설계</button>
+            <button class="sk" data-sk="mysql">MySQL</button>
+            <button class="sk" data-sk="mybatis">MyBatis</button>
+            <button class="sk" data-sk="redis">Redis</button>
+            <button class="sk" data-sk="oracle">Oracle</button>
+            <button class="sk" data-sk="docker">Docker</button>
+            <button class="sk" data-sk="linux">Linux</button>
+          </div>
+        </div>
+        <div class="skcol">
+          <h4>Frontend · Etc</h4>
+          <div class="row">
+            <button class="sk" data-sk="git">Git · GitHub</button>
+            <button class="sk" data-sk="js">JavaScript</button>
+            <button class="sk" data-sk="htmlcss">HTML5 · CSS3</button>
+            <button class="sk" data-sk="react">React (TS)</button>
+            <button class="sk" data-sk="thymeleaf">Thymeleaf</button>
+            <button class="sk" data-sk="python">Python</button>
+            <button class="sk" data-sk="figma">Figma</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="skpanel rv d1">
+        <div class="skp on" id="sk-springai"><b>Spring AI<i>중상 · 주력</i></b>
+          <p>ChatClient와 Advisor 기반 프롬프트 관리, Tool Calling을 통한 외부 기능 확장 활용 가능. 비용 효율을 고려한 멀티 LLM 라우팅 구성 및 Ollama 로컬 모델과
+            벡터스토어를
+            엮은 RAG 파이프라인 설계 경험 보유. 대우능력개발원 KDT 과정에서 116시간 이수.</p>
+        </div>
+        <div class="skp" id="sk-llm"><b>LLM 연동<i>중급 · 주력</i></b>
+          <p>Claude · GPT · Gemini · Groq 네 벤더를 한 인터페이스로 호출하는 계층 설계 및 구현. Anthropic Messages 형식과 OpenAI 호환 형식의 요청·응답 차이를
+            한
+            클래스 안에서 분기 처리, 코드펜스 제거·확장 사고 블록 건너뛰기·JSON 스키마 검증까지 방어 로직 작성. COGI·TripLinker·오몽 세 프로젝트에 적용.</p>
+        </div>
+        <div class="skp" id="sk-router"><b>멀티 LLM 라우팅<i>중급 · 주력</i></b>
+          <p>플랜별 허용 모델과 토큰 단가를 분리해 관리하고 호출 실패 시 다음 모델로 넘기는 순차 폴백 구성 가능. 속도가 필요한 판단에는 빠른 모델을, 품질이 필요한 생성에는 상위 모델을 배치하는
+            이원 구성 적용. 벤더 응답을 받아 입력·출력 토큰으로 실사용 비용을 계산하는 로직 구현.</p>
+        </div>
+        <div class="skp" id="sk-prompt"><b>프롬프트 설계<i>중급 · 주력</i></b>
+          <p>공통 규칙·사용자 수준·모델 티어 세 축을 파일로 분리해 조합하는 프롬프트 빌더 설계 및 구현. 학습 카드와 퀴즈는 수준 3단계와 모델 티어 3단계를 교차해 9가지 조합으로 생성. 중복 서술을
+            공통 파일로 정리해 규칙 하나를 한 곳에서만 고치도록 정리.</p>
+        </div>
+        <div class="skp" id="sk-rag"><b>RAG<i>중급</i></b>
+          <p>임베딩과 벡터스토어를 엮은 검색 증강 생성 파이프라인 설계 활용 가능. 문서를 청크로 나눠 임베딩한 뒤 유사도 검색 결과를 프롬프트 컨텍스트로 주입하는 흐름 이해. 대우능력개발원 Spring
+            AI 과정에서 실습.</p>
+        </div>
+        <div class="skp" id="sk-tool"><b>Tool Calling<i>중급</i></b>
+          <p>모델이 직접 함수를 호출해 외부 기능을 쓰도록 도구를 등록하고 스키마를 정의하는 방식 활용 가능. 모델 응답만으로 처리할 수 없는 조회·계산을 서버 메서드에 위임하는 구조 이해.</p>
+        </div>
+        <div class="skp" id="sk-ollama"><b>Ollama 로컬모델<i>중급</i></b>
+          <p>로컬에서 구동하는 오픈 모델을 Spring AI로 연결해 사용 가능. 오몽에서 비전 모델을 provider 추상화 뒤에 두어, 게이트웨이 경로와 로컬 모델 경로를 설정 한 줄로 바꿔 쓸 수
+            있게
+            구성.</p>
+        </div>
+        <div class="skp" id="sk-mcp"><b>MCP<i>초중급</i></b>
+          <p>Model Context Protocol로 모델과 외부 도구·데이터 소스를 표준 인터페이스로 잇는 방식 학습. 서버가 도구와 리소스를 노출하고 클라이언트가 이를 발견해 호출하는 구조 이해.
+            대우능력개발원
+            Spring AI 과정에서 다룸.</p>
+        </div>
+
+        <div class="skp" id="sk-java"><b>Java<i>중급 · 주력</i></b>
+          <p>객체지향 프로그래밍, 클래스 설계, 상속, 예외 처리, 컬렉션 등 자바 핵심 문법을 실무 수준으로 활용 가능. TripLinker·COGI 등 다수 프로젝트에서 주력 언어 사용.</p>
+        </div>
+        <div class="skp" id="sk-boot"><b>Spring Boot<i>중급 · 주력</i></b>
+          <p>REST API 설계, 데이터베이스 연동, 빈 관리 등 Spring Boot 기반 백엔드 개발 활용 가능. 팀 프로젝트 팀장으로 전체 아키텍처 설계 주도 경험 보유.</p>
+        </div>
+        <div class="skp" id="sk-security"><b>Spring Security<i>중급 · 주력</i></b>
+          <p>인증·인가 처리와 Filter Chain 구성 활용 가능. JWT 이중 토큰, OAuth 2.0 소셜 로그인, 로그인 실패 횟수 기반 계정 잠금 구현 경험 보유.</p>
+        </div>
+        <div class="skp" id="sk-jpa"><b>Spring Data JPA<i>중급 · 주력</i></b>
+          <p>엔티티 매핑, 연관관계 설정, JPQL 및 쿼리 메서드 작성 활용 가능. 더티 체킹과 트랜잭션 경계를 고려한 도메인 설계 경험 보유.</p>
+        </div>
+        <div class="skp" id="sk-mvc"><b>Spring MVC<i>중급</i></b>
+          <p>컨트롤러·서비스·리포지토리 계층 분리 설계 및 요청 매핑, 예외 처리 활용 가능. JSP·Thymeleaf 뷰 연동과 REST 응답 처리 모두 구현 경험 보유.</p>
+        </div>
+        <div class="skp" id="sk-oauth"><b>OAuth 2.0<i>중급</i></b>
+          <p>소셜 로그인 인증 흐름 이해 및 Spring Security 연동 구현 가능. TripLinker에서 카카오·구글, COGI에서 GitHub·카카오 연동 구현.</p>
+        </div>
+        <div class="skp" id="sk-php"><b>PHP<i>중급</i></b>
+          <p>서버 사이드 웹 개발과 세션 처리, DB 연동 활용 가능. WindyCamp·PetVillage 쇼핑몰 구현 및 전공 멘토로 후배 프로젝트 지도, 온라인쇼핑몰 개발 경진대회 금상 수상.</p>
+        </div>
+        <div class="skp" id="sk-laravel"><b>Laravel<i>중급</i></b>
+          <p>MVC 패턴 기반 애플리케이션 구조와 라우팅·ORM 활용 가능. 판매 관리 시스템 DEVICE SHOP 구현 및 Laravel 웹 솔루션 경진대회 금상 수상.</p>
+        </div>
+        <div class="skp" id="sk-webflux"><b>Spring WebFlux<i>중급</i></b>
+          <p>동기·비동기 처리 방식의 차이를 이해하고 상황에 맞는 비동기 로직 적용 가능. 반응형 웹의 기초 개념 학습을 통한 응답성 개선 접근 가능.</p>
+        </div>
+
+        <div class="skp" id="sk-mariadb"><b>MariaDB<i>중급 · 주력</i></b>
+          <p>TripLinker·COGI·WindyCamp 등 다수 프로젝트의 운영 DB로 사용. 인덱스와 제약조건을 고려한 테이블 정의서 작성 및 물리 모델링 수행.</p>
+        </div>
+        <div class="skp" id="sk-aws"><b>AWS EC2 · RDS<i>중급 · 주력</i></b>
+          <p>EC2 인스턴스에 애플리케이션을 올리고 RDS를 운영 DB로 붙여 서비스 배포·운영 가능. 운영과 로컬 설정을 프로필로 분리해 DB 주소·포트·업로드 경로를 환경마다 다르게 구성.
+            대우능력개발원
+            과정에서 EBS·AMI·S3·IAM·VPC·WAF까지 이수, AWS 서비스 활용능력 경진대회 최우수상 수상.</p>
+        </div>
+        <div class="skp" id="sk-dbms"><b>DB 설계<i>중급</i></b>
+          <p>테이블 설계와 정규화, 인덱스·제약조건 설계, 트랜잭션 관리 등 관계형 데이터베이스 설계·운영 활용 가능. TripLinker·COGI의 테이블 정의서와 물리적 모델링 문서를 직접 작성,
+            DBMS 경진대회 금상 수상.</p>
+        </div>
+        <div class="skp" id="sk-mysql"><b>MySQL<i>중급</i></b>
+          <p>테이블 설계, 관계형 데이터 모델링, SQL 작성, 트랜잭션 관리 활용 가능. 조인·서브쿼리·집계 함수를 활용한 조회 쿼리 작성 및 다중 조건 검색·필터링 구현.</p>
+        </div>
+        <div class="skp" id="sk-mybatis"><b>MyBatis<i>중급</i></b>
+          <p>DB 연동, 동적 쿼리 작성, CRUD 구현 활용 가능. TripLinker에서 다중 조건 검색·필터링 기능 직접 구현.</p>
+        </div>
+        <div class="skp" id="sk-redis"><b>Redis<i>초중급</i></b>
+          <p>키 단위 카운터와 만료 시간을 이용한 상태 저장 활용 가능. COGI에서 비로그인 체험 횟수를 Redis 카운터로 제한하고 AI 호출이 모두 실패하면 카운터를 되돌리는 처리 구현.</p>
+        </div>
+        <div class="skp" id="sk-oracle"><b>Oracle<i>초중급</i></b>
+          <p>Oracle 환경에서 SQL 작성과 데이터 조회·삽입·수정·삭제 활용 가능. 기본적인 실행 계획 확인과 쿼리 개선을 교육 과정 실습에서 수행.</p>
+        </div>
+        <div class="skp" id="sk-docker"><b>Docker<i>초중급</i></b>
+          <p>이미지 빌드와 컨테이너 실행, 포트·볼륨 연결 등 기본 사용 가능. 대우능력개발원 AWS 과정에서 컨테이너 배포 실습 이수.</p>
+        </div>
+        <div class="skp" id="sk-linux"><b>Linux<i>초중급</i></b>
+          <p>명령어와 권한 관리, 네트워크 설정, Tomcat 운영, 방화벽 설정 활용 가능. Linux 서버 환경에서 PHP 웹 서비스 개발·운영 수행.</p>
+        </div>
+
+        <div class="skp" id="sk-git"><b>Git · GitHub<i>중급</i></b>
+          <p>브랜치 전략과 커밋 단위 관리, Pull Request 기반 코드 리뷰 활용 가능. 팀 프로젝트에서 팀장으로 브랜치 운영 및 리뷰 진행.</p>
+        </div>
+        <div class="skp" id="sk-js"><b>JavaScript<i>초중급</i></b>
+          <p>이벤트 처리와 DOM 조작, 비동기 요청(fetch)을 통한 백엔드 연동 화면 구성 가능. 다수 웹 프로젝트에서 API 연동 및 화면 동작 구현에 사용.</p>
+        </div>
+        <div class="skp" id="sk-htmlcss"><b>HTML5 · CSS3<i>초중급</i></b>
+          <p>시맨틱 태그를 고려한 문서 구조 작성 가능. Flexbox·Grid 기반 레이아웃과 반응형 스타일링 활용 가능. 다수 웹 프로젝트의 화면 마크업과 포트폴리오 사이트 제작에 사용.</p>
+        </div>
+        <div class="skp" id="sk-figma"><b>Figma<i>초중급</i></b>
+          <p>UI 프로토타입 제작과 와이어프레임 설계 활용 가능. 그래픽 디자인 실무 경험을 바탕으로 디자이너·기획자와의 협업에 사용.</p>
+        </div>
+        <div class="skp" id="sk-react"><b>React (TS)<i>초급</i></b>
+          <p>컴포넌트 구조 설계와 상태 관리, 라우팅 기초 활용 가능. StagePass 개발 및 웹 프론트엔드 경진대회 최우수상 수상, COGI 프론트엔드 화면 구현에 사용.</p>
+        </div>
+        <div class="skp" id="sk-thymeleaf"><b>Thymeleaf<i>초중급</i></b>
+          <p>Spring Boot 연동 서버 사이드 템플릿 엔진으로 동적 HTML 렌더링과 모델 데이터 바인딩 활용 가능. 교육 과정 프로젝트에 적용.</p>
+        </div>
+        <div class="skp" id="sk-python"><b>Python<i>초급</i></b>
+          <p>기본 문법, 파일 처리, 데이터 가공, 간단한 자동화 코드 작성 가능. Analyze Festa에서 데이터 전처리와 예측 모델 구현에 사용, PCA·SARIMA 적용.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREDITS -->
+  <section class="credits snap" id="credits">
+    <div class="wrap">
+      <div class="shead">
+        <div class="kick rv">Credits</div>
+        <h2 class="rv">자격증 · 수상</h2>
+      </div>
+      <div class="folds rv d1">
+        <details class="fold" name="credits">
+          <summary>
+            <div>
+              <div class="ft">자격증 5건</div>
+              <div class="fs">정보처리산업기사 필기 합격 · 네트워크관리사 2급 · MOS 2종 · ITQ</div>
+            </div><span class="more"></span>
+          </summary>
+          <div class="frows">
+            <div class="awrow">
+              <div>
+                <div class="nm">정보처리산업기사</div>
+                <div class="og">한국산업인력공단</div>
+              </div>
+              <div class="dt"><span class="pz">필기 합격</span>2026.05</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">네트워크관리사 2급</div>
+                <div class="og">한국정보통신자격협회</div>
+              </div>
+              <div class="dt"><span class="pz">필기 합격</span>2025.03</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">MOS 365 Word Expert</div>
+                <div class="og">Microsoft</div>
+              </div>
+              <div class="dt"><span class="pz">최종 합격</span>2025.04</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">MOS Access Expert</div>
+                <div class="og">Microsoft</div>
+              </div>
+              <div class="dt"><span class="pz">최종 합격</span>2025.06</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">정보기술자격(ITQ) 아래한글 A등급</div>
+                <div class="og">한국생산성본부</div>
+              </div>
+              <div class="dt"><span class="pz">최종 합격</span>2015.07</div>
+            </div>
+          </div>
+          <div class="foldnote">정보처리산업기사는 필기에 붙고 실기 접수를 마친 상태입니다.</div>
+        </details>
+
+        <details class="fold" name="credits">
+          <summary>
+            <div>
+              <div class="ft">수상 8건</div>
+              <div class="fs">최우수상 2 · 금상 4 · 은상 1 · 시각화상 1 · 해커톤 아이디어상 1</div>
+            </div><span class="more"></span>
+          </summary>
+          <div class="frows">
+            <div class="awrow">
+              <div>
+                <div class="nm">빛나는 인재 AI Re-Local 해커톤</div>
+                <div class="og">제주더큰내일센터 · 한국고등직업교육학회 — <a href="#omong">오몽</a></div>
+              </div>
+              <div class="dt"><span class="pz">아이디어상 · 팀 MVP</span>2026.07</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">웹 프론트엔드 경진대회</div>
+                <div class="og">인덕대학교 컴퓨터소프트웨어학과 — <a href="#more">StagePass</a></div>
+              </div>
+              <div class="dt"><span class="pz">최우수상</span>2026.06</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">AWS 서비스 활용능력 경진대회</div>
+                <div class="og">인덕대학교</div>
+              </div>
+              <div class="dt"><span class="pz">최우수상</span>2025.12</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">2025 Laravel 웹 솔루션 경진대회</div>
+                <div class="og">인덕대학교 — <a href="#more">DEVICE SHOP</a></div>
+              </div>
+              <div class="dt"><span class="pz">금상</span>2025.12</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">2025 Analyze Festa 데이터 분석 경진대회</div>
+                <div class="og">인덕대학교 — <a href="#more">Analyze Festa</a></div>
+              </div>
+              <div class="dt"><span class="pz">데이터시각화상</span>2025.12</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">온라인쇼핑몰 개발 경진대회</div>
+                <div class="og">인덕대학교 — <a href="#more">WindyCamp</a></div>
+              </div>
+              <div class="dt"><span class="pz">금상</span>2025.06</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">DBMS 경진대회</div>
+                <div class="og">인덕대학교 컴퓨터소프트웨어학과 — 차량 견적 관리 프로그램</div>
+              </div>
+              <div class="dt"><span class="pz">금상</span>2024.11</div>
+            </div>
+            <div class="awrow">
+              <div>
+                <div class="nm">C++언어 사용 설명서 경진대회</div>
+                <div class="og">인덕대학교</div>
+              </div>
+              <div class="dt"><span class="pz">은상</span>2024.12</div>
+            </div>
+          </div>
+          <div class="foldnote">이 밖에 인덕대학교 컴퓨터소프트웨어학과 PHP 쇼핑몰 실무 전공멘토로 뽑혔습니다 (2026.03).</div>
+        </details>
+
+        <details class="fold" name="credits">
+          <summary>
+            <div>
+              <div class="ft">교육 — 대우능력개발원 KDT(2025.11 – 2026.08)</div>
+              <div class="fs">클라우드 기반 Java 웹개발자 시큐어코딩 과정 · 총 1024h</div>
+            </div><span class="more"></span>
+          </summary>
+          <div class="frows">
+            <div class="edurow">
+              <div>
+                <div class="nm">자바 프로그래밍</div>
+                <div class="kw">OOP · 컬렉션 · 멀티스레드 · 네트워크(TCP/IP) · 형상관리(Git)</div>
+              </div>
+              <div class="hr">130h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">Spring AI</div>
+                <div class="kw">ChatClient · Advisor · Tool Calling · MCP · 멀티 LLM 라우팅 · RAG · Ollama</div>
+              </div>
+              <div class="hr">116h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">프레임워크 기반 프로그래밍</div>
+                <div class="kw">MyBatis · Spring Core/MVC · RESTful · Maven</div>
+              </div>
+              <div class="hr">110h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">보안 코딩</div>
+                <div class="kw">애플리케이션 인증 보안 · 웹 취약점 분석 · 시큐어코딩</div>
+              </div>
+              <div class="hr">90h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">RDBMS 활용</div>
+                <div class="kw">Oracle · SQL(DML/DDL) · 트랜잭션 · 프로시저 · JDBC</div>
+              </div>
+              <div class="hr">60h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">웹 표준 기술</div>
+                <div class="kw">HTML5 · CSS3 반응형 · JavaScript · AJAX</div>
+              </div>
+              <div class="hr">60h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">서버프로그램 개발</div>
+                <div class="kw">HTTP · Servlet · 세션/쿠키 · JSP · EL/JSTL</div>
+              </div>
+              <div class="hr">56h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">AWS 클라우드 서버 구축·보안</div>
+                <div class="kw">EC2 · EBS · AMI · RDS · S3 · IAM · VPC · Docker 배포 · WAF</div>
+              </div>
+              <div class="hr">40h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">리눅스의 이해 및 활용</div>
+                <div class="kw">명령어 · 권한 · 네트워크 · Tomcat 운영 · 방화벽</div>
+              </div>
+              <div class="hr">30h</div>
+            </div>
+            <div class="edurow">
+              <div>
+                <div class="nm">소양교과</div>
+                <div class="kw">의사소통능력 · 문서작성능력</div>
+              </div>
+              <div class="hr">20h</div>
+            </div>
+            <div class="edurow hi">
+              <div>
+                <div class="nm">실무형 프로젝트</div>
+                <div class="kw">팀 프로젝트 · 요구사항 정리 · 중간 피드백 반영 · AWS 배포 · 산출물 문서화</div>
+              </div>
+              <div class="hr">312h</div>
+            </div>
+          </div>
+          <div class="foldnote">실무형 프로젝트는 팀을 짜서 요구사항 정리부터 AWS 배포까지 직접 해 보는 과정입니다. 중간 점검마다 받은 피드백을 반영해 고쳤습니다.</div>
+        </details>
       </div>
     </div>
   </section>
 
   <!-- FEATURED: COGI (web) -->
-  <section class="feat gray" id="work">
+  <section class="feat gray snap" id="work" style="--pb:#1c4f8c">
     <div class="wrap">
       <div class="shead">
         <div class="kick rv">Featured · Web</div>
         <h2 class="rv"><a href="./projects/cogi.html">COGI</a></h2>
-        <p class="rv">AI가 GitHub PR을 리뷰합니다. 반복된 지적은 약점으로 모아 학습 카드로 돌려줍니다.</p>
+        <p class="rv">AI가 GitHub PR을 리뷰하고,<br>반복된 지적은 약점으로 모아 학습 카드와 퀴즈로 만들어 주는 서비스입니다.</p>
       </div>
       <div class="device duo rv d1">
         <div class="browser">
@@ -1152,9 +2273,10 @@
       <div class="txt rv d1">
         <ul class="tech">
           <li><b>AI 연동</b> — 벤더 4곳(Claude · GPT · Gemini · Groq)을 한 클라이언트로 호출, 타임아웃·코드펜스·스키마 방어를 그 안에 모음</li>
-          <li><b>약점 통계</b> — 리뷰 지적을 카테고리·언어로 묶어 3회 이상만 집계, 조회 시점에 계산해 쓰기 경합을 없앰</li>
+          <li><b>약점 통계</b> — 리뷰 지적을 카테고리·언어로 묶어 3회 이상만 집계, 조회 시점에 계산해 쓰기 경합 제거</li>
           <li><b>학습카드·퀴즈</b> — 약점에서 카드와 퀴즈를 생성, 크레딧을 먼저 차감하고 응답 파싱이 깨지면 롤백으로 되돌림</li>
           <li><b>주간 리포트</b> — 지난주 발생·해결 건수를 집계해 HTML 메일로 발송, 전주 대비 증감을 함께 표기</li>
+          <li><b>사용량·비용</b> — 앱 로그 집계에 벤더 Admin API 조회를 따로 붙임. OpenAI와 Anthropic이 규격이 달라 두 경로로 나눔</li>
         </ul>
         <div class="projbtns">
           <button class="pbtn" data-lb="cogi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1168,23 +2290,18 @@
           <a class="pbtn dark" href="./projects/cogi.html">상세보기 ↗</a>
         </div>
       </div>
-      <div class="hl rv">
-        <div class="c"><b>67</b><span>내 커밋 / 전체 300</span></div>
-        <div class="c"><b>4인 팀 (팀장)</b><span>Spring Boot · React</span></div>
-        <div class="c"><b>47</b><span>담당 도메인 테스트</span></div>
-      </div>
     </div>
   </section>
 
   <!-- FEATURED: TripLinker (web) -->
-  <section class="feat" id="triplinker">
+  <section class="feat snap" id="triplinker" style="--pb:#a85c28">
     <div class="wrap">
       <div class="shead">
         <div class="kick rv">Featured · Web</div>
         <h2 class="rv"><a href="./projects/triplinker.html">TripLinker</a></h2>
-        <p class="rv">AI가 취향을 분석해 일자별 동선과 예산을 짜는 웹 여행 플래너.</p>
+        <p class="rv">AI가 취향을 분석해 일자별 동선과 예산까지 짜 주는 웹 여행 플래너입니다.</p>
       </div>
-      <div class="device rv d1">
+      <div class="device rv d1" data-lb="tl" role="button" tabindex="0" aria-label="TripLinker 화면 크게 보기">
         <div class="browser">
           <div class="bar"><i></i><i></i><i></i><span class="u">triplinker.app</span></div>
           <div class="cap"><img src="assets/triplinker-shot.png" alt="TripLinker 메인 화면" loading="lazy"></div>
@@ -1192,9 +2309,10 @@
       </div>
       <div class="txt rv d1">
         <ul class="tech">
-          <li><b>인증</b> — JWT 이중 토큰(AT 30분·RT 7일)·Redis 블랙리스트로 로그아웃·탈취 대응</li>
-          <li><b>AI</b> — Spring AI 멀티 LLM 체인, 주 모델 장애 시 예비 모델로 자동 전환</li>
-          <li><b>성능</b> — 인기 경로를 10분 주기 배치로 캐싱해 응답 속도 개선</li>
+          <li><b>인증</b> — JWT 이중 토큰(AT 30분·RT 7일), 로그아웃 시 <code>refresh_tokens</code> 행을 삭제해 재발급 차단</li>
+          <li><b>환각 차단</b> — 장소 후보 수집 단계에서는 LLM을 부르지 않고 카카오 검색 결과만 사용</li>
+          <li><b>AI</b> — Spring AI 멀티 LLM, 주 모델(Claude) 실패 시 <code>catch</code>에서 Groq로 전환</li>
+          <li><b>동선 보정</b> — 좌표를 한 번만 조회해 재사용, 40km 넘는 AI 장소는 삭제하고 사용자 요청 장소는 알림으로 남김</li>
           <li><b>품질·운영</b> — 테스트 케이스 169건을 문서로 정리·검증, AWS EC2·RDS 배포·운영</li>
         </ul>
         <div class="projbtns">
@@ -1208,29 +2326,25 @@
           <a class="pbtn dark" href="./projects/triplinker.html">상세보기 ↗</a>
         </div>
       </div>
-      <div class="hl rv">
-        <div class="c"><b>169</b><span>테스트 케이스 (문서)</span></div>
-        <div class="c"><b>4인 팀 (팀장)</b><span>백엔드 리드 / 프론트엔드 총괄</span></div>
-        <div class="c"><b>AWS</b><span>EC2 · RDS 배포</span></div>
-      </div>
     </div>
   </section>
 
   <!-- FEATURED: 오몽 (app) -->
-  <section class="feat gray" id="omong">
+  <section class="feat gray snap" id="omong" style="--pb:#E07B1E">
     <div class="wrap">
       <div class="shead">
         <div class="kick rv">Featured · App</div>
         <h2 class="rv"><a href="./projects/omong.html">오몽</a></h2>
-        <p class="rv">누구나 사진·음성·큰 버튼으로 키오스크 주문을 마치도록 돕는 배리어프리 서비스.</p>
+        <p class="rv">누구나 키오스크 주문을 혼자 끝내도록 돕는 배리어프리 서비스입니다.</p>
       </div>
-      <div class="device rv d1">
+      <div class="device rv d1" data-lb="om" role="button" tabindex="0" aria-label="오몽 화면 크게 보기">
         <img class="mockimg" src="assets/omong-mockup.png" alt="오몽 앱 메인 화면" loading="lazy">
       </div>
       <div class="txt rv d1">
         <ul class="tech">
-          <li><b>화면 인식</b> — Ollama 비전 모델이 키오스크 화면을 대신 읽어 메뉴를 파악</li>
-          <li><b>AI 체인</b> — Claude → GPT → Groq → Gemini 순으로 시도해 첫 성공을 쓰고, 모두 실패하면 규칙 기반으로 폴백</li>
+          <li><b>화면 인식</b> — 비전 모델이 키오스크 사진에서 메뉴·버튼·가격을 읽어냄. 실패하면 시드된 키오스크 DB, 그다음 재촬영 안내</li>
+          <li><b>AI 체인</b> — Claude · GPT · Gemini 순으로 시도해 첫 성공을 쓰고, 모두 실패하면 규칙 기반으로 폴백</li>
+          <li><b>모델 추상화</b> — provider를 설정으로 나눠 게이트웨이와 Ollama 로컬 모델을 교체</li>
           <li><b>접근성</b> — 5개국어 · 음성 안내 · 큰글씨 모드, 언제든 직원 연결 안전망</li>
           <li><b>성과</b> — 2박 3일 만에 개발, AI Re-Local 해커톤 아이디어상 · 팀 MVP</li>
         </ul>
@@ -1245,16 +2359,11 @@
           <a class="pbtn dark" href="./projects/omong.html">상세보기 ↗</a>
         </div>
       </div>
-      <div class="hl rv">
-        <div class="c"><b>아이디어상</b><span>AI Re-Local 해커톤</span></div>
-        <div class="c"><b>팀 MVP</b><span>6인 팀 '징검다리'</span></div>
-        <div class="c"><b>5개국어</b><span>음성 · 큰글씨</span></div>
-      </div>
     </div>
   </section>
 
   <!-- MORE WORK -->
-  <section class="grid-sec" id="more">
+  <section class="grid-sec snap" id="more">
     <div class="wrap">
       <div class="shead">
         <div class="kick rv">More</div>
@@ -1264,39 +2373,39 @@
         <div class="tile rv">
           <div class="rowtop"><span class="yr">2026.05–06 · 개인</span><span class="badge">최우수상</span></div>
           <h3>StagePass</h3>
-          <p>콘서트 티켓 예매 SPA. Context API 전역 상태와<br>useSeats 커스텀 훅으로 좌석 로직을 분리했습니다.</p>
+          <p>콘서트 티켓 예매 SPA.<br>Context API로 전역 상태를 관리하고 useSeats 커스텀 훅으로<br>좌석 로직을 분리했습니다.</p>
           <div class="st">React 18 · TypeScript · Vite</div>
           <div class="tbtns"><button class="tbtn" data-lb="stagepass">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite/stage-pass" target="_blank" rel="noopener">GitHub ↗</a></div>
         </div>
         <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.06 · 약 1개월 · 개인</span><span class="badge">금상</span></div>
+          <div class="rowtop"><span class="yr">2025.06 · 개인</span><span class="badge">금상</span></div>
           <h3>WindyCamp</h3>
-          <p>캠핑용품 쇼핑몰. 상품·장바구니·주문 흐름을<br>PHP로 직접 설계하고 구현했습니다.</p>
+          <p>캠핑용품 쇼핑몰.<br>상품·장바구니·주문 흐름을<br>PHP로 직접 설계하고 구현했습니다.</p>
           <div class="st">PHP · MariaDB</div>
           <div class="tbtns"><button class="tbtn" data-lb="windycamp">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite/PHP_vscode" target="_blank" rel="noopener">GitHub ↗</a></div>
         </div>
         <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025 · 개인</span><span class="badge">프로젝트</span></div>
+          <div class="rowtop"><span class="yr">2025.04–05 · 개인</span><span class="badge">금상</span></div>
           <h3>DEVICE SHOP</h3>
-          <p>전자기기 판매·재고 관리 시스템.<br>Laravel의 MVC·ORM·인증으로 관리 기능을 구성했습니다.</p>
+          <p>전자기기 판매·재고 관리 시스템.<br>Laravel의 MVC·ORM·인증으로<br>관리 기능을 구성했습니다.</p>
           <div class="st">PHP · Laravel · MariaDB</div>
           <div class="tbtns"><button class="tbtn" data-lb="deviceshop">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
         </div>
         <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.12 · 약 1개월 · 개인</span><span class="badge">Laravel 금상</span></div>
+          <div class="rowtop"><span class="yr">2025.12 · 개인</span><span class="badge">프로젝트</span></div>
           <h3>PetVillage</h3>
-          <p>입양 공고 등록·조회를 중심으로 반려동물 입양 정보 사이트를<br>설계하고 개발했습니다.</p>
+          <p>반려동물 입양 정보 사이트.<br>입양 공고 등록과 조회를 중심으로<br>설계하고 개발했습니다.</p>
           <div class="st">PHP · MariaDB · Linux</div>
           <div class="tbtns"><button class="tbtn" data-lb="petvillage">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite/php" target="_blank" rel="noopener">GitHub ↗</a></div>
         </div>
         <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.11–2026.03 · 개인</span><span class="badge">아키텍처</span></div>
+          <div class="rowtop"><span class="yr">2025.11–2026.03 · 개인</span><span class="badge">프로젝트</span></div>
           <h3>Triplan</h3>
-          <p>TripLinker의 전신. CLI에서 Servlet/JSP를 거쳐 Spring+MyBatis까지 아키텍처를 세 번 재설계했습니다.</p>
+          <p>TripLinker의 전신.<br>CLI에서 Servlet/JSP를 거쳐 Spring+MyBatis까지<br>아키텍처를 세 번 재설계했습니다.</p>
           <div class="st">Java · Spring · MyBatis · JSP</div>
           <div class="tbtns"><button class="tbtn" data-lb="triplan">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
@@ -1304,7 +2413,7 @@
         <div class="tile rv">
           <div class="rowtop"><span class="yr">2025.11–12 · 개인</span><span class="badge">시각화상</span></div>
           <h3>Analyze Festa</h3>
-          <p>서울시 공공데이터로 대중교통 수요를 분석하고 예측했습니다.<br>PCA 두 성분이 변동성의 80% 이상을 설명했습니다.</p>
+          <p>서울시 공공데이터 분석.<br>PCA로 핵심 변수를 찾고<br>SARIMA로 2026년 수요를 예측했습니다.</p>
           <div class="st">Python · PCA · SARIMA</div>
           <div class="tbtns"><button class="tbtn" data-lb="festa">이미지 보기</button><a class="tbtn"
               href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
@@ -1313,146 +2422,41 @@
     </div>
   </section>
 
-  <!-- EDUCATION -->
-  <section class="edu" id="edu">
-    <div class="wrap">
-      <div class="shead">
-        <div class="kick rv">Education</div>
-        <h2 class="rv">교육</h2>
-      </div>
-      <div class="period rv">대우능력개발원 KDT · 클라우드 기반 Java 웹개발자 시큐어코딩 과정 · 2025.11 – 2026.08</div>
-      <div class="edutable rv d1">
-        <div class="edurow">
-          <div>
-            <div class="nm">소양교과</div>
-            <div class="kw">의사소통능력 · 문서작성능력</div>
-          </div>
-          <div class="hr">20h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">자바 프로그래밍</div>
-            <div class="kw">OOP · 컬렉션 · 멀티스레드 · 네트워크(TCP/IP) · 형상관리(Git)</div>
-          </div>
-          <div class="hr">130h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">RDBMS 활용</div>
-            <div class="kw">Oracle · SQL(DML/DDL) · 트랜잭션 · 프로시저 · JDBC</div>
-          </div>
-          <div class="hr">60h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">웹 표준 기술</div>
-            <div class="kw">HTML5 · CSS3 반응형 · JavaScript · AJAX(비동기)</div>
-          </div>
-          <div class="hr">60h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">서버프로그램 개발</div>
-            <div class="kw">HTTP · Servlet · 세션/쿠키 · JSP · EL/JSTL</div>
-          </div>
-          <div class="hr">56h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">프레임워크 기반 프로그래밍</div>
-            <div class="kw">MyBatis · Spring Core/MVC · RESTful · Maven</div>
-          </div>
-          <div class="hr">110h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">리눅스의 이해 및 활용</div>
-            <div class="kw">명령어 · 권한 · 네트워크 · Tomcat 운영 · 방화벽</div>
-          </div>
-          <div class="hr">30h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">AWS 클라우드 서버 구축·보안</div>
-            <div class="kw">EC2 · EBS · AMI · RDS · S3 · IAM · VPC · Docker 배포 · WAF</div>
-          </div>
-          <div class="hr">40h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">보안 코딩</div>
-            <div class="kw">애플리케이션 인증 보안 · 웹 취약점 분석 · 시큐어코딩</div>
-          </div>
-          <div class="hr">90h</div>
-        </div>
-        <div class="edurow">
-          <div>
-            <div class="nm">Spring AI</div>
-            <div class="kw">ChatClient/ChatModel · 프롬프트·Advisor · Tool Calling · 멀티 LLM 라우팅 · RAG(임베딩·벡터스토어) · Ollama
-              로컬모델 · 스트리밍 최적화</div>
-          </div>
-          <div class="hr">116h</div>
-        </div>
-      </div>
-      <div class="edutotal rv">총 712h</div>
-    </div>
-  </section>
-
-  <!-- SKILLS -->
-  <section class="skills-sec" id="skills">
-    <div class="wrap">
-      <div class="shead">
-        <div class="kick rv">Skills</div>
-        <h2 class="rv">기술 스택</h2>
-      </div>
-      <div class="skcols rv d1">
-        <div class="skcol">
-          <h4>Backend</h4>
-          <div class="row"><span class="key">Java</span><span class="key">Spring Boot</span><span class="key">Spring
-              Security</span><span class="key">Spring AI</span><span>Spring Data JPA</span><span>JWT · OAuth
-              2.0</span><span>PHP ·
-              Laravel</span></div>
-        </div>
-        <div class="skcol">
-          <h4>DB · Infra</h4>
-          <div class="row"><span class="key">MariaDB</span><span
-              class="key">AWS</span><span>MySQL</span><span>Redis</span><span>MyBatis</span><span>Oracle</span><span>AWS
-              EC2 · RDS · S3</span><span>Docker</span><span>Linux</span></div>
-        </div>
-        <div class="skcol">
-          <h4>Frontend · Etc</h4>
-          <div class="row"><span>JavaScript</span><span>React (TS)</span><span>HTML /
-              CSS</span><span>Thymeleaf</span><span>Python</span><span>Figma · Git</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- LINK -->
-  <section class="arch" id="archiving">
+  <section class="arch snap" id="archiving">
     <div class="wrap">
       <div class="shead">
         <div class="kick rv">Link</div>
-        <h2 class="rv">링크</h2>
+        <h2 class="rv">링크 · 연락처</h2>
       </div>
       <div class="archcards rv d1">
         <a class="acard" href="https://github.com/ynkite" target="_blank" rel="noopener">
           <span class="ic">💻</span>
           <h4>GitHub</h4>
-          <p>프로젝트 소스와 커밋 기록입니다.<br>코드를 공개합니다.</p><span class="go">github.com/ynkite ↗</span>
+          <p>프로젝트 소스와 커밋 기록입니다.</p><span class="go">github.com/ynkite ↗</span>
         </a>
         <a class="acard" href="https://my-commit.tistory.com" target="_blank" rel="noopener">
           <span class="ic">✍️</span>
           <h4>기술 블로그</h4>
           <p>트러블슈팅과 학습 정리를 200편 넘게 기록했습니다.</p><span class="go">my-commit.tistory.com ↗</span>
         </a>
+        <a class="acard" href="mailto:j.sangyeon6@gmail.com">
+          <span class="ic">✉️</span>
+          <h4>이메일</h4>
+          <p>채용 문의는 메일로 주시면 가장 빠릅니다.</p><span class="go">j.sangyeon6@gmail.com ↗</span>
+        </a>
+        <a class="acard" href="tel:01042113521">
+          <span class="ic">📞</span>
+          <h4>전화</h4>
+          <p>언제든 연락 가능합니다!</p><span class="go">010-4211-3521 ↗</span>
+        </a>
       </div>
-      <div class="archline rv">연락처 <a href="mailto:j.sangyeon6@gmail.com">j.sangyeon6@gmail.com</a> · <a
-          href="tel:01042113521">010-4211-3521</a></div>
     </div>
+    <div class="foot">© 2026 정상연 · Backend Developer</div>
   </section>
 
-  <div class="foot">© 2026 정상연 · Backend Developer</div>
+  <div class="imglb" id="imglb" role="dialog" aria-modal="true" aria-label="확대 이미지"><button class="x"
+      aria-label="닫기">✕</button><img alt=""></div>
 
   <!-- lightbox -->
   <div class="lb" id="lightbox" role="dialog" aria-modal="true">
@@ -1469,17 +2473,187 @@
     const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target) } }), { threshold: .16, rootMargin: '0px 0px 14% 0px' });
     document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
+    // 스킬 칩 → 아래 패널 하나만 보여준다. JS가 없으면 CSS가 전 패널을 그대로 보여준다
+    const NAVH = 48;
+    let restoring = true;   // 복원 중에는 관찰 결과를 기록하지 않는다 (덮어써서 top으로 돌아가던 원인)
+
+    // 스텝 인디케이터 — 새 스크롤 리스너 없이 보이는 페이지만 표시한다
+    const dots = [...document.querySelectorAll('.steps a')];
+    const pageIo = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      dots.forEach(d => d.classList.toggle('on', d.getAttribute('href') === '#' + e.target.id));
+      if (!restoring) { try { sessionStorage.setItem('sec', e.target.id) } catch (_) { } }
+    }), { threshold: .5 });
+    document.querySelectorAll('.snap').forEach(el => pageIo.observe(el));
+
+    // 상세보기로 나가기 직전에 지금 섹션을 확실히 남긴다
+    document.querySelectorAll('a[href^="./projects/"]').forEach(a => a.addEventListener('click', () => {
+      const sec = a.closest('.snap');
+      if (sec) { try { sessionStorage.setItem('sec', sec.id) } catch (_) { } }
+    }));
+
+    // 섹션 높이가 100vh라 브라우저가 픽셀로 복원하면 다른 섹션에 떨어진다.
+    // 복원을 직접 맡아 섹션 id로 되돌린다
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    (function restore() {
+      const nav = performance.getEntriesByType('navigation')[0];
+      const back = nav && nav.type === 'back_forward';
+      let id = (location.hash || '').slice(1);
+      if (!id && back) { try { id = sessionStorage.getItem('sec') || '' } catch (_) { } }
+      const el = id && document.getElementById(id);
+      if (!el || !el.classList.contains('snap')) { restoring = false; return; }
+
+      const root = document.documentElement;
+      // 스냅이 켜진 채로 옮기면 브라우저가 되잡는다. 옮기는 동안만 끈다.
+      // offsetTop은 offsetParent 기준이라 어긋날 수 있어 실제 화면 위치로 맞추고,
+      // 지연 로딩 이미지 때문에 높이가 밀리면 다시 맞춘다
+      const place = (tries) => {
+        root.style.scrollSnapType = 'none';
+        scrollTo({ top: scrollY + el.getBoundingClientRect().top - NAVH, behavior: 'instant' });
+        requestAnimationFrame(() => {
+          const off = el.getBoundingClientRect().top - NAVH;
+          if (Math.abs(off) > 2 && tries > 0) return place(tries - 1);
+          root.style.scrollSnapType = '';
+          restoring = false;
+        });
+      };
+      place(8);
+      addEventListener('load', () => { restoring = true; place(8); setTimeout(() => place(4), 150) }, { once: true });
+    })();
+
+    document.querySelectorAll('.sk').forEach(b => b.addEventListener('click', () => {
+      const p = document.getElementById('sk-' + b.dataset.sk); if (!p) return;
+      document.querySelectorAll('.sk.on,.skp.on').forEach(el => el.classList.remove('on'));
+      b.classList.add('on'); p.classList.add('on');
+    }));
+    document.querySelector('.sk[data-sk="springai"]')?.classList.add('on');
+
     // gallery data
     const GALLERY = {
-      cogi: { title: 'COGI — 실제 화면', note: '로그인 후 대시보드입니다. 학습일·크레딧·약점 집계와 주간 이슈 추이를 한 화면에서 봅니다.', shot: 'assets/cogi-dash.png', live: 'http://43.202.36.123/' },
-      tl: { title: 'TripLinker — 실제 화면', note: '배포된 사이트의 메인 화면입니다.', shot: 'assets/triplinker-shot.png', live: 'http://43.201.154.80:8081/' },
-      om: { title: '오몽 — 실제 화면', note: '배포된 사이트의 메인 화면입니다.', phone: true, shot: 'assets/omong-shot.png', live: 'https://omong.o-r.kr/' },
-      stagepass: { title: 'StagePass — 이미지', slots: [['🎫', '예매 화면'], ['💺', '좌석 선택'], ['🧾', '주문 내역']] },
-      windycamp: { title: 'WindyCamp — 이미지', slots: [['🏕', '상품 목록'], ['🛒', '장바구니'], ['🧾', '주문']] },
-      deviceshop: { title: 'DEVICE SHOP — 이미지', slots: [['📦', '상품 관리'], ['📊', '재고 현황'], ['🔐', '관리자']] },
-      petvillage: { title: 'PetVillage — 이미지', slots: [['🐾', '입양 공고'], ['📝', '공고 등록'], ['🔎', '검색']] },
-      triplan: { title: 'Triplan — 이미지', slots: [['🧭', '일정 화면'], ['🗂', '구조 설계'], ['💾', 'DB']] },
-      festa: { title: 'Analyze Festa — 이미지', slots: [['📈', '분석 결과'], ['🗺', '수요 예측'], ['📊', 'PCA']] }
+      cogi: {
+        title: 'COGI — 실제 화면', live: 'http://43.202.36.123/',
+        note: '담당한 학습·리텐션 도메인과 AI 연동 화면 중심으로 골랐습니다.',
+        shots: [
+          ['assets/image/cogi-01-dashboard.png', '대시보드 — 학습일 · 크레딧 · 약점 집계'],
+          ['assets/image/cogi-02-retention.png', '리텐션 — streak와 코기 상태'],
+          ['assets/image/cogi-03-growth.png', '성장 추이 — 이슈 발생·해결 추이'],
+          ['assets/image/cogi-04-review.png', 'AI 리뷰 결과'],
+          ['assets/image/cogi-05-review-followup.png', '리뷰 후속 질문'],
+          ['assets/image/cogi-06-learning-card.png', '학습 카드 — 개념 · 예제 · 퀴즈'],
+          ['assets/image/cogi-07-skill-recommend.png', 'AI 스킬 추천'],
+          ['assets/image/cogi-08-weekly-report.png', '주간 리포트 메일'],
+          ['assets/image/cogi-09-guest-review.png', '비로그인 체험'],
+          ['assets/image/cogi-10-pr-list.png', 'PR 리뷰 현황'],
+          ['assets/image/cogi-11-mobile.png', '모바일 화면']
+        ]
+      },
+      tl: {
+        title: 'TripLinker — 실제 화면', live: 'http://43.201.154.80:8081/',
+        note: '플랜을 만들고 다녀와서 정산하기까지, 쓰는 순서대로 늘어놓았습니다.',
+        shots: [
+          ['assets/image/tl-01-home.png', '메인 — 여행 플랜 시작'],
+          ['assets/image/tl-02-plan-basic.png', '플랜 만들기 — 기본 정보'],
+          ['assets/image/tl-03-plan-taste.png', '플랜 만들기 — 취향 설정'],
+          ['assets/image/tl-04-generating.png', '경로 생성 중'],
+          ['assets/image/tl-05-day1.jpg', '1일차 경로 — 지도와 순서'],
+          ['assets/image/tl-06-all-days.jpg', '전체 일차 한눈에 보기'],
+          ['assets/image/tl-07-reorder.jpg', '장소 순서 교체 결과'],
+          ['assets/image/tl-08-stay-price.jpg', '실제 숙박 금액 입력'],
+          ['assets/image/tl-09-chat.png', 'AI 챗봇 — 플랜 수정 요청'],
+          ['assets/image/tl-10-chat-budget.png', 'AI 챗봇 — 예산 추가'],
+          ['assets/image/tl-11-ledger.png', '가계부 — 지출 내역'],
+          ['assets/image/tl-12-budget.png', '예산 현황'],
+          ['assets/image/tl-13-share-edit.jpg', '수정 권한을 준 플랜 공유'],
+          ['assets/image/tl-14-share-kakao.jpg', '카카오톡으로 보기 권한 공유'],
+          ['assets/image/tl-15-community.png', '커뮤니티'],
+          ['assets/image/tl-16-review.png', '후기 상세'],
+          ['assets/image/tl-17-place-reviews.png', '장소별 리뷰 목록'],
+          ['assets/image/tl-18-admin.png', '관리자 — 대시보드'],
+          ['assets/image/tl-19-admin-report.png', '관리자 — 신고 관리'],
+          ['assets/image/tl-20-admin-curation.png', '관리자 — 큐레이션 관리']
+        ]
+      },
+      om: {
+        title: '오몽 — 실제 화면', phone: true, live: 'https://omong.o-r.kr/',
+        note: '주문 한 건이 끝나는 순서대로 늘어놓았습니다. 큰글씨 모드는 같은 화면을 비교용으로 넣었습니다.',
+        shots: [
+          ['assets/image/omong-01-home.png', '홈 — 말하기 · 사진 · 제보'],
+          ['assets/image/omong-02-bigtext.png', '같은 화면, 큰글씨 모드'],
+          ['assets/image/omong-03-ask.png', '말하기 — 가게 고르기'],
+          ['assets/image/omong-04-narrow.png', 'AI 대화로 메뉴 좁히기'],
+          ['assets/image/omong-05-guide1.png', '화면 안내 — 매장 · 포장 고르기'],
+          ['assets/image/omong-06-guide2.png', '화면 안내 — 메뉴 위치 짚어주기'],
+          ['assets/image/omong-07-guide3.png', '화면 안내 — 결제 버튼까지'],
+          ['assets/image/omong-08-staff.png', '직원에게 보여주기'],
+          ['assets/image/omong-09-photo.png', '사진찍기 — 화면 올리기'],
+          ['assets/image/omong-10-vision.png', '사진에서 브랜드 인식'],
+          ['assets/image/omong-11-admin.png', '관리자 — 키오스크 등록']
+        ]
+      },
+      stagepass: {
+        title: 'StagePass — 실제 화면', note: 'Vite + React 18 + TypeScript SPA. 좌석 로직은 useSeats 커스텀 훅으로 분리했습니다.',
+        shots: [
+          ['assets/image/sp-01-home.jpg', '메인 — 추천 공연'],
+          ['assets/image/sp-02-explore.jpg', '공연 탐색'],
+          ['assets/image/sp-03-detail.png', '공연 상세 · 회차 선택'],
+          ['assets/image/sp-04-seats.png', '좌석 선택'],
+          ['assets/image/sp-05-booking.png', '예매자 정보 입력'],
+          ['assets/image/sp-06-confirm.png', '예매 확인'],
+          ['assets/image/sp-07-myticket.png', '마이티켓'],
+          ['assets/image/sp-08-guide.png', '예매 안내'],
+          ['assets/image/sp-09-refund.png', '취소 · 환불 정책'],
+          ['assets/image/sp-10-faq.png', 'FAQ']
+        ]
+      },
+      windycamp: {
+        title: 'WindyCamp — 실제 화면', note: 'Linux 서버에서 PHP · MariaDB로 만든 캠핑용품 쇼핑몰입니다. 화면 전체를 담았습니다.',
+        shots: [
+          ['assets/image/wc-01-main.jpg', '메인 — 카테고리와 배너'],
+          ['assets/image/wc-02-list.jpg', '상품 목록 — 테이블'],
+          ['assets/image/wc-03-detail.jpg', '상품 상세 — 색상 · 크기 · 수량'],
+          ['assets/image/wc-05-signup.png', '회원가입'],
+          ['assets/image/wc-04-zipcode.png', '우편번호 찾기 팝업'],
+          ['assets/image/wc-06-admin.png', '관리자 — 상품 등록']
+        ]
+      },
+      deviceshop: {
+        title: 'DEVICE SHOP — 실제 화면', note: 'Laravel MVC · ORM으로 만든 판매 관리 시스템입니다. 화면 전체를 담았습니다.',
+        shots: [
+          ['assets/image/ds-01-main.jpg', '메인 — BEST ITEM'],
+          ['assets/image/ds-06-home.jpg', '메인 — 상품 목록까지'],
+          ['assets/image/ds-04-products.jpg', '상품 목록 — CPU'],
+          ['assets/image/ds-02-sales.jpg', '기간별 매출입 현황'],
+          ['assets/image/ds-05-chart.png', '매출 비중 차트'],
+          ['assets/image/ds-03-login.png', '로그인']
+        ]
+      },
+      petvillage: {
+        title: 'PetVillage — 실제 화면', note: 'PHP · MariaDB로 만든 반려동물 입양 정보 사이트입니다. 화면 전체를 담았습니다.',
+        shots: [
+          ['assets/image/pv-01-ai-name.jpg', 'AI 이름 추천 — 키워드 입력'],
+          ['assets/image/pv-04-ai-result.png', 'AI가 추천한 이름'],
+          ['assets/image/pv-02-chatbot.png', 'AI 상담 챗봇'],
+          ['assets/image/pv-03-animals.jpg', '입양 가능한 동물'],
+          ['assets/image/pv-05-guide.png', '입양 안내 — 4단계 절차'],
+          ['assets/image/pv-06-reviews.png', '입양 후기'],
+          ['assets/image/pv-07-centers.png', '보호센터 안내'],
+          ['assets/image/pv-08-donate.png', '후원하기'],
+          ['assets/image/pv-09-login.png', '로그인'],
+          ['assets/image/pv-10-signup.png', '회원가입'],
+          ['assets/image/pv-11-admin.png', '관리자 대시보드']
+        ]
+      },
+      triplan: {
+        title: 'Triplan — 실제 화면', note: 'TripLinker의 전신. CLI에서 Servlet/JSP를 거쳐 Spring+MyBatis까지 구조를 세 번 바꿨습니다.',
+        shots: [
+          ['assets/image/triplan-01-main.png', '메인 — Triplan 랜딩'],
+          ['assets/image/triplan-02-full.png', '전체 일정 화면']
+        ]
+      },
+      festa: {
+        title: 'Analyze Festa — 산출물', note: 'PCA로 핵심 변수를 찾고 SARIMA로 수요를 예측했습니다. 결과는 학술 논문으로 제출했습니다.',
+        shots: [['assets/image/festa-01-paper.png', '제출한 학술 논문']]
+      }
     };
     const lb = document.getElementById('lightbox');
     function openLb(id) {
@@ -1488,15 +2662,39 @@
       document.getElementById('lb-title').textContent = d.title;
       document.getElementById('lb-note').textContent = d.note || '실제 스크린샷으로 교체할 자리입니다.';
       const c = document.getElementById('lb-content');
-      if (d.shot) {
-        c.innerHTML = '<div class="shotimg"><img src="' + d.shot + '" alt=""></div>' + (d.live ? '<a class="open-real" href="' + d.live + '" target="_blank" rel="noopener">실제 사이트 새 탭에서 열기 ↗</a>' : '');
+      const live = d.live ? '<a class="open-real" href="' + d.live + '" target="_blank" rel="noopener">실제 사이트 새 탭에서 열기 ↗</a>' : '';
+      if (d.shots) {
+        c.innerHTML = '<div class="grid">' + d.shots.map(t =>
+          '<figure class="shotimg"><img src="' + t[0] + '" alt="' + t[1] + '"><figcaption>' + t[1] + '</figcaption></figure>'
+        ).join('') + '</div>' + live;
       } else {
-        c.innerHTML = '<div class="grid">' + d.slots.map(s => '<div class="shot-slot"><span class="ico">' + s[0] + '</span><span class="t">' + s[1] + '</span><span class="s">준비 중</span></div>').join('') + '</div>';
+        c.innerHTML = '<div class="shotimg"><img src="' + d.shot + '" alt=""></div>' + live;
       }
       lb.classList.add('open'); document.body.style.overflow = 'hidden';
     }
     function closeLb() { lb.classList.remove('open'); document.body.style.overflow = ''; }
-    document.querySelectorAll('[data-lb]').forEach(b => b.addEventListener('click', () => openLb(b.dataset.lb)));
+
+    // 라이트박스 격자의 사진은 축소돼 보인다. 누르면 원본 크기로 한 단계 더 띄운다
+    (function () {
+      const ilb = document.getElementById('imglb'), big = ilb.querySelector('img');
+      document.getElementById('lb-content').addEventListener('click', e => {
+        const im = e.target.closest('.shotimg img');
+        if (!im) return;
+        e.stopPropagation();
+        big.src = im.currentSrc || im.src; big.alt = im.alt || '';
+        const s = im.getBoundingClientRect(), b = big.getBoundingClientRect();
+        const ox = s.left + s.width / 2 - b.left, oy = s.top + s.height / 2 - b.top;
+        const far = ox < -b.width || ox > b.width * 2 || oy < -b.height || oy > b.height * 2;
+        big.style.transformOrigin = far ? '50% 50%' : ox + 'px ' + oy + 'px';
+        ilb.classList.add('open');
+      });
+      ilb.addEventListener('click', () => ilb.classList.remove('open'));
+      addEventListener('keydown', e => { if (e.key === 'Escape' && ilb.classList.contains('open')) { e.stopPropagation(); ilb.classList.remove('open'); } }, true);
+    })();
+    document.querySelectorAll('[data-lb]').forEach(b => {
+      b.addEventListener('click', () => openLb(b.dataset.lb));
+      if (b.tagName !== 'BUTTON') b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(b.dataset.lb); } });
+    });
     lb.addEventListener('click', e => { if (e.target === lb || e.target.closest('[data-close]')) closeLb(); });
     addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
   </script>
