@@ -20,11 +20,18 @@
     'display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:980px;',
     'border:1px solid var(--line);background:#fff;transition:transform .3s var(--ease),border-color .3s}',
     '.docbtn:hover{transform:translateY(-2px);border-color:' + brand + ';color:' + brand + '}',
+    '.docbtn:active{transform:scale(.97);transition-duration:.1s}',
     '.docbtn::before{content:"";width:15px;height:18px;flex:none;border-radius:2px;',
     'background:' + brand + ';opacity:.16}',
     '.dvbg{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);',
     '-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;padding:26px}',
-    '.dvbg.on{display:flex;align-items:center;justify-content:center}',
+    '.dvbg.on{display:flex;align-items:center;justify-content:center;animation:dvveil .28s cubic-bezier(.28,.11,.32,1) forwards}',
+    // 재질이 도착하듯 blur 반경과 scale을 함께 올린다 (제스처가 없으니 오버슈트 없음)
+    '@keyframes dvveil{from{background:rgba(0,0,0,0);backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px)}',
+    'to{background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}}',
+    '.dvbg.on .dv{animation:dvrise .28s cubic-bezier(.28,.11,.32,1) forwards}',
+    '@keyframes dvrise{from{opacity:0;transform:scale(.96);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}',
+    '@media(prefers-reduced-motion:reduce){.dvbg.on,.dvbg.on .dv{animation:none}}',
     '.dv{background:#fff;border-radius:20px;width:100%;max-width:1180px;max-height:100%;',
     'display:flex;flex-direction:column;overflow:hidden;box-shadow:0 50px 110px -30px rgba(0,0,0,.5)}',
     '.dv .hd{display:flex;align-items:flex-start;gap:16px;padding:20px 24px;border-bottom:1px solid var(--line)}',
@@ -87,9 +94,6 @@
     elTitle.textContent = d.label;
     elSrc.textContent = d.file + '  ·  시트 「' + d.sheet + '」';
     elFoot.textContent = '';
-    var base = document.createElement('div');
-    base.textContent = d.rows.length + '행 — 프로젝트 산출 문서를 이 페이지 서식으로 다시 그린 것입니다.';
-    elFoot.appendChild(base);
     if (d.legend) {                              // WBS 색 = 담당자
       var lg = document.createElement('div');
       lg.className = 'lgd';
@@ -103,13 +107,6 @@
       });
       elFoot.appendChild(lg);
     }
-    if (d.note) {                                // 원본을 손댄 부분은 밝혀 둔다
-      var nt = document.createElement('div');
-      nt.className = 'note';
-      nt.textContent = d.note;
-      elFoot.appendChild(nt);
-    }
-
     var table = document.createElement('table'), thead = document.createElement('thead'),
         tbody = document.createElement('tbody'), tr = document.createElement('tr');
     d.head.forEach(function (h, i) { tr.appendChild(cell('th', h || '·')); });

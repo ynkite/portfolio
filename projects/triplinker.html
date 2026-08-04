@@ -40,7 +40,7 @@
       -webkit-font-smoothing: antialiased;
       word-break: keep-all;
       overflow-wrap: break-word;
-      letter-spacing: -.01em;
+      letter-spacing: -.003em;
       overflow-x: hidden
     }
 
@@ -265,10 +265,11 @@
       transform: scale(1.03)
     }
 
+    /* 사이트 바로가기 — 메인과 같은 검정 */
     .lbtn.blue {
-      background: var(--teal);
+      background: var(--ink);
       color: #fff;
-      border-color: var(--teal)
+      border-color: var(--ink)
     }
 
     .lbtn.off {
@@ -298,6 +299,15 @@
       font-weight: 700;
       letter-spacing: -.03em;
       margin-top: 8px
+    }
+
+    /* 경력기술서 머리줄 — 무슨 프로젝트에서 무슨 역할이었는지 한 줄 */
+    .rline {
+      margin-top: 16px;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--teal);
+      letter-spacing: -.01em
     }
 
     .lead {
@@ -470,6 +480,13 @@
       gap: 10px
     }
 
+    .card p b,
+    .tsflow .b p b,
+    .drow .v b {
+      color: var(--ink);
+      font-weight: 600
+    }
+
     .tsflow .b {
       background: var(--gray);
       border-radius: 12px;
@@ -587,6 +604,216 @@
     .foot a {
       color: var(--blue)
     }
+
+    /* 표 안 링크 — 전역 a{color:inherit} 때문에 본문과 구분이 안 됐다.
+       누를 수 있다는 걸 색·밑줄·화살표 세 가지로 알린다 */
+    .drow .v a[href^="http"] {
+      color: var(--teal);
+      font-weight: 600;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+      transition: text-decoration-color .3s, opacity .2s
+    }
+
+    .drow .v a[href^="http"]::after {
+      content: " ↗";
+      font-weight: 500
+    }
+
+    .drow .v a[href^="http"]:hover {
+      text-decoration-color: var(--teal)
+    }
+
+    .drow .v a[href^="http"]:active {
+      opacity: .6
+    }
+
+    /* §15 큰 제목은 leading을 좁힌다. body의 1.6을 그대로 받으면 46px 제목이 뜬다 */
+    .stitle {
+      line-height: 1.05
+    }
+
+    .phead .desc {
+      line-height: 1.45
+    }
+
+    /* §12 재질 — 빛을 받는 밝은 위 모서리 + 1px 선 대신 옅은 스크롤 경계 */
+    nav {
+      border-top: 1px solid rgba(255, 255, 255, .5)
+    }
+
+    nav::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 14px;
+      pointer-events: none;
+      background: linear-gradient(rgba(0, 0, 0, .045), transparent)
+    }
+
+    /* §16 craft — 키보드 초점 */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 3px;
+      border-radius: 6px
+    }
+
+    /* ── apple-design 마감 ───────────────────────────────── */
+    /* §15 트래킹은 크기별로. 전역 음수값은 작은 글씨에서 자간이 무너진다 */
+    .step,
+    .drow .k,
+    .ov .c span,
+    .chips span,
+    .figure .cap,
+    .videocap,
+    .tsflow .b .lab,
+    .commit,
+    .mono {
+      letter-spacing: .01em
+    }
+
+    /* §1 반응은 hover가 아니라 눌림에 준다 */
+    .lbtn:active,
+    .docbtn:active {
+      transform: scale(.97);
+      transition-duration: .1s
+    }
+
+    /* §14 모션을 줄여 달라고 한 사용자에겐 이동을 빼고 페이드만 */
+    @keyframes rvfade {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto
+      }
+
+      .js .rv.on {
+        animation: rvfade .25s ease both
+      }
+
+      .lbtn:hover,
+      .docbtn:hover,
+      .lbtn:active,
+      .docbtn:active {
+        transform: none
+      }
+
+      .imglb.open,
+      .imglb img {
+        animation: none
+      }
+    }
+
+    /* §12 반투명을 줄여 달라고 하면 네비를 불투명하게 */
+    @media (prefers-reduced-transparency: reduce) {
+      nav {
+        background: #fff;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none
+      }
+    }
+
+    /* 사진 클릭 확대 */
+    .figure img,
+    .browser .cap img,
+    .mockimg {
+      cursor: zoom-in
+    }
+
+    .imglb {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      background: rgba(20, 20, 25, .74);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: zoom-out
+    }
+
+    .imglb.open {
+      display: flex;
+      animation: imgveil .3s var(--ease) forwards
+    }
+
+    @keyframes imgveil {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .imglb img {
+      max-width: 96vw;
+      max-height: 92vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 14px;
+      box-shadow: 0 40px 100px -40px rgba(0, 0, 0, .7);
+      animation: imgrise .3s var(--ease) forwards
+    }
+
+    @keyframes imgrise {
+      from {
+        opacity: 0;
+        transform: scale(.95);
+        filter: blur(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+        filter: none
+      }
+    }
+
+    /* SVG는 고유 크기가 없어 flex 안에서 폭이 0으로 접힌다 */
+    .imglb img[src$=".svg"] {
+      width: min(1240px, 96vw)
+    }
+
+    .imglb .x {
+      position: absolute;
+      top: 22px;
+      right: 26px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .9);
+      color: #1d1d1f;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .imglb.open,
+      .imglb img {
+        animation: none
+      }
+    }
   </style>
   <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -603,7 +830,7 @@
     <p class="desc">조건을 입력하면 AI가 취향을 분석합니다.<br>일자별 동선과 예산을 함께 구성하는 웹 여행 플래너</p>
     <div class="meta">2026.04 – 06 | 4인 팀 (팀장) | 백엔드 리드</div>
     <div class="chips"><span>Java</span><span>Spring Boot</span><span>Spring AI</span><span>Spring
-        Security</span><span>JWT</span><span>Redis</span><span>MariaDB</span><span>OAuth 2.0</span><span>AWS
+        Security</span><span>JWT</span><span>MariaDB</span><span>OAuth 2.0</span><span>AWS
         EC2·RDS</span></div>
     <div class="links">
       <a class="lbtn" href="https://github.com/seolgi100/trip-linker" target="_blank" rel="noopener">↗ GitHub</a>
@@ -624,9 +851,10 @@
     <div class="wrap">
       <div class="step">OVERVIEW</div>
       <h2 class="stitle rv">개요</h2>
-      <p class="lead rv">여행 일정은 검색 탭 스무 개로 시작해 흐지부지되기 쉽습니다.<br>TripLinker는 조건을 받아 <b>취향 분석 결과로 일자별 동선과 예산을 구성</b>합니다.<br> 저는 4인 팀의 팀장 겸 백엔드 리드로 <b>인증·보안 · AI 여행 플래너 · 경로·동선 · 챗봇 · 기상 연동</b> 등 백엔드 전반을 맡아 설계·구현했습니다.<br>
-        프론트엔드는 AI를 활용해 디자인하고 AWS에 배포·운영했습니다.
-      </p>
+      <div class="rline rv">AI 여행 플래너 서비스 · 4인 팀 프로젝트 · 팀장 / 백엔드 리드</div>
+      <p class="lead rv">여행지·날짜·인원·예산을 입력하면 AI가 취향을 분석해 일자별 동선과 예산이 포함된 일정을 만들어 주는 서비스입니다.<br>인증·보안, AI 일정 생성,
+        경로·동선, 챗봇, 기상 연동 등 백엔드 전반을 설계·구현.<br>프론트엔드 화면은 Claude·Gemini·Figma로 시안을 만들어 붙이고 API 연동은 직접 처리했습니다.<br>요구사항
+        정의서·ERD·WBS 작성, 테스트 케이스 169건 문서화·검증 후 AWS EC2/RDS 배포 완료.</p>
       <div class="ov rv">
         <div class="c"><b>169</b><span>테스트 케이스 (문서)</span></div>
         <div class="c"><b>12</b><span>도메인 패키지</span></div>
@@ -640,7 +868,8 @@
     <div class="wrap">
       <div class="step">01 · ANALYSIS</div>
       <h2 class="stitle rv">분석</h2>
-      <p class="lead rv">입력을 줄이고 결과는 바로 쓸 수 있게 하자는 기준으로 요구사항을 정의하고 기능을 도출했습니다.<br>요구사항 정의서·기능 리스트·API 정의서·테이블/클래스 정의서·WBS를 문서로 남겼습니다.<br> 검증 범위는 도메인별 테스트 케이스로 관리했습니다.</p>
+      <p class="lead rv">입력 항목은 최소화하고 결과는 바로 사용할 수 있게 한다는 기준으로 기능을 도출했습니다.<br>요구사항 정의서·기능 리스트·API 정의서·테이블/클래스 정의서·WBS를
+        문서로 작성했습니다.</p>
       <div class="dtable rv">
         <div class="drow"><span class="k">요구사항 정의서</span><span class="v">REQ ID 체계로 기능·비기능 요구사항 정리 (인증, 일정 생성, 지도 동선,
             예산, 커뮤니티 등)</span></div>
@@ -648,13 +877,14 @@
             관리자</span></div>
         <div class="drow"><span class="k">WBS</span><span class="v">2026.05.10 – 06.26 일정으로 설계·구현·테스트·배포 단계 관리</span>
         </div>
-        <div class="drow"><span class="k">테스트 케이스</span><span class="v">도메인별 케이스를 통합해 총 169건 작성·검증</span></div>
+        <div class="drow"><span class="k">API 명세서</span><span class="v">도메인별 엔드포인트와 요청·응답 스키마 정의. 팀원과 인터페이스 조율</span>
+        </div>
       </div>
       <div class="docbtns rv">
         <button class="docbtn" data-doc="req">요구사항 정의서</button>
         <button class="docbtn" data-doc="func">기능 정의서</button>
         <button class="docbtn" data-doc="wbs">WBS</button>
-        <button class="docbtn" data-doc="test">테스트 케이스 (담당분)</button>
+        <button class="docbtn" data-doc="api">API 명세서</button>
       </div>
     </div>
   </section>
@@ -663,37 +893,65 @@
     <div class="wrap">
       <div class="step">02 · DESIGN</div>
       <h2 class="stitle rv">설계</h2>
-      <p class="lead rv">도메인별로 패키지를 분리하고 서비스를 인터페이스·구현으로 나눈 <b>계층형 아키텍처</b>로 설계했습니다.<br> AI 일정 생성은 Spring AI 위에 <b>멀티
-          LLM
-          체인</b>으로 구성해 주 모델 장애 시 예비 모델로 전환되게 했고,<br> 데이터는 물리적 모델링(ERD)으로 정리했습니다.</p>
+      <p class="lead rv">도메인별로 패키지를 분리하고 서비스는 인터페이스와 구현체로 나눈 <b>계층형 구조</b>로 설계했습니다.<br>AI 일정 생성에는 Spring AI
+        <code>ChatClient</code> 세 개를 배치했으며,<BR><b>존재하지 않는 장소를 생성하지 않는 것</b>을 첫 번째 기준으로 삼았습니다.<br>데이터 구조는 물리적 모델링(ERD)으로
+        확정했습니다.
+      </p>
       <div class="cards rv">
         <div class="card">
           <div class="n">아키텍처</div>
-          <h4>도메인 계층형 구조</h4>
-          <p>user · auth · plan · route · place · expense · weather<br>chat · post · admin · system 으로 도메인을 분리하고<br>각 서비스는 인터페이스와 구현체로 결합도를 낮췄습니다.</p>
+          <h4>도메인 계층형 구조 12개</h4>
+          <p>user · auth · plan · planshare · route · place<br>expense · weather · chat · post · admin · system<BR>12개로
+            분리.<br>각 서비스는 <b>인터페이스와 구현체</b>로 결합도를 낮춤.</p>
         </div>
         <div class="card">
           <div class="n">AI 파이프라인</div>
-          <h4>멀티 LLM + 순서 검증</h4>
-          <p>후보 수집 → AI 경로 구성 → 순서·정합성 검증(validate & fix)<br>→ 지도 동선 배치로 이어지는 파이프라인입니다.<br>주 모델에 장애가 생기면 예비 모델이 자동으로 이어받습니다.</p>
+          <h4>후보는 카카오 검색 결과만</h4>
+          <p><code>generateCandidates()</code>는 빈 JSON만 반환.<br>후보는 <code>collectCandidatesFromKakao()</code>가<BR>카카오
+            검색으로만 수집.<br><b>모델이 장소명을 만들어 낼 여지를 차단한</b> 선택.</p>
+        </div>
+        <div class="card">
+          <div class="n">모델 배치</div>
+          <h4>Claude 우선, 실패 시 Groq</h4>
+          <p>AI 호출 지점은 <b>5곳</b><BR>— 동선 조립 · 챗봇 · 가격 추정 · 장소 교체 · 악천후 실내 교체.<br>동선 조립은 <code>buildRouteWithAI()</code>가
+            <b>Claude 호출</b>,<BR>
+            <code>catch</code>에서 <b>Groq로 전환</b>.<br>챗봇만 Claude · Groq · Gemini 3단.
+          </p>
+        </div>
+        <div class="card">
+          <div class="n">가격 추정</div>
+          <h4>DB 조회 후 남은 장소만 일괄 요청</h4>
+          <p><code>resolveDbPrice()</code>가 <code>PLACES.avg_price</code>를 먼저 조회.<br>값이 없는 장소만 모아
+            <code>estimatePricesWithAi()</code>에 <b>한 번에 전달</b>.<br>응답 형식을 <code>index:amount</code> 한 줄씩으로 고정해 출력 토큰을
+            줄임.
+          </p>
+        </div>
+        <div class="card">
+          <div class="n">역할 분리</div>
+          <h4>수치는 카카오 API로 계산</h4>
+          <p>프롬프트에서 <code>transit</code>의 km · 분 · 원 <b>출력을 금지</b>.<BR> 실제 값은
+            <code>recalcTransitWithKakao()</code>가 채운다.<br>별점도 <code>"평점 정보 없음"</code>으로만 받고 실측값으로 대체.<br><b>장소와 순서는 AI,
+              수치는 카카오</b>로 책임을 분리.
+          </p>
         </div>
         <div class="card">
           <div class="n">인증·보안</div>
           <h4>JWT 이중 토큰</h4>
-          <p>Access 30분 / Refresh 7일 이중 토큰과 Redis 블랙리스트로 로그아웃·탈취에 대응. OAuth 2.0 소셜 로그인,<br> 로그인 실패 잠금.</p>
+          <p>Access 30분 / Refresh 7일. 로그아웃 시<BR><b><code>refresh_tokens</code> 행 삭제</b>로 재발급 차단.<br>OAuth 2.0 소셜 로그인,
+            로그인
+            5회 실패 시 계정 잠금.<br>액세스 토큰은 만료로만 회수<BR>— 즉시 무효화에는 별도 블랙리스트 저장소 필요.</p>
         </div>
-        <div class="card">
-          <div class="n">문서</div>
-          <h4>테이블·API·클래스 정의서</h4>
-          <p>테이블 정의서·API 정의서·클래스 정의서를 작성해 팀원과 인터페이스를 맞췄습니다. 물리적 모델링(ERD)으로<br> 데이터 구조를 확정했습니다.</p>
-        </div>
+      </div>
+      <div class="figure rv">
+        <img src="../assets/triplinker-flow.svg"
+          alt="TripLinker 경로 생성 흐름 — 조건 입력부터 카카오 후보 수집·Claude 생성·Groq 폴백·코드 거리 보정·지도 출력까지" loading="lazy">
+        <div class="cap">경로 생성 흐름 — 조건 한 번으로 일자별 동선과 예산이 나오기까지 (실제 코드 기준)</div>
       </div>
       <div class="figure rv">
         <img src="../assets/triplinker-erd.png" alt="TripLinker ERD 설계" loading="lazy">
         <div class="cap">물리적 모델링 — TripLinker ERD 설계</div>
       </div>
       <div class="docbtns rv">
-        <button class="docbtn" data-doc="api">API 명세서</button>
         <button class="docbtn" data-doc="table">테이블 정의서</button>
       </div>
     </div>
@@ -703,81 +961,188 @@
     <div class="wrap">
       <div class="step">03 · DEVELOPMENT</div>
       <h2 class="stitle rv">개발 — 문제 해결 과정</h2>
-      <p class="lead rv">Spring Boot 도메인 계층 구조(<code>domain/{auth, plan, route, chat, weather …}</code>) 위에서<br>인증·AI 여행
-        플래너·경로 생성을 구현했습니다.<br>아래는 실제 커밋 이력에 남은 대표 트러블슈팅을 <b>발견 → 원인 → 해결</b> 순으로 정리한 것입니다.</p>
+      <p class="lead rv">인증, AI 일정 생성, 경로 계산을 <code>domain/{auth, plan, route, chat, weather …}</code> 아래에 분리해
+        구현했습니다.<br>해결에 가장 오래 걸린 다섯 건을 <b>발견 · 원인 · 해결</b> 순으로 정리했습니다.</p>
       <div class="ts rv">
         <div class="tsitem">
-          <div class="t">① 이름이 같은 장소를 잘못 잡아 좌표가 엉뚱하게 찍혔다</div>
+          <div class="t">① 동명 장소 오인식으로 인한 좌표 오류</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>지오코딩이 같은 이름의 다른 장소를 잡아 동선을<br>엉뚱한 곳에 배치했습니다.</p>
+              <p>지오코딩이 같은 이름의 다른 지역을 반환. 동선이 엉뚱한 좌표에 배치.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>이름만으로 좌표를 조회해 동명 지역을 구분하지 못했습니다.</p>
+              <p>장소명만으로 조회해 지역 구분 불가. 전국에 같은 상호가 다수 존재.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><code>geocodeOnce()</code>에 지역 필터를 추가해<br>동명 타지역 오인식을 차단했습니다.</p>
+              <p><code>geocodeOnce()</code>에 지역 필터 추가.<BR><b>질의 첫 토큰을 지역 키워드로</b> 사용하고 <code>address_name</code>에 지역이 없는
+                결과는 버림.</p>
             </div>
           </div>
           <div class="commit">fix(Backend): geocodeOnce 지역 필터 추가 — 동명 타지역 오인식 차단</div>
         </div>
         <div class="tsitem">
-          <div class="t">② AI가 만든 일정의 순서·정합성 오류</div>
+          <div class="t">② AI 생성 일정의 방문 순서 오류</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>LLM이 생성한 일정의 방문 순서가 어긋나거나 미확정 일정이 사라지는 문제.</p>
+              <p>LLM이 만든 일정의 방문 순서 어긋남.<BR>확정 전 일정이 사라짐.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>생성 결과를 그대로 써서<br>순서 검증·보존 단계가 없었습니다.</p>
+              <p>생성 결과를 그대로 사용.<BR>순서 검증·보존 단계가 없음.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><code>validateAndFixWithClaude()</code>를<br>순서 검증 전용으로 되살려<br>5단계 파이프라인에 연결하고<br>미확정 일정 보존 로직을 넣었습니다.</p>
+              <p><code>validateAndFixWithClaude()</code>를<BR>순서 검증 전용으로 연결.<BR>그러나 검증 모델이 순서를 고치며<BR><b>존재하지 않는 장소를 새로
+                  생성</b>.<BR>생성
+                흐름에서 제외하고 순서·거리 보정을 <code>postProcessRoute()</code> 코드로 옮김.</p>
             </div>
           </div>
           <div class="commit">feat: validateAndFixWithClaude 재활성화 — 순서 검증 전용 · fix: 미확정 일정 보존 추가</div>
         </div>
         <div class="tsitem">
-          <div class="t">③ 단일 LLM 의존으로 인한 서비스 중단 위험</div>
+          <div class="t">③ 단일 모델 장애 시 일정 생성 중단</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>주 모델이 응답하지 않으면 일정 생성 전체가 멈추는 단일 장애점.</p>
+              <p>주 모델 무응답 시 일정 생성 전체 중단.<BR>단일 장애 지점.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>하나의 LLM에만 의존하는 구조.</p>
+              <p>LLM 한 곳에만 의존하는 호출 구조.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><code>buildRouteWithAI()</code>·<code>assembleCandidates()</code>를 Spring AI 멀티 LLM 체인으로 묶어<br>주 모델이 실패하면 예비 모델로 자동 넘어가게 했습니다.</p>
+              <p><code>buildRouteWithAI()</code>가 Claude 호출, <code>catch</code>에서 Groq로 전환.<BR>챗봇은 Claude · Groq ·
+                Gemini
+                3단 구성.</p>
             </div>
           </div>
           <div class="commit">feat: buildRouteWithAI 추가 및 assembleCandidates 내부 교체</div>
         </div>
         <div class="tsitem">
-          <div class="t">④ 인기 경로 반복 생성으로 인한 응답 지연</div>
+          <div class="t">④ 거리 계산의 과도한 외부 API 호출</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>같은 인기 경로를 매번 새로 생성해<br>응답이 느려졌습니다.</p>
+              <p>장소마다 카카오 자동차 경로<BR>API 호출. 경로 생성 지연.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>결과를 재사용하지 않고 매 요청마다 재계산했습니다.</p>
+              <p>근거리까지 전부 도로 거리 조회.<BR>좌표도 계산 시마다 재조회.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>인기 경로를 <code>@Scheduled</code><br>10분 주기 배치로 캐싱해<br>재요청 시 재계산 없이 응답합니다.</p>
+              <p><b>하버사인 직선거리로 1차 선별</b>,<BR><b>20km 초과</b>일 때만 <code>carDirections()</code> 호출. 좌표는
+                <code>geocodeOnce()</code>로 1회 조회 후<BR>거리·시간·비용 계산에 재사용.
+              </p>
             </div>
           </div>
           <div class="commit">Trip-linker 경로 최적화 및 숙소 배치 수정 · 지도 동선 이슈 7건 수정</div>
         </div>
+        <div class="tsitem">
+          <div class="t">⑤ 당일치기 일정의 숙소 오배치</div>
+          <div class="tsflow">
+            <div class="b">
+              <div class="lab">발견</div>
+              <p>1일 일정에도 숙소 배치.<BR>숙소 제거 시 앞뒤 이동 구간 단절.</p>
+            </div>
+            <div class="b">
+              <div class="lab">원인</div>
+              <p>숙소만 삭제하면 해당 숙소를 향하던 <code>transit</code> 객체가 남음.</p>
+            </div>
+            <div class="b res">
+              <div class="lab">해결</div>
+              <p><code>stripStayForDayTrip()</code>에서 <code>type=="stay"</code> 제거 후, 앞뒤가 실제 장소가 아닌
+                <code>transit</code>까지 정리. <b>역순 순회</b>로 인덱스 밀림 방지.
+              </p>
+            </div>
+          </div>
+          <div class="commit">fix: 당일치기 숙소 제거 및 이동 구간 정리</div>
+        </div>
+        <div class="tsitem">
+          <div class="t">⑥ 지오코딩 질의 이중 인코딩</div>
+          <div class="tsflow">
+            <div class="b">
+              <div class="lab">발견</div>
+              <p>일부 장소명에서 좌표 조회 실패. 한글·공백이 섞인 질의에서 주로 발생.</p>
+            </div>
+            <div class="b">
+              <div class="lab">원인</div>
+              <p>이미 인코딩된 문자열을 URL 빌더에 넘겨 재차 인코딩. 카카오가 질의를 인식하지 못함.</p>
+            </div>
+            <div class="b res">
+              <div class="lab">해결</div>
+              <p><b><code>URI.create()</code>로 인코딩 완료 문자열을 그대로 전달.</b> 실패 시 <code>geocode()</code>가 공백 제거 → 앞 토큰 제거 순으로
+                재시도.</p>
+            </div>
+          </div>
+          <div class="commit">fix(Backend): geocodeOnce 지역 필터 추가 — 동명 타지역 오인식 차단</div>
+        </div>
+        <div class="tsitem">
+          <div class="t">⑦ 장소 교체 루프에서 원본이 그대로 통과했다</div>
+          <div class="tsflow">
+            <div class="b">
+              <div class="lab">발견</div>
+              <p>50km 넘는 장소를 교체 요청했는데 응답이 원본과 동일. 교체가 일어나지 않은 채 저장.</p>
+            </div>
+            <div class="b">
+              <div class="lab">원인</div>
+              <p>Claude 실패 시 Groq · Gemini로<BR>폴백하는 구조였으나 두 모델에서<BR><b>429(분당 토큰 한도) · 503(과부하)</b>가 잦았음. 폴백 모델이 원본을<BR>
+                그대로
+                반환하면
+                교체 없이 통과.</p>
+            </div>
+            <div class="b res">
+              <div class="lab">해결</div>
+              <p>교체 경로에서 <b>폴백을 제거하고<BR>Claude 단독</b>으로 고정.<br>Claude까지 실패하면 <code>stripBadPlaces()</code>가 해당 장소를 코드로
+                삭제하고
+                앞뒤
+                <code>transit</code>까지 정리.<BR>교체 없이 통과하는 경로를 제거.
+              </p>
+            </div>
+          </div>
+          <div class="commit">feat: 장소별 AI 교체 요청, 여행 플랜 공유 및 예산 연동 기능 구현</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="step">04 · DEPLOY &amp; TEST</div>
+      <h2 class="stitle rv">배포 및 테스트</h2>
+      <p class="lead rv">운영과 로컬을 프로필로 분리해 <b>DB 주소·포트·업로드 경로를 환경별로</b> 구성했습니다.<br>검증은 문서로 작성한 테스트 케이스를 따라 직접 수행했습니다.</p>
+      <div class="dtable rv">
+        <div class="drow"><span class="k">운영 주소</span><span class="v"><a href="http://43.201.154.80:8081/"
+              target="_blank" rel="noopener">http://43.201.154.80:8081/</a> — AWS EC2</span></div>
+        <div class="drow"><span class="k">DB</span><span class="v">AWS RDS MariaDB (ap-northeast-2)</span></div>
+        <div class="drow"><span class="k">프로필 분리</span><span class="v"><code>application-local.properties</code> 8080 ·
+            <code>application-prod.properties</code> 8081.<BR>업로드 경로와 OAuth 리다이렉트 주소도 프로필별로 분리</span></div>
+        <div class="drow"><span class="k">프록시 대응</span><span
+            class="v"><code>server.forward-headers-strategy=framework</code>로 프록시를 거친 요청의 원래 스킴·호스트를 살립니다</span></div>
+        <div class="drow"><span class="k">빌드</span><span class="v">Gradle <code>bootJar</code> →
+            <code>triplinker.jar</code>.
+            빌드한 jar를 EC2에 올려 실행합니다</span></div>
+      </div>
+      <div class="cards rv">
+        <div class="card">
+          <div class="n">테스트 문서</div>
+          <h4>테스트 케이스 169건</h4>
+          <p>도메인별 케이스를 통합해 <b>169건 문서화</b>.<BR>화면을 따라가며 건별 확인.<br>담당분은 아래 버튼에서 확인 가능.</p>
+        </div>
+        <div class="card">
+          <div class="n">테스트 코드</div>
+          <h4>테스트 코드 2건</h4>
+          <p><code>TripLinkerApplicationTests</code>·<code>UserSecurityServiceTest</code> <b>2건</b>.<br>문서 검증만으로는 코드
+            수정마다 동일 화면 재확인 필요.<br>다음 프로젝트 COGI에서 담당 도메인 테스트 47건을 작성한 배경.</p>
+        </div>
+      </div>
+      <div class="docbtns rv">
+        <button class="docbtn" data-doc="test">테스트 케이스 (담당분)</button>
       </div>
     </div>
   </section>
@@ -791,7 +1156,7 @@
           <div class="no">01</div>
           <h4>인증 · 보안</h4>
           <ul>
-            <li>JWT 이중 토큰(Access 30분/Refresh 7일) + Redis 블랙리스트</li>
+            <li>JWT 이중 토큰(Access 30분/Refresh 7일),<BR>로그아웃 시 리프레시 토큰 행 삭제</li>
             <li>OAuth 2.0 소셜 로그인, 로그인 실패 잠금</li>
           </ul>
         </div>
@@ -799,8 +1164,11 @@
           <div class="no">02</div>
           <h4>AI 여행 플래너 (plan)</h4>
           <ul>
-            <li>후보 수집·AI 경로 구성·순서 검증 파이프라인</li>
-            <li>멀티 LLM 체인·폴백 설계</li>
+            <li>카카오 검색만으로 후보를 모으는 수집 단계 (LLM 미사용)</li>
+            <li>Claude 우선·Groq 폴백 경로 생성, 좌표 1회 조회 재사용</li>
+            <li>챗봇 태그로 수집한 취향을 <code>parseExtraNotesToPrompt()</code>로<BR>생성 프롬프트에 합류</li>
+            <li>사용자가 직접 지목한 장소는 교체 금지 집합으로 보호</li>
+            <li>가격은 <code>PLACES.avg_price</code> 우선, 미해결 건만 배치 호출로 추정</li>
           </ul>
         </div>
         <div class="part">
@@ -815,23 +1183,36 @@
           <div class="no">04</div>
           <h4>챗봇 · 기상 (chat · weather)</h4>
           <ul>
-            <li>여행 챗봇 오탐 대응</li>
-            <li>기상 예보 연동으로 일정 보정</li>
+            <li>챗봇이 대화에서 취향을 읽어 <code>[UPDATE:코드:값]</code>·<code>[EXTRA:라벨:값]</code> 태그로 반환</li>
+            <li>AI 추천은 취향으로 반영하지 않고,<BR>사용자가 직접 말한 것만 반영하도록 프롬프트에 규칙 명시</li>
+            <li>히스토리를 최근 10건으로 잘라 토큰 관리</li>
+            <li>악천후 감지 시 <code>replaceDayWithIndoor()</code>가 해당 일차만<BR>실내로 재구성, 나머지 일차는 원본 보존</li>
           </ul>
         </div>
         <div class="part">
           <div class="no">05</div>
           <h4>관리자 · 시스템 (admin · system)</h4>
           <ul>
-            <li>관리자 기능, 공통 설정·전역 처리</li>
+            <li>가입자·신고 현황 대시보드, 회원 제재, 큐레이션 CRUD</li>
+            <li>전역 예외 처리와 공통 설정, 신고 중복 방지·일괄 숨김 규칙</li>
           </ul>
         </div>
+
         <div class="part">
           <div class="no">06</div>
           <h4>운영 · 품질</h4>
           <ul>
-            <li>테스트 케이스 169건을 문서로 정리·검증</li>
-            <li>AWS EC2·RDS 배포·운영</li>
+            <li>요구사항 정의서·ERD·WBS 작성,<BR>테스트 케이스 169건 문서화·검증</li>
+            <li>프로필 분리 후 AWS EC2·RDS 배포·운영</li>
+          </ul>
+        </div>
+        <div class="part">
+          <div class="no">07</div>
+          <h4>프론트엔드 (AI 활용)</h4>
+          <ul>
+            <li>Thymeleaf 화면 11종 — 플래너·지도·가계부·커뮤니티·관리자 등</li>
+            <li>Claude·Gemini·Figma로 시안과 컴포넌트를 만들고<BR>API 연동은 직접 처리</li>
+            <li>챗봇 태그 파싱·자동 교체 루프 같은 화면 로직은 손으로 작성</li>
           </ul>
         </div>
       </div>
@@ -846,9 +1227,11 @@
         <div class="feat"><b>여행 플래너</b>조건 입력 → AI 취향 분석 → 일자별 동선·예산 자동 구성</div>
         <div class="feat"><b>지도·동선</b>경로 최적화·숙소 배치, 지도 위 동선 시각화</div>
         <div class="feat"><b>인증</b>JWT 쿠키 로그인, OAuth 2.0 소셜 로그인, 실패 잠금</div>
-        <div class="feat"><b>AI 안정성</b>멀티 LLM 폴백, 순서·정합성 검증</div>
+        <div class="feat"><b>AI 안정성</b>후보 수집 단계 LLM 미사용, Claude 실패 시 Groq 폴백</div>
+        <div class="feat"><b>날씨</b>기상청 단기·중기 예보 조합, 악천후 시 실내 일정 재구성</div>
+        <div class="feat"><b>예산</b>DB 단가 우선 조회, 없는 장소만 AI 배치 추정</div>
         <div class="feat"><b>커뮤니티</b>여행 후기 게시판, 인기 경로 랭킹</div>
-        <div class="feat"><b>운영</b>인기 경로 10분 배치 캐싱, AWS 배포</div>
+        <div class="feat"><b>운영</b>프로필 분리 배포, AWS EC2 · RDS</div>
       </div>
     </div>
   </section>
@@ -862,6 +1245,31 @@
   </script>
   <script src="../assets/docs-tl.js"></script>
   <script src="../assets/docviewer.js"></script>
+
+  <div class="imglb" id="imglb" role="dialog" aria-modal="true" aria-label="확대 이미지"><button class="x"
+      aria-label="닫기">✕</button><img alt=""></div>
+  <script>
+    // 본문 사진을 누르면 원본 크기로 띄운다. 목업 프레임은 그대로 두고 안의 사진만 연다
+    (function () {
+      var lb = document.getElementById('imglb'), big = lb.querySelector('img');
+      document.querySelectorAll('.figure img, .browser .cap img, .mockimg').forEach(function (im) {
+        im.addEventListener('click', function () {
+          big.src = im.currentSrc || im.src; big.alt = im.alt || '';
+          lb.classList.add('open'); document.body.style.overflow = 'hidden';
+          // §7 누른 자리에서 자라나게 — 원점을 썸네일 중심에 맞춘다.
+          // 중앙에서 커지면 어디서 열렸는지 알 수 없다
+          var s = im.getBoundingClientRect(), b = big.getBoundingClientRect();
+          var ox = s.left + s.width / 2 - b.left, oy = s.top + s.height / 2 - b.top;
+          // 원본이 화면 밖이면 원점이 터무니없이 멀어진다 — 그때는 가운데에서 연다
+          var far = ox < -b.width || ox > b.width * 2 || oy < -b.height || oy > b.height * 2;
+          big.style.transformOrigin = far ? '50% 50%' : ox + 'px ' + oy + 'px';
+        });
+      });
+      function close() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+      lb.addEventListener('click', close);
+      addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+  </script>
 </body>
 
 </html>

@@ -40,7 +40,7 @@
       -webkit-font-smoothing: antialiased;
       word-break: keep-all;
       overflow-wrap: break-word;
-      letter-spacing: -.01em;
+      letter-spacing: -.003em;
       overflow-x: hidden
     }
 
@@ -265,10 +265,11 @@
       transform: scale(1.03)
     }
 
+    /* 사이트 바로가기 — 메인과 같은 검정 */
     .lbtn.blue {
-      background: var(--teal);
+      background: var(--ink);
       color: #fff;
-      border-color: var(--teal)
+      border-color: var(--ink)
     }
 
     .lbtn.off {
@@ -300,6 +301,15 @@
       margin-top: 8px
     }
 
+    /* 경력기술서 머리줄 — 무슨 프로젝트에서 무슨 역할이었는지 한 줄 */
+    .rline {
+      margin-top: 16px;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--teal);
+      letter-spacing: -.01em
+    }
+
     .lead {
       font-size: 17px;
       color: var(--sub);
@@ -315,7 +325,7 @@
     /* overview stats */
     .ov {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1px;
       background: var(--line);
       border: 1px solid var(--line);
@@ -470,6 +480,13 @@
       gap: 10px
     }
 
+    .card p b,
+    .tsflow .b p b,
+    .drow .v b {
+      color: var(--ink);
+      font-weight: 600
+    }
+
     .tsflow .b {
       background: var(--gray);
       border-radius: 12px;
@@ -587,6 +604,216 @@
     .foot a {
       color: var(--blue)
     }
+
+    /* 표 안 링크 — 전역 a{color:inherit} 때문에 본문과 구분이 안 됐다.
+       누를 수 있다는 걸 색·밑줄·화살표 세 가지로 알린다 */
+    .drow .v a[href^="http"] {
+      color: var(--teal);
+      font-weight: 600;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+      transition: text-decoration-color .3s, opacity .2s
+    }
+
+    .drow .v a[href^="http"]::after {
+      content: " ↗";
+      font-weight: 500
+    }
+
+    .drow .v a[href^="http"]:hover {
+      text-decoration-color: var(--teal)
+    }
+
+    .drow .v a[href^="http"]:active {
+      opacity: .6
+    }
+
+    /* §15 큰 제목은 leading을 좁힌다. body의 1.6을 그대로 받으면 46px 제목이 뜬다 */
+    .stitle {
+      line-height: 1.05
+    }
+
+    .phead .desc {
+      line-height: 1.45
+    }
+
+    /* §12 재질 — 빛을 받는 밝은 위 모서리 + 1px 선 대신 옅은 스크롤 경계 */
+    nav {
+      border-top: 1px solid rgba(255, 255, 255, .5)
+    }
+
+    nav::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 14px;
+      pointer-events: none;
+      background: linear-gradient(rgba(0, 0, 0, .045), transparent)
+    }
+
+    /* §16 craft — 키보드 초점 */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 3px;
+      border-radius: 6px
+    }
+
+    /* ── apple-design 마감 ───────────────────────────────── */
+    /* §15 트래킹은 크기별로. 전역 음수값은 작은 글씨에서 자간이 무너진다 */
+    .step,
+    .drow .k,
+    .ov .c span,
+    .chips span,
+    .figure .cap,
+    .videocap,
+    .tsflow .b .lab,
+    .commit,
+    .mono {
+      letter-spacing: .01em
+    }
+
+    /* §1 반응은 hover가 아니라 눌림에 준다 */
+    .lbtn:active,
+    .docbtn:active {
+      transform: scale(.97);
+      transition-duration: .1s
+    }
+
+    /* §14 모션을 줄여 달라고 한 사용자에겐 이동을 빼고 페이드만 */
+    @keyframes rvfade {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto
+      }
+
+      .js .rv.on {
+        animation: rvfade .25s ease both
+      }
+
+      .lbtn:hover,
+      .docbtn:hover,
+      .lbtn:active,
+      .docbtn:active {
+        transform: none
+      }
+
+      .imglb.open,
+      .imglb img {
+        animation: none
+      }
+    }
+
+    /* §12 반투명을 줄여 달라고 하면 네비를 불투명하게 */
+    @media (prefers-reduced-transparency: reduce) {
+      nav {
+        background: #fff;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none
+      }
+    }
+
+    /* 사진 클릭 확대 */
+    .figure img,
+    .browser .cap img,
+    .mockimg {
+      cursor: zoom-in
+    }
+
+    .imglb {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      background: rgba(20, 20, 25, .74);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: zoom-out
+    }
+
+    .imglb.open {
+      display: flex;
+      animation: imgveil .3s var(--ease) forwards
+    }
+
+    @keyframes imgveil {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .imglb img {
+      max-width: 96vw;
+      max-height: 92vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 14px;
+      box-shadow: 0 40px 100px -40px rgba(0, 0, 0, .7);
+      animation: imgrise .3s var(--ease) forwards
+    }
+
+    @keyframes imgrise {
+      from {
+        opacity: 0;
+        transform: scale(.95);
+        filter: blur(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+        filter: none
+      }
+    }
+
+    /* SVG는 고유 크기가 없어 flex 안에서 폭이 0으로 접힌다 */
+    .imglb img[src$=".svg"] {
+      width: min(1240px, 96vw)
+    }
+
+    .imglb .x {
+      position: absolute;
+      top: 22px;
+      right: 26px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .9);
+      color: #1d1d1f;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .imglb.open,
+      .imglb img {
+        animation: none
+      }
+    }
   </style>
   <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -603,7 +830,8 @@
     <p class="desc">GitHub PR에서 반복되는 지적을<br>약점으로 모으는 AI 코드리뷰 서비스</p>
     <div class="meta">2026.07 – 진행 중 | 4인 팀 (팀장) | 학습·리텐션 도메인 · AI 연동 · 프론트엔드</div>
     <div class="chips"><span>Java</span><span>Spring Boot</span><span>Spring Security</span><span>Spring Data
-        JPA</span><span>JWT</span><span>OAuth 2.0</span><span>Redis</span><span>MariaDB</span><span>React</span><span>TypeScript</span><span>Vite</span><span>Gradle</span>
+        JPA</span><span>JWT</span><span>OAuth
+        2.0</span><span>Redis</span><span>MariaDB</span><span>React</span><span>TypeScript</span><span>Vite</span><span>Gradle</span><span>Claude·Gemini</span><span>Figma</span>
     </div>
     <div class="links">
       <a class="lbtn" href="https://github.com/Leeuswa/COGI" target="_blank" rel="noopener">↗ GitHub</a>
@@ -613,9 +841,7 @@
 
   <div class="videosec" id="video">
     <div class="wrap">
-      <div class="videowrap off">
-        <div class="vph">소개 영상 준비 중</div>
-      </div>
+      <div class="videowrap"><video controls preload="metadata" src="../assets/cogi.mp4"></video></div>
       <div class="videocap">COGI 소개 영상</div>
     </div>
   </div>
@@ -624,17 +850,18 @@
     <div class="wrap">
       <div class="step">OVERVIEW</div>
       <h2 class="stitle rv">개요</h2>
-      <p class="lead rv">코드리뷰는 받고 나면 흩어집니다. 같은 지적을 몇 번째 받는지 세어 주는 곳이 없습니다.<br>COGI는 GitHub 웹훅으로 PR을 받아 AI가 리뷰하고, <b>모인 약점은 학습 카드와 퀴즈로 만들어 다시 풀게 합니다.</b><br>저는 4인 팀의 팀장으로 <b>학습·리텐션 도메인과 AI 벤더 연동</b>을 맡고, 인증·스튜디오·성장 화면을 함께
-        구현했습니다.</p>
+      <div class="rline rv">AI 코드리뷰 기반 성장 관리 서비스 · 4인 팀 프로젝트 · 팀장 / 백엔드·AI 연동</div>
+      <p class="lead rv">GitHub Pull Request를 AI가 리뷰하고, 반복되는 지적을 약점으로 모아 학습 카드와 퀴즈로 만들어 주는 서비스입니다.<br>학습·리텐션 도메인과 AI 벤더
+        연동
+        계층을 담당했고, 담당 도메인 API 엔드포인트 26개 정의·구현, 단위 테스트 47건 작성.<br>프론트엔드 화면은 Claude·Gemini로 시안을 만들어 붙이고 API 연동은 직접 처리.</p>
       <div class="ov rv">
-        <div class="c"><b>67</b><span>내 커밋 / 전체 300</span></div>
         <div class="c"><b>26</b><span>담당 API 엔드포인트</span></div>
         <div class="c"><b>47</b><span>담당 도메인 테스트</span></div>
         <div class="c"><b>4곳</b><span>AI 벤더 연동</span></div>
       </div>
       <div class="figure rv">
-        <img src="../assets/cogi-flow.png" alt="COGI 서비스 흐름도" loading="lazy">
-        <div class="cap">서비스 흐름 — 검사 → 오답노트 → 맞춤 공부 → 습관</div>
+        <img src="../assets/cogi-arch.svg" alt="COGI 처리 흐름 — PR 수신부터 약점 누적·학습 카드·주간 리포트까지" loading="lazy">
+        <div class="cap">처리 흐름 — 리뷰 한 건이 약점 통계와 학습 카드로 남는 경로 (실제 코드 기준)</div>
       </div>
     </div>
   </section>
@@ -643,21 +870,24 @@
     <div class="wrap">
       <div class="step">01 · ANALYSIS</div>
       <h2 class="stitle rv">분석</h2>
-      <p class="lead rv">요구사항 정의서·기능 정의서·API 명세서·테이블 정의서·WBS를 문서로 남기고 담당을 나눴습니다.<br>집계 기준이나 승급 규칙처럼 나중에 말이 갈릴 수 있는 것은 FR
-        번호를 붙여 못박아 뒀습니다.</p>
+      <p class="lead rv">요구사항 정의서·기능 정의서·API 명세서·테이블 정의서·WBS를 문서로 작성하고 담당을 분배했습니다.<br>집계 기준과 승급 규칙처럼 해석이 갈릴 수 있는 항목은 FR
+        번호를 부여해 조건을 문장으로 확정했습니다.</p>
       <div class="dtable rv">
-        <div class="drow"><span class="k">요구사항 정의서</span><span class="v">FR 번호 체계로 정리. 약점 집계 기준(FR-55·56), 승급 규칙(FR-61·62),
-            streak 초기화(FR-73·74)까지 조건을 문장으로 확정</span></div>
-        <div class="drow"><span class="k">기능 정의서</span><span class="v">코드리뷰 · 약점 통계 · 학습카드/퀴즈 · AI 스킬 추천 · 성장 추이 · 주간 리포트 · 팀
+        <div class="drow"><span class="k">요구사항 정의서</span><span class="v">FR 번호 체계로 정리. 약점 집계 기준(FR-55·56),<br>승급
+            규칙(FR-61·62), streak 초기화(FR-73·74)까지 조건을 문장으로 확정</span></div>
+        <div class="drow"><span class="k">기능 정의서</span><span class="v">코드리뷰 · 약점 통계 · 학습카드/퀴즈 · AI 스킬 추천 · 성장 추이 · 주간
+            리포트 · 팀
             · 요금제</span></div>
         <div class="drow"><span class="k">WBS</span><span class="v">주차별 담당자 배정. 제 몫은 AI 연동, 약점 통계, 학습카드·퀴즈, 리텐션, 프론트엔드
             연동</span></div>
-        <div class="drow"><span class="k">API 명세서</span><span class="v">학습·리텐션·게스트 도메인에서 26개 엔드포인트를 맡아 정의·구현</span></div>
+        <div class="drow"><span class="k">API 명세서</span><span class="v">학습·리텐션·게스트 도메인에서 26개 엔드포인트를 맡아 정의·구현</span>
+        </div>
       </div>
       <div class="docbtns rv">
         <button class="docbtn" data-doc="req">요구사항 정의서</button>
         <button class="docbtn" data-doc="func">기능 정의서</button>
         <button class="docbtn" data-doc="wbs">WBS</button>
+        <button class="docbtn" data-doc="api">API 명세서</button>
       </div>
     </div>
   </section>
@@ -666,42 +896,54 @@
     <div class="wrap">
       <div class="step">02 · DESIGN</div>
       <h2 class="stitle rv">설계</h2>
-      <p class="lead rv">도메인 단위로 패키지를 나누고 서비스를 인터페이스·구현으로 갈랐습니다.<br>AI 호출은 <code>global/ai</code> 한 곳에 모아, <b>도메인 코드가 어느
-          벤더를 쓰는지 몰라도 되게</b> 했습니다.</p>
+      <p class="lead rv">도메인 단위로 패키지를 나누고, 서비스는 인터페이스와 구현체로 분리했습니다.<br>AI 호출은 <code>global/ai</code> 한 곳에 모아, <b>도메인
+          코드에서 벤더를 직접 참조하지 않도록</b> 분리했습니다.</p>
       <div class="cards rv">
         <div class="card">
           <div class="n">아키텍처</div>
           <h4>도메인 패키지 분리</h4>
-          <p>learning · retention · guest · review · growth<br>pr · repo · payment · terms · user 로 나누고,<br>벤더 호출은
-            <code>global/ai</code>로 밀어 넣었습니다.
+          <p>learning · retention · guest · review · growth<br>pr · repo · payment · terms · user 로 분리.<br>벤더 호출은
+            <b>global/ai 한 곳에 집중</b>.
           </p>
         </div>
         <div class="card">
           <div class="n">AI 연동</div>
           <h4>벤더 4곳을 한 인터페이스로</h4>
-          <p><code>AiProvider</code>가 호출 방식을 맡습니다. <code>AiModel</code>은<br>모델 문자열과 토큰 단가를 맡습니다.<br>Claude는 Anthropic 형식, 나머지는 OpenAI 호환 형식.</p>
+          <p><code>AiProvider</code>는 <b>호출 방식</b>,<br> <code>AiModel</code>은 <b>모델 문자열과 토큰 단가</b> 담당.<br>Claude는
+            Anthropic 형식, 나머지는 OpenAI 호환 형식.</p>
         </div>
         <div class="card">
           <div class="n">프롬프트</div>
           <h4>수준 × 모델 티어 조합</h4>
-          <p>초·중·고급 프롬프트와 모델 티어 3단을<br><code>LearningPromptBuilder</code>가 합칩니다.<br>같은 약점도 수준과 플랜에 따라 결과가 달라집니다.</p>
+          <p>초·중·고급 프롬프트와 <b>모델 티어 3단</b>을<br><code>LearningPromptBuilder</code>가 합칩니다.<br>같은 약점도 수준과 플랜에 따라 결과가 달라집니다.
+          </p>
         </div>
         <div class="card">
           <div class="n">크레딧</div>
-          <h4>선차감 후 롤백으로 복구</h4>
-          <p><code>checkAndConsume()</code>으로 먼저 차감하고<br>AI를 부릅니다. 응답 파싱이 깨지면 예외로<br>트랜잭션이 되돌아가 크레딧도 함께 복구됩니다.</p>
+          <h4>크레딧 선차감 후 롤백</h4>
+          <p><code>checkAndConsume()</code>으로 선차감 후 AI 호출.<br>응답 파싱 실패 시 <b>예외로 트랜잭션 롤백</b>,<br>크레딧도 함께 복구.</p>
         </div>
-      </div>
-      <div class="figure rv">
-        <img src="../assets/cogi-arch.png" alt="COGI 아키텍처 설계" loading="lazy">
-        <div class="cap">아키텍처 설계 — COGI</div>
+        <div class="card">
+          <div class="n">응답 방어</div>
+          <h4>깨진 응답까지 파싱</h4>
+          <p><code>stripCodeFence()</code>로 코드펜스 제거.<br>Claude 확장 사고 모델은 <code>content[]</code>에서
+            <code>type=="text"</code>만 추출.<br>학습 도메인은 <b>제어문자를 허용하는</b> <code>LENIENT_JSON</code>으로 파싱.
+          </p>
+        </div>
+        <div class="card">
+          <div class="n">사용량 · 비용</div>
+          <h4>벤더별 사용량 조회 분리</h4>
+          <p>기존: 앱이 남긴 <code>ai_usage_logs</code>를<br>일괄 집계해 관리자 화면에 표시.<br>현재: 실제 청구액과 맞추려고 벤더 Admin API 추가.<br><b>규격이
+              달라</b>
+            <code>fetchOpenAi()</code>·<code>fetchClaude()</code>로 분리.
+          </p>
+        </div>
       </div>
       <div class="figure rv">
         <img src="../assets/cogi-erd.png" alt="COGI ERD 설계" loading="lazy">
         <div class="cap">물리적 모델링 — COGI ERD 설계</div>
       </div>
       <div class="docbtns rv">
-        <button class="docbtn" data-doc="api">API 명세서</button>
         <button class="docbtn" data-doc="table">테이블 정의서</button>
       </div>
     </div>
@@ -711,103 +953,205 @@
     <div class="wrap">
       <div class="step">03 · DEVELOPMENT</div>
       <h2 class="stitle rv">개발 — 문제 해결 과정</h2>
-      <p class="lead rv">실제 커밋 이력에 남은 트러블슈팅을 <b>발견 → 원인 → 해결</b> 순으로 정리했습니다.<br>대부분 "될 때도 있고 안 될 때도 있다"로만 보이던 증상이라 원인을
-        가르는 데 시간이 더 걸렸습니다.</p>
+      <p class="lead rv">실제 커밋에 남은 문제 해결 과정을 <b>발견 · 원인 · 해결</b> 순으로 정리했습니다.<br>재현 조건이 일정하지 않은 문제가 많아 원인 분석에 시간이 소요됐습니다.
+      </p>
       <div class="ts rv">
         <div class="tsitem">
-          <div class="t">① 약점 통계를 두 화면이 동시에 열면 500</div>
+          <div class="t">① 약점 통계 동시 조회 시 500 오류</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>약점 화면과 스킬 추천 화면이 같이 뜨거나<br>StrictMode가 이펙트를 두 번 실행하면 500이 났습니다.</p>
+              <p>약점 화면과 스킬 추천 화면<br>동시 진입 시 500오류.<br>React StrictMode가<br>이펙트를 두 번 실행할 때도 재현.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>조회 API가 매번 <code>deleteByUserId</code> 후 재삽입을 했습니다. 뒤 트랜잭션이 앞에서 이미 지운 행을 지우려 들었습니다.</p>
+              <p>조회 API가 매 호출마다 <code>deleteByUserId</code><br>후 재삽입. 뒤 트랜잭션이 앞에서 이미 지운 행을 다시 삭제 시도.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>표에 쓰지 않고 <code>getWeaknessStats()</code>에서<br>조회 시점에 집계해 바로 응답으로 만들었습니다.<br>그 표를 읽는 코드가 없어 쓰기를
-                걷어냈습니다.</p>
+              <p>집계 테이블 <b>쓰기 자체를 제거</b>.<br><code>getWeaknessStats()</code>에서 조회 시점 계산으로 전환.</p>
             </div>
           </div>
           <div class="commit">fix: 약점 통계 재집계 동시 호출 시 500 · fix: 약점·강의·스킬추천 500과 PR 피커가 실제 레포를 못 보던 것</div>
         </div>
         <div class="tsitem">
-          <div class="t">② 퀴즈 생성이 될 때도 있고 안 될 때도 있었다</div>
+          <div class="t">② 퀴즈 생성의 간헐적 파싱 실패</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>같은 카드인데 어떤 퀴즈는 만들어지고<br>어떤 퀴즈는 파싱에서 터졌습니다.</p>
+              <p>같은 카드에서 퀴즈 생성이 성공하기도, JSON 파싱에서 실패하기도 함.<BR>재현 조건 불명확.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>둘이었습니다. 프롬프트가 문제 본문에 코드블록을 넣게 지시하는데 모델이 줄바꿈을 그대로 흘려 JSON이 깨졌습니다. 스키마에 없는 키가 하나 붙어도 통째로 실패했습니다.</p>
+              <p><b>원인 두 가지.</b> 프롬프트가 문제 본문에 코드블록을 요구 → 모델이 raw 개행을 그대로 출력해 JSON 파손. 스키마에 없는 키 1개에도 전체 역직렬화 실패.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>AI 응답 전용 리더를 따로 두고<br><code>ALLOW_UNESCAPED_CONTROL_CHARS</code>를 켜고<br><code>FAIL_ON_UNKNOWN_PROPERTIES</code>를
-                껐습니다. 공용 <code>ObjectMapper</code>는 API 직렬화에도 쓰여 건드리지 않았습니다.</p>
+              <p>AI 응답 전용 <code>LENIENT_JSON</code> 리더 분리. <code>ALLOW_UNESCAPED_CONTROL_CHARS</code> 허용,
+                <code>FAIL_ON_UNKNOWN_PROPERTIES</code> 해제. 공용 <code>ObjectMapper</code>는 API 직렬화에도 쓰여 미변경.
+              </p>
             </div>
           </div>
           <div class="commit">fix: 문제 생성이 될 때도 있고 안 될 때도 있던 원인</div>
         </div>
         <div class="tsitem">
-          <div class="t">③ AI가 응답하지 않으면 화면이 계속 "분석 중"이었다</div>
+          <div class="t">③ AI 무응답 시 화면이 대기 상태로 멈춤</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>벤더가 503을 뱉고 재시도하는 동안<br>스튜디오가 "코드 분석 중…"에서 멈추지 않았습니다.</p>
+              <p>벤더가 503 반환 후 재시도하는 동안 스튜디오가 "코드 분석 중…"에서 무한 대기.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p><code>RestClient.builder().build()</code>가 이 프로젝트에서 <code>JdkClientHttpRequestFactory</code>로 폴백되는데 기본 생성자에는 연결·응답 타임아웃이 아예 없었습니다.</p>
+              <p><code>RestClient.builder().build()</code>가 <code>JdkClientHttpRequestFactory</code>로 폴백. 기본 생성자에 연결·응답
+                타임아웃 미설정.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>연결 10초 · 응답 60초를 명시하고<br>실패는 <code>AI_MODEL_CALL_FAILED</code>로 올려<br>화면이 끝을 보게 했습니다.</p>
+              <p><b>연결 10초 · 응답 60초</b> 명시. 실패는 <code>AI_MODEL_CALL_FAILED</code>로 올려 화면에 종료 상태 표시.</p>
             </div>
           </div>
           <div class="commit">fix: 빌드 깨짐과 AI 호출 실패 무반응 수정</div>
         </div>
         <div class="tsitem">
-          <div class="t">④ 벤더마다 요청·응답 규격이 어긋났다</div>
+          <div class="t">④ 벤더별 요청·응답 규격 불일치</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>모델을 실제로 붙이자 400과<br>빈 응답이 섞여 나왔습니다.</p>
+              <p>실제 모델 연동 시 400과 빈 응답이 섞여 나옴. 이슈가 많은 리뷰에서는 JSON이 중간에서 잘림.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>OpenAI 신형 모델에서는 <code>max_tokens</code>가 통하지 않고 <code>max_completion_tokens</code>를 써야 했습니다. Claude는 확장 사고를 쓰면 <code>content[0]</code>이 thinking 블록이라 텍스트가 비었습니다. 이슈가 많은 리뷰는 JSON이 중간에 잘렸습니다.</p>
+              <p>OpenAI 신형 모델은 <b><code>max_tokens</code> 거부</b>, <code>max_completion_tokens</code> 요구. Claude 확장 사고
+                모델은 <code>content[0]</code>이 thinking 블록이라 텍스트가 비어 있음. 응답 상한이 모자라 잘림.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>호출 경로를 <code>callOpenAiCompatible()</code>과<br><code>callAnthropic()</code>으로 갈랐습니다.<br>content 배열에서 text
-                블록을 찾아 꺼내고<br>최대 토큰을 8192로 올렸습니다.</p>
+              <p>호출 경로를 <code>callOpenAiCompatible()</code> · <code>callAnthropic()</code>으로 분기. <code>content</code>
+                배열에서 <code>type=="text"</code> 블록만 추출, 상한을 8192로 올림.</p>
             </div>
           </div>
           <div class="commit">fix: AI 모델 실제 API 연동 시 발생하는 파싱/파라미터 오류 수정 · feat: AI 모델별 provider 라우팅 구조 분리
             (AiProvider/AiModel)</div>
         </div>
         <div class="tsitem">
-          <div class="t">⑤ DB를 새로 심어도 화면은 옛 정보를 믿었다</div>
+          <div class="t">⑤ DB 초기화 후 클라이언트 캐시 불일치</div>
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>데이터를 초기화한 뒤에도 화면은 GitHub이 연동된 줄 알고 요청을 보내 400을 받았습니다.</p>
+              <p>데이터 초기화 후에도 화면은 GitHub 연동 상태로 판단하고 요청 전송 → 400 수신.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p><code>AuthContext</code>가 <code>localStorage</code> 캐시를<br>끝까지 신뢰했습니다.</p>
+              <p><code>AuthContext</code>가 <code>localStorage</code> 캐시를 최종 신뢰. 서버 상태와 맞추는 지점이 없음.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>새로고침마다 서버 프로필로 캐시를 맞추고<br>화면 표시용 값만 남겨 덮게 했습니다.<br>쿠키가 죽은 경우는 401을 보고 로그아웃시킵니다.</p>
+              <p>새로고침마다 서버 프로필로 캐시 갱신. 표시 전용 값만 유지하고 나머지는 덮어쓰기. 쿠키 만료 시 401 감지 후 로그아웃 처리.</p>
             </div>
           </div>
           <div class="commit">fix: 캐시된 로그인 정보가 서버와 어긋나던 것 + 미처리 실패 4곳 · fix: DB를 새로 심어도 코기와 학습 기록이 그대로이던 것</div>
         </div>
+        <div class="tsitem">
+          <div class="t">⑥ 코드가 아닌 입력에도 크레딧 차감</div>
+          <div class="tsflow">
+            <div class="b">
+              <div class="lab">발견</div>
+              <p>일반 텍스트를 붙여 넣어도 리뷰가 시도되고 크레딧이 소모됨.</p>
+            </div>
+            <div class="b">
+              <div class="lab">원인</div>
+              <p>입력이 코드인지 판별하는 규칙이 없음. 벤더 호출은 이미 발생해 비용은 실제 청구.</p>
+            </div>
+            <div class="b res">
+              <div class="lab">해결</div>
+              <p>응답 스키마에 <b><code>analyzable</code></b> 추가. <code>false</code>면
+                <code>creditUsageService.refund()</code>로 환불. 단 실제 과금이 일어났으므로 <code>ai_usage_logs</code> 기록은 유지.
+              </p>
+            </div>
+          </div>
+          <div class="commit">feat: 코드가 아닌 입력 시 크레딧 환불(analyzable 필드) 추가</div>
+        </div>
+        <div class="tsitem">
+          <div class="t">⑦ 프롬프트 공통 규칙 3중 복사</div>
+          <div class="tsflow">
+            <div class="b">
+              <div class="lab">발견</div>
+              <p>규칙 하나를 바꾸면 초·중·고급 프롬프트 파일 3개를 모두 수정해야 함. BEGINNER 레벨만 용어 규칙 미반영.</p>
+            </div>
+            <div class="b">
+              <div class="lab">원인</div>
+              <p>공통 규칙이 레벨 파일마다 복사돼 있어 한 곳만 고치면 되는 구조가 아님.</p>
+            </div>
+            <div class="b res">
+              <div class="lab">해결</div>
+              <p><b><code>_common_rules.txt</code></b>로 <b>분리</b> 후 <code>PromptBuilder.build()</code>에서 조합. 레벨 지침은
+                <code>review_guidelines</code> 테이블 우선, 없으면 파일 폴백.
+              </p>
+            </div>
+          </div>
+          <div class="commit">fix: 프롬프트 공통규칙 중복 제거 + BEGINNER 용어 미준수 수정</div>
+        </div>
+        <div class="tsitem">
+          <div class="t">⑧ 플랜 기본 모델 결정 로직 분산</div>
+          <div class="tsflow">
+            <div class="b">
+              <div class="lab">발견</div>
+              <p>플랜이 허용하는 모델을 고르는 코드가 서로 다른 세 곳에 존재. 모델 추가 시 누락 위험.</p>
+            </div>
+            <div class="b">
+              <div class="lab">원인</div>
+              <p>기능이 순차로 붙으면서 각자 자기 위치에서 <code>allowed_models</code>를 파싱.</p>
+            </div>
+            <div class="b res">
+              <div class="lab">해결</div>
+              <p><b>단일 지점으로 통합.</b> 모델 문자열과 토큰 단가는 <code>AiModel</code> enum, 호출 방식은 <code>AiProvider</code>가 각각 소유하도록
+                책임 분리.</p>
+            </div>
+          </div>
+          <div class="commit">refactor: 플랜 기본 모델 뽑는 세 군데를 한 곳으로</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="step">04 · DEPLOY &amp; TEST</div>
+      <h2 class="stitle rv">배포 및 테스트</h2>
+      <p class="lead rv">AWS EC2에 배포해 <b>무료·게스트 기능만 공개한 상태로</b> 운영 중입니다.<br>유료 플랜은 실제 결제가 발생하므로 배포판에서는 비활성화했습니다.</p>
+      <div class="dtable rv">
+        <div class="drow"><span class="k">운영 주소</span><span class="v"><a href="http://43.202.36.123/" target="_blank"
+              rel="noopener">http://43.202.36.123/</a> — AWS EC2</span></div>
+        <div class="drow"><span class="k">빌드</span><span class="v">백엔드 <code>./gradlew build</code> (Gradle · Spring
+            Boot ·
+            Java 25), 프론트 <code>tsc --noEmit &amp;&amp; vite build</code></span></div>
+        <div class="drow"><span class="k">런타임</span><span class="v">MariaDB · Redis. 게스트 체험 횟수는 Redis 카운터로 제한. AI 호출이 모두
+            실패하면 <code>decrement()</code>로 복구</span></div>
+        <div class="drow"><span class="k">환경 분리</span><span class="v">키를 전부 환경변수로 주입(<code>${JWT_SECRET}</code> 등)하고
+            <code>application.properties</code>는 형상관리에서 제외</span></div>
+        <div class="drow"><span class="k">주소 하드코딩 제거</span><span class="v">CORS 허용 목록과 OAuth 성공 리다이렉트를
+            <code>app.frontend-url</code> 한 속성에서 참조. 로컬과 배포가 같은 값이면 <code>distinct()</code>로 중복 제거</span></div>
+      </div>
+      <div class="cards rv">
+        <div class="card">
+          <div class="n">테스트</div>
+          <h4>담당 도메인 테스트 47건</h4>
+          <p><code>LearningCardServiceTest</code> 21건 ·
+          <code>RetentionServiceImplTest</code> 8건 ·<br><code>AiReviewClientIntegrationTest</code> 8건 ·
+          <code>LearningServiceImplTest</code> 7건 · <code>AiModelTest</code> 3건.
+          </p>
+        </div>
+        <div class="card">
+          <div class="n">과금 주의</div>
+          <h4>실과금 통합 테스트는 수동 실행</h4>
+          <p><code>AiReviewClientIntegrationTest</code>는 모델마다<br>실제 벤더에 요청 전송.<br><b>실행할 때마다 과금</b>되므로 자동 실행에서 제외.<br>
+            모델 교체
+            시에만 수동 실행.</p>
+        </div>
+      </div>
+      <div class="dtable rv">
+        <div class="drow"><span class="k">테스트 케이스 문서</span><span class="v">작성 중. 완료 시 이 자리에 문서 보기 버튼 추가 예정</span></div>
       </div>
     </div>
   </section>
@@ -859,10 +1203,11 @@
         </div>
         <div class="part">
           <div class="no">06</div>
-          <h4>프론트엔드</h4>
+          <h4>프론트엔드 (AI 활용)</h4>
           <ul>
             <li>인증(로그인·회원가입·OAuth 콜백·온보딩·2FA) 화면</li>
             <li>스튜디오·학습·성장 화면과 모바일 전용 화면 15개</li>
+            <li>Claude·Gemini·Figma로 시안·컴포넌트를 만들고<br>API 연동은 직접</li>
           </ul>
         </div>
       </div>
@@ -895,6 +1240,31 @@
   </script>
   <script src="../assets/docs-cogi.js"></script>
   <script src="../assets/docviewer.js"></script>
+
+  <div class="imglb" id="imglb" role="dialog" aria-modal="true" aria-label="확대 이미지"><button class="x"
+      aria-label="닫기">✕</button><img alt=""></div>
+  <script>
+    // 본문 사진을 누르면 원본 크기로 띄운다. 목업 프레임은 그대로 두고 안의 사진만 연다
+    (function () {
+      var lb = document.getElementById('imglb'), big = lb.querySelector('img');
+      document.querySelectorAll('.figure img, .browser .cap img, .mockimg').forEach(function (im) {
+        im.addEventListener('click', function () {
+          big.src = im.currentSrc || im.src; big.alt = im.alt || '';
+          lb.classList.add('open'); document.body.style.overflow = 'hidden';
+          // §7 누른 자리에서 자라나게 — 원점을 썸네일 중심에 맞춘다.
+          // 중앙에서 커지면 어디서 열렸는지 알 수 없다
+          var s = im.getBoundingClientRect(), b = big.getBoundingClientRect();
+          var ox = s.left + s.width / 2 - b.left, oy = s.top + s.height / 2 - b.top;
+          // 원본이 화면 밖이면 원점이 터무니없이 멀어진다 — 그때는 가운데에서 연다
+          var far = ox < -b.width || ox > b.width * 2 || oy < -b.height || oy > b.height * 2;
+          big.style.transformOrigin = far ? '50% 50%' : ox + 'px ' + oy + 'px';
+        });
+      });
+      function close() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+      lb.addEventListener('click', close);
+      addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+  </script>
 </body>
 
 </html>
