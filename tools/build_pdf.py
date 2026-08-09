@@ -76,6 +76,17 @@ SHOTS = {
     ]),
 }
 
+# 프로젝트마다 한 문장 쪽을 둔다. 무엇을 풀었는지 먼저 말하지 않으면
+# 뒤의 설계·트러블슈팅이 그냥 목록으로 읽힌다
+STATEMENT = {
+    'work': ('리뷰에서 지적받은 걸<br>다음 리뷰에서 또 지적받는다.',
+             '반복된 지적을 약점으로 모아 학습 카드와 퀴즈로 바꿨습니다.'),
+    'triplinker': ('AI가 짠 일정은 그럴듯하지만<br>실제로는 못 가는 동선이 나온다.',
+                   '생성은 AI에 맡기고 거리와 순서는 지도 API로 다시 잡았습니다.'),
+    'omong': ('키오스크 앞에서 한 번 멈추면<br>뒤에 줄이 선다.',
+              '말하거나 찍으면 주문 완료 화면까지 데려다줍니다.'),
+}
+
 TILE_SHOTS = {
     'stagepass':  ('sp-01-home.jpg',      '메인 — 추천 공연'),
     'windycamp':  ('wc-03-detail.jpg',    '상품 상세'),
@@ -385,8 +396,22 @@ def build_blocks():
                feat['device']),
             newpage=True, tag=tag))
 
+        # 한 문장 쪽 — 문제와 해결을 크게, 지표는 그 아래
+        q, a = STATEMENT[ch['sec']]
+        B.append(Block(
+            '<div class="det stmt" style="--brand:%s"><div class="stmtno">%s</div>'
+            '<p class="stmtq">%s</p><p class="stmta">%s</p>%s</div>'
+            % (brand, ch['no'], q, a, ovhtml),
+            newpage=True, tag=tag))
+
         kind, shots = SHOTS[ch['sec']]
-        B += pdfpages.shot_pages(kind, shots, brand, tag)
+        # 대표 화면 한 장을 크게 — 포트폴리오에서 화면이 주인공이다
+        f0, c0 = shots[0]
+        B.append(Block(
+            '<div class="det hero1" style="--brand:%s"><img src="assets/image/%s" alt="%s">'
+            '<div class="cap">%s</div></div>' % (brand, f0, c0, c0),
+            newpage=True, tag=tag))
+        B += pdfpages.shot_pages(kind, shots[1:], brand, tag)
 
         for sec in pj['sections'][1:]:
             B += pdfpages.section_pages(sec, brand, tag)
@@ -440,7 +465,7 @@ PRINT_CSS = '''
 html, body { background: #fff; margin: 0 }
 body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 
-.page { position: relative; width: 297mm; height: 210mm; overflow: hidden;
+.page { position: relative; width: 296.9mm; height: 209.6mm; overflow: hidden;
   box-sizing: border-box; padding: 82px 64px 60px; background: #fff;
   break-after: page; break-inside: avoid }
 .page:last-child { break-after: auto }
@@ -560,96 +585,107 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .chap .chips { margin-top: 18px }
 .chap .links { margin-top: 22px }
 
-/* ── 지면용 컴포넌트 ──────────────────────────────────────────
-   화면 컴포넌트를 그대로 옮기면 둥근 상자가 줄줄이 깔려 종이에서는
-   답답하다. 상자와 그림자를 걷고 괘선으로 묶는 편집 방식으로 바꾼다 */
-.pdfdoc .det .card, .pdfdoc .det .part, .pdfdoc .det .tsitem,
-.pdfdoc .det .dtable, .pdfdoc .det .feats, .pdfdoc .det .cards, .pdfdoc .det .parts,
-.pdfdoc .det .drow, .pdfdoc .det .feat, .pdfdoc .det .c {
-  background: none !important; border: 0 !important; border-radius: 0 !important;
-  box-shadow: none !important }
+/* ── 지면 컴포넌트 ────────────────────────────────────────────
+   괘선으로 가르지 않고 부드러운 면으로 묶는다. 여백을 넉넉히 두고
+   글자 크기 차이로 위계를 만든다. 테두리와 그림자는 쓰지 않는다 */
 .pdfdoc .det .card, .pdfdoc .det .part, .pdfdoc .det .tsitem {
-  border-top: 1px solid var(--ink) !important; padding: 15px 0 0 !important }
-.pdfdoc .det .drow, .pdfdoc .det .feat {
-  border-top: 1px solid var(--line) !important; padding: 12px 0 !important }
-.pdfdoc .det .dtable, .pdfdoc .det .feats, .pdfdoc .det .cards, .pdfdoc .det .parts {
-  padding: 0 !important; overflow: visible !important }
+  background: #f5f5f7 !important; border: 0 !important; border-radius: 20px !important;
+  padding: 22px 24px !important; box-shadow: none !important }
+.pdfdoc .det .cards, .pdfdoc .det .parts { gap: 16px !important; padding: 0 !important }
 .pdfdoc .det .card .n, .pdfdoc .det .part .no {
-  display: inline-block; font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  display: block; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
   color: var(--brand); font-weight: 700; background: none !important; padding: 0 !important;
-  margin-bottom: 7px }
+  margin-bottom: 9px }
 .pdfdoc .det .card h4, .pdfdoc .det .part h4 {
-  font-size: 15.5px; font-weight: 700; letter-spacing: -.018em; margin-bottom: 7px }
+  font-size: 17px; font-weight: 700; letter-spacing: -.024em; margin-bottom: 9px }
 .pdfdoc .det .card p, .pdfdoc .det .part li {
-  font-size: 12.6px; line-height: 1.66; color: var(--sub) }
-.pdfdoc .det .part ul { margin: 0; padding-left: 15px }
-.pdfdoc .det .drow .k { font-size: 11.5px; letter-spacing: .04em; color: var(--muted) }
-.pdfdoc .det .drow .v { font-size: 12.8px; line-height: 1.66 }
-.pdfdoc .det .feat b { display: block; font-size: 13.5px; font-weight: 700;
-  letter-spacing: -.015em; margin-bottom: 3px }
-.pdfdoc .det .feat { font-size: 12.4px; line-height: 1.6; color: var(--sub) }
+  font-size: 13.4px; line-height: 1.66; color: var(--sub); letter-spacing: -.004em }
+.pdfdoc .det .part ul { margin: 0; padding-left: 16px }
 
-/* 트러블슈팅 — 세 단계를 괘선으로 나누고 해결만 색을 준다 */
-.pdfdoc .det .tsitem .t { font-size: 15px; font-weight: 700; letter-spacing: -.018em;
-  margin-bottom: 11px }
-.pdfdoc .det .tsflow .b { background: none !important; border: 0 !important;
-  border-radius: 0 !important; border-left: 1px solid var(--line) !important;
-  padding: 0 0 0 14px !important }
-.pdfdoc .det .tsflow .b.res { border-left-color: var(--brand) !important }
-.pdfdoc .det .tsflow .lab { font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--muted); font-weight: 700; background: none !important; padding: 0 !important }
+/* 표 — 상자를 없애고 넓은 줄 간격으로 읽게 한다 */
+.pdfdoc .det .dtable { background: none !important; border: 0 !important;
+  border-radius: 0 !important; padding: 0 !important; overflow: visible !important }
+.pdfdoc .det .drow { background: none !important; border: 0 !important;
+  border-top: 1px solid rgba(0,0,0,.08) !important; border-radius: 0 !important;
+  padding: 16px 0 !important; box-shadow: none !important }
+.pdfdoc .det .drow .k { font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700 }
+.pdfdoc .det .drow .v { font-size: 13.6px; line-height: 1.66; letter-spacing: -.006em }
+
+/* 기능 — 면 하나에 두 줄 */
+.pdfdoc .det .feats { gap: 14px !important; padding: 0 !important;
+  background: none !important; border: 0 !important }
+.pdfdoc .det .feat { background: #f5f5f7 !important; border: 0 !important;
+  border-radius: 16px !important; padding: 16px 18px !important; font-size: 13px;
+  line-height: 1.6; color: var(--sub) }
+.pdfdoc .det .feat b { display: block; font-size: 14.5px; font-weight: 700;
+  letter-spacing: -.02em; color: var(--ink); margin-bottom: 4px }
+
+/* 트러블슈팅 — 세 단계를 면으로 나누고 해결에만 색을 얹는다 */
+.pdfdoc .det .tsitem .t { font-size: 17px; font-weight: 700; letter-spacing: -.024em;
+  margin-bottom: 14px }
+.pdfdoc .det .tsflow { gap: 12px !important }
+.pdfdoc .det .tsflow .b { background: #fff !important; border: 0 !important;
+  border-radius: 14px !important; padding: 14px 16px !important }
+.pdfdoc .det .tsflow .b.res { background: color-mix(in srgb, var(--brand) 9%, #fff) !important }
+.pdfdoc .det .tsflow .lab { font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; background: none !important; padding: 0 !important;
+  margin-bottom: 7px }
 .pdfdoc .det .tsflow .b.res .lab { color: var(--brand) }
-.pdfdoc .det .tsflow p { font-size: 12.2px; line-height: 1.64; color: var(--sub) }
+.pdfdoc .det .tsflow p { font-size: 12.8px; line-height: 1.62; color: var(--sub) }
 
-/* 지표 — 상자 대신 괘선. 숫자는 등폭으로 세로줄을 맞춘다 */
-.pdfdoc .det .ov { border: 0 !important; border-top: 1px solid var(--ink) !important;
-  border-radius: 0 !important; background: none !important; gap: 0 !important }
-.pdfdoc .det .ov .c { padding: 14px 0 0 !important; border-left: 0 !important }
-.pdfdoc .det .ov b { font-size: 34px; font-weight: 700; letter-spacing: -.045em;
+/* 지표 — 숫자를 크게 세우고 상자는 두지 않는다 */
+.pdfdoc .det .ov { border: 0 !important; border-radius: 0 !important;
+  background: none !important; gap: 0 !important }
+.pdfdoc .det .ov .c { padding: 0 !important; border: 0 !important }
+.pdfdoc .det .ov b { font-size: 46px; font-weight: 700; letter-spacing: -.05em;
   font-variant-numeric: tabular-nums; line-height: 1 }
-.pdfdoc .det .ov span { display: block; margin-top: 6px; font-size: 11.5px; color: var(--muted) }
-.pdfdoc .det .figure { border: 0 !important; border-radius: 0 !important;
-  background: none !important; padding: 0 !important }
-.pdfdoc .det .figure .cap { margin-top: 10px; font-size: 11.5px; color: var(--muted);
-  padding: 0 !important; border: 0 !important }
+.pdfdoc .det .ov span { display: block; margin-top: 8px; font-size: 12px;
+  letter-spacing: .02em; color: var(--muted) }
+
+/* 도식과 화면 — 부드러운 바탕 위에 둥근 미디어 */
+.pdfdoc .det .figure { border: 0 !important; border-radius: 22px !important;
+  background: #f5f5f7 !important; padding: 26px !important }
+.pdfdoc .det .figure img { border-radius: 10px }
+.pdfdoc .det .figure .cap { margin-top: 16px; font-size: 12px; color: var(--muted);
+  padding: 0 !important; border: 0 !important; text-align: center }
 .pdfdoc .det .rline { color: var(--brand) }
 .pdfdoc .det code { background: none !important; padding: 0 !important;
   color: var(--ink); font-weight: 600 }
 
-/* 화면 사진 — 액자 대신 얇은 괘선 하나 */
-.pf { border: 0 !important; border-radius: 0 !important; background: none !important }
-.pf img { border: 1px solid var(--line) }
-.pf figcaption { border: 0 !important; padding: 8px 0 0 !important; color: var(--muted) }
+.pf { border: 0 !important; border-radius: 22px !important;
+  background: #f5f5f7 !important; padding: 20px 20px 0 !important; overflow: hidden }
+.pf img { border-radius: 10px 10px 0 0; display: block }
+.pf figcaption { border: 0 !important; padding: 14px 4px !important; text-align: center;
+  font-size: 12px; color: var(--muted); background: none !important }
 
-/* 스킬 — 칩 대신 글자 굵기로 주력을 가른다. 알약 버튼은 화면의 언어다 */
-.skmatrix { border-top: 1px solid var(--line) }
-.smrow { display: grid; grid-template-columns: 148px 1fr; gap: 32px;
-  padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline }
-.smcat { font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--muted); font-weight: 700 }
-.smlist { display: flex; flex-wrap: wrap; gap: 6px 0 }
-.smlist span { font-size: 15px; letter-spacing: -.012em; line-height: 1.7 }
-.smlist span + span::before { content: "·"; color: var(--line); margin: 0 10px }
-.smk { font-weight: 700; color: var(--ink) }
-.smn { font-weight: 450; color: var(--muted) }
+/* 한 문장 쪽 — 여백을 크게 두고 활자로만 말한다 */
+.stmt { min-height: 600px; display: flex; flex-direction: column; justify-content: center;
+  padding: 0 40px }
+.stmtno { font-size: 12px; letter-spacing: .2em; color: var(--brand); font-weight: 700;
+  font-variant-numeric: tabular-nums; margin-bottom: 28px }
+.stmtq { font-size: 44px; line-height: 1.28; letter-spacing: -.04em; font-weight: 700;
+  color: var(--ink); max-width: 20ch }
+.stmta { margin-top: 26px; font-size: 19px; line-height: 1.6; letter-spacing: -.022em;
+  color: var(--sub); font-weight: 550; max-width: 34ch }
+.stmt .ov { margin-top: 52px; display: grid !important;
+  grid-template-columns: repeat(3, max-content) !important; gap: 0 72px !important }
 
-.skdrow { display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px }
-.skdrow + .skdrow { margin-top: 0 }
-.skd { padding: 15px 0; border-top: 1px solid var(--line) }
-.skd b { font-size: 15.5px; font-weight: 700; letter-spacing: -.015em }
-.skd i { font-style: normal; font-size: 11px; letter-spacing: .04em; color: var(--brand, var(--blue));
-  font-weight: 700; margin-left: 9px }
-.skd p { margin-top: 7px; font-size: 12.6px; line-height: 1.68; color: var(--sub) }
+/* 대표 화면 — 거의 전면으로 */
+.hero1 { background: #f5f5f7; border-radius: 24px; padding: 30px 30px 0;
+  box-sizing: border-box }
+.hero1 img { width: 100%; max-height: 520px; object-fit: contain; border-radius: 10px; display: block }
+.hero1 .cap { padding: 18px 0 26px; text-align: center; font-size: 12.5px; color: var(--muted) }
 
 /* 절 머리 — 제목 왼쪽, 리드 오른쪽. 지면 폭을 다 쓴다 */
-.sechd { display: grid; grid-template-columns: .82fr 1.5fr; gap: 48px; align-items: start;
-  padding-bottom: 20px; border-bottom: 1px solid var(--line) }
+.sechd { display: grid; grid-template-columns: .9fr 1.4fr; gap: 52px; align-items: start;
+  padding-bottom: 26px }
 .sechd .step { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
   color: var(--brand, var(--muted)); font-weight: 700 }
-.sechd .stitle { font-size: 40px; line-height: 1.02; letter-spacing: -.045em; margin-top: 10px }
+.sechd .stitle { font-size: 46px; line-height: 1.0; letter-spacing: -.045em; margin-top: 12px }
 .sectxt .rline { font-size: 14px; font-weight: 650; letter-spacing: -.012em;
   color: var(--brand, var(--ink)); margin-bottom: 9px }
-.sectxt .lead { font-size: 13.8px; line-height: 1.8; color: var(--sub) }
+.sectxt .lead { font-size: 14.6px; line-height: 1.72; color: var(--sub); letter-spacing: -.006em }
 
 /* 개요 — 왼쪽 글과 지표, 오른쪽 화면 */
 .ovpage { display: grid; grid-template-columns: 1.02fr 1fr; gap: 44px; align-items: start }
