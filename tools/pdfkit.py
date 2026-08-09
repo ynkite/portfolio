@@ -17,21 +17,23 @@ CHROME = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
 PAGE_W = 1122.5      # 297mm @96dpi
 PAGE_H = 793.7       # 210mm
-PAD_T, PAD_B, PAD_X = 48, 60, 64
-BODY_H = int(PAGE_H - PAD_T - PAD_B)   # 한 쪽에 담을 수 있는 높이
+PAD_T, PAD_B, PAD_X = 82, 60, 64
+SAFETY = 18   # 실측과 인쇄 사이의 미세한 오차분. 이만큼 비워 두면 잘리지 않는다
+BODY_H = int(PAGE_H - PAD_T - PAD_B) - SAFETY
 
 
 class Block:
     """한 쪽 안에서 쪼개지지 않는 덩어리."""
 
-    __slots__ = ('html', 'newpage', 'softpage', 'keepnext', 'tag', 'h')
+    __slots__ = ('html', 'newpage', 'softpage', 'keepnext', 'tag', 'head', 'h')
 
-    def __init__(self, html, newpage=False, keepnext=False, tag='', softpage=False):
+    def __init__(self, html, newpage=False, keepnext=False, tag='', softpage=False, head=None):
         self.html = html
         self.newpage = newpage      # 반드시 새 쪽에서 시작
         self.softpage = softpage    # 앞 쪽이 어느 정도 찼을 때만 새 쪽에서 시작
         self.keepnext = keepnext    # 다음 블록과 떨어지면 안 된다 (제목)
         self.tag = tag              # 바닥글에 쓸 장 이름
+        self.head = head            # 이어지는 쪽 머리에 쓸 (절 라벨, 절 이름)
         self.h = 0
 
 
@@ -155,6 +157,12 @@ def render_pages(pages, foot_title, budget=BODY_H):
         m = re.search(r'--brand:\s*(#[0-9a-fA-F]{3,8})', ''.join(b.html for b in page))
         if m:
             brand = ' style="--brand:%s"' % m.group(1)
+        # 절 머리가 없는 쪽에는 어디까지 왔는지 한 줄 얹는다.
+        # 흘러가는 문서가 아니라 한 판으로 읽히게 하는 장치다
+        lead_in = ''
+        if 'class="sechd"' not in page[0].html and page[0].head:
+            lead_in = ('<div class="runhd"><span class="step">%s</span>'
+                       '<span>%s</span></div>' % page[0].head)
         used = sum(b.h for b in page)
         gap = 0
         # 절반도 못 채운 쪽은 일부러 비워 둔 자리다. 억지로 늘리지 않는다
@@ -162,14 +170,17 @@ def render_pages(pages, foot_title, budget=BODY_H):
             gap = min((budget - used) / float(len(page) - 1), 34)
         foot = ('<div class="pfoot"><span>%s</span><span>%s</span>'
                 '<span>%02d / %02d</span></div>' % (foot_title, tag, n, total))
-        out.append('<section class="page"%s><div class="pgbody" style="gap:%.1fpx">%s</div>%s</section>'
-                   % (brand, gap, ''.join(b.html for b in page), foot))
+        out.append('<section class="page"%s>%s<div class="pgbody" style="gap:%.1fpx">%s</div>%s</section>'
+                   % (brand, lead_in, gap, ''.join(b.html for b in page), foot))
     return ''.join(out)
+
+
+LIMIT = int(PAGE_H - PAD_T - PAD_B)   # 실제로 쓸 수 있는 높이. 여기를 넘으면 잘린다
 
 
 def assert_fits(src, budget=None, chrome=CHROME):
     """인쇄 직전에 쪽마다 실제 높이를 재어 넘치는 쪽이 없는지 확인한다."""
-    budget = budget or BODY_H
+    budget = budget or LIMIT
     probe = ('<script>addEventListener("load",function(){document.fonts.ready.then(function(){'
              'var o=[];document.querySelectorAll(".pgbody").forEach(function(e,i){'
              'var h=Math.ceil(e.getBoundingClientRect().height);'

@@ -326,7 +326,7 @@ def build_blocks():
         '<div class="sechd"><div><div class="step">PROFILE</div><h2 class="stitle">프로필</h2></div>'
         '<div class="sectxt"><p class="lead">%s</p></div></div>' % ix['lead'],
         newpage=True, keepnext=True, tag='프로필'))
-    B.append(Block(ix['abgrid'], tag='프로필'))
+    B.append(Block(ix['abgrid'], tag='프로필', head=('PROFILE', '프로필')))
 
     # ── 스킬 : 칩을 걷고 글자 굵기로 주력을 가른다. 설명은 주력만
     cats, desc = pdfdoc.skills()
@@ -341,7 +341,7 @@ def build_blocks():
         '<div class="sectxt"><p class="lead">굵게 쓴 것이 주력입니다. 설명은 주력 열 개만 실었습니다.'
         '<br>나머지는 실무에서 쓸 수 있는 수준으로 익혔습니다.</p></div></div>',
         newpage=True, keepnext=True, tag='스킬'))
-    B.append(Block('<div class="skmatrix">%s</div>' % rows, tag='스킬'))
+    B.append(Block('<div class="skmatrix">%s</div>' % rows, tag='스킬', head=('SKILLS', '스킬')))
 
     core = [(sid, desc[sid]) for c in cats for sid, _, k in c['items'] if k and sid in desc]
     B.append(Block('<h3 class="pgh">주력 스킬</h3>', softpage=True, keepnext=True, tag='스킬'))
@@ -349,7 +349,7 @@ def build_blocks():
         cells = ''.join(
             '<div class="skd"><b>%s</b><i>%s</i><p>%s</p></div>' % (d['name'], d['level'], d['text'])
             for _, d in pair)
-        B.append(Block('<div class="skdrow">%s</div>' % cells, tag='스킬'))
+        B.append(Block('<div class="skdrow">%s</div>' % cells, tag='스킬', head=('SKILLS', '주력 스킬')))
 
     # ── 자격증 · 수상 · 교육
     B.append(Block(
@@ -361,7 +361,7 @@ def build_blocks():
     for f in ix['folds']:
         f = f.replace('<details class="fold"', '<details open class="fold"')
         f = re.sub(r'\sname="credits"', '', f)   # 배타 아코디언이면 하나만 열린다
-        B.append(Block(f, tag='자격증 · 수상'))
+        B.append(Block(f, tag='자격증 · 수상', head=('CREDITS', '자격증 · 수상 · 교육')))
 
     # ── 프로젝트 세 장
     for ch in CHAPTERS:
@@ -408,7 +408,7 @@ def build_blocks():
         tiles.append(el)
     for part in pdfpages.chunk(tiles, 2):
         B.append(Block('<div class="tiles pairtile">%s</div>' % ''.join(part),
-                       newpage=True, tag='더 많은 작업'))
+                       newpage=True, tag='더 많은 작업', head=('MORE WORK', '더 많은 작업')))
 
     # ── 링크
     B.append(Block(
@@ -417,7 +417,7 @@ def build_blocks():
         '<div class="sectxt"><p class="lead">소스와 커밋 기록은 GitHub에, 트러블슈팅은 블로그에 정리했습니다.'
         '<br>채용 문의는 메일이 가장 빠릅니다.</p></div></div>',
         newpage=True, keepnext=True, tag='링크'))
-    B.append(Block(ix['archcards'], tag='링크'))
+    B.append(Block(ix['archcards'], tag='링크', head=('LINK', '링크 · 연락처')))
 
     for b in B:
         b.html = re.sub(r'<button class="(?:pbtn|tbtn)"[^>]*data-lb="[^"]*"[^>]*>.*?</button>',
@@ -441,12 +441,21 @@ html, body { background: #fff; margin: 0 }
 body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 
 .page { position: relative; width: 297mm; height: 210mm; overflow: hidden;
-  box-sizing: border-box; padding: 48px 64px 60px; background: #fff;
+  box-sizing: border-box; padding: 82px 64px 60px; background: #fff;
   break-after: page; break-inside: avoid }
 .page:last-child { break-after: auto }
 .page.bleed { padding: 0 }
 .pgbody { display: flex; flex-direction: column }
 .pgbody > * { flex: none }
+
+/* 이어지는 쪽 머리 — 여기가 어느 절인지 한 줄로 알린다 */
+.runhd { position: absolute; top: 46px; left: 64px; right: 64px;
+  display: flex; gap: 14px; align-items: baseline;
+  border-bottom: 1px solid var(--line); padding-bottom: 9px }
+.runhd .step { font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--brand, var(--muted)); font-weight: 700 }
+.runhd span:nth-child(2) { font-size: 12.5px; font-weight: 650;
+  letter-spacing: -.012em; color: var(--sub) }
 
 /* 바닥글 — 어디에 있는지 늘 답한다 (§16 길찾기) */
 .pfoot { position: absolute; left: 64px; right: 64px; bottom: 24px;
@@ -513,20 +522,20 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .cvmeta a { color: var(--blue); font-weight: 650 }
 
 /* 목차 */
-.tochd { margin-bottom: 26px }
+.tochd { margin-bottom: 20px }
 .tochd .kick { display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
   color: var(--muted); margin-bottom: 8px }
 .tochd h2 { font-size: 40px; letter-spacing: -.04em; line-height: 1 }
 .tocgrid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 54px }
 .toclist { list-style: none; counter-reset: t; margin: 0; padding: 0 }
-.toclist li { counter-increment: t; padding: 13px 0; border-bottom: 1px solid var(--line) }
+.toclist li { counter-increment: t; padding: 10px 0; border-bottom: 1px solid var(--line) }
 .toclist li::before { content: counter(t, decimal-leading-zero); font-size: 11px; font-weight: 700;
   color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 14px }
 .toclist b { font-size: 16.5px; font-weight: 650; letter-spacing: -.012em }
 .toclist span { display: block; margin: 4px 0 0 32px; font-size: 12.5px; color: var(--muted) }
 .tocside { border-left: 1px solid var(--line); padding-left: 34px }
-.tsblk { padding: 12px 0; border-bottom: 1px solid var(--line) }
-.tsblk b { display: block; font-size: 30px; font-weight: 700; letter-spacing: -.04em;
+.tsblk { padding: 10px 0; border-bottom: 1px solid var(--line) }
+.tsblk b { display: block; font-size: 27px; font-weight: 700; letter-spacing: -.04em;
   font-variant-numeric: tabular-nums; line-height: 1 }
 .tsblk span { display: block; margin-top: 5px; font-size: 12px; line-height: 1.5; color: var(--muted) }
 .tsnote { margin-top: 18px; font-size: 11.5px; line-height: 1.65; color: var(--muted) }
@@ -645,13 +654,18 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 /* 개요 — 왼쪽 글과 지표, 오른쪽 화면 */
 .ovpage { display: grid; grid-template-columns: 1.02fr 1fr; gap: 44px; align-items: start }
 .ovpage .tech { margin-top: 16px }
-.ovpage .tech li { font-size: 12.2px; line-height: 1.56 }
+.ovpage .tech li { font-size: 11.8px; line-height: 1.5; margin-bottom: 4px }
 .ovpage .step { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
   color: var(--brand); font-weight: 700 }
-.ovpage .stitle { font-size: 38px; line-height: 1.02; letter-spacing: -.045em; margin: 10px 0 14px }
+.ovpage .stitle { font-size: 34px; line-height: 1.02; letter-spacing: -.045em; margin: 8px 0 12px }
 .ovpage .rline { font-size: 14px; font-weight: 650; color: var(--brand); margin-bottom: 10px }
-.ovpage .lead { font-size: 13.2px; line-height: 1.72; color: var(--sub); margin-bottom: 16px }
-.ovpage .ovshot { justify-self: end }
+.ovpage .lead { font-size: 12.8px; line-height: 1.68; color: var(--sub); margin-bottom: 14px }
+.ovpage .ovshot { justify-self: stretch; align-self: center }
+/* 좁은 단에서 목업 둘을 나란히 두면 세로로 접혀 지면을 먹는다.
+   개요에는 큰 화면 하나만 싣고 폰만 있는 프로젝트는 그대로 둔다 */
+.ovpage .ovshot .browser + .mockimg { display: none }
+.ovpage .ovshot .browser { max-width: 100% !important }
+.ovpage .ovshot .mockimg { max-width: 210px !important; margin: 0 auto }
 
 /* 쪽 단위 격자 — 개수를 정해 두었으니 폭은 균등하게 */
 .pgcards, .pgparts { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px }
