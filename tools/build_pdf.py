@@ -344,7 +344,7 @@ def build_blocks():
     B.append(Block('<div class="skmatrix">%s</div>' % rows, tag='스킬', head=('SKILLS', '스킬')))
 
     core = [(sid, desc[sid]) for c in cats for sid, _, k in c['items'] if k and sid in desc]
-    B.append(Block('<h3 class="pgh">주력 스킬</h3>', softpage=True, keepnext=True, tag='스킬'))
+    B.append(Block('<h3 class="pgh">주력 스킬</h3>', keepnext=True, tag='스킬', head=('SKILLS','주력 스킬')))
     for pair in pdfpages.chunk(core, 2):
         cells = ''.join(
             '<div class="skd"><b>%s</b><i>%s</i><p>%s</p></div>' % (d['name'], d['level'], d['text'])
