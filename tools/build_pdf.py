@@ -328,16 +328,28 @@ def build_blocks():
         newpage=True, keepnext=True, tag='프로필'))
     B.append(Block(ix['abgrid'], tag='프로필'))
 
-    # ── 스킬 : 칩 한 쪽, 설명은 두 단으로
+    # ── 스킬 : 칩을 걷고 글자 굵기로 주력을 가른다. 설명은 주력만
+    cats, desc = pdfdoc.skills()
+    rows = ''
+    for c in cats:
+        names = ''.join(
+            '<span class="%s">%s</span>' % ('smk' if k else 'smn', n) for _, n, k in c['items'])
+        rows += '<div class="smrow"><div class="smcat">%s</div><div class="smlist">%s</div></div>' % (
+            c['name'], names)
     B.append(Block(
         '<div class="sechd"><div><div class="step">SKILLS</div><h2 class="stitle">스킬</h2></div>'
-        '<div class="sectxt"><p class="lead">%s</p></div></div>' % ix['sknote'],
+        '<div class="sectxt"><p class="lead">굵게 쓴 것이 주력입니다. 설명은 주력 열 개만 실었습니다.'
+        '<br>나머지는 실무에서 쓸 수 있는 수준으로 익혔습니다.</p></div></div>',
         newpage=True, keepnext=True, tag='스킬'))
-    B.append(Block(ix['skcols'], tag='스킬'))
-    for n, part in enumerate(pdfpages.chunk(ix['skp'], 8)):
-        head = '<h3 class="pgh">스킬별 설명</h3>' if n == 0 else ''
-        B.append(Block('%s<div class="skpanel pgskp">%s</div>' % (head, ''.join(part)),
-                       newpage=True, tag='스킬'))
+    B.append(Block('<div class="skmatrix">%s</div>' % rows, tag='스킬'))
+
+    core = [(sid, desc[sid]) for c in cats for sid, _, k in c['items'] if k and sid in desc]
+    B.append(Block('<h3 class="pgh">주력 스킬</h3>', softpage=True, keepnext=True, tag='스킬'))
+    for pair in pdfpages.chunk(core, 2):
+        cells = ''.join(
+            '<div class="skd"><b>%s</b><i>%s</i><p>%s</p></div>' % (d['name'], d['level'], d['text'])
+            for _, d in pair)
+        B.append(Block('<div class="skdrow">%s</div>' % cells, tag='스킬'))
 
     # ── 자격증 · 수상 · 교육
     B.append(Block(
@@ -538,6 +550,87 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
   font-size: 13px; color: var(--muted); letter-spacing: .01em }
 .chap .chips { margin-top: 18px }
 .chap .links { margin-top: 22px }
+
+/* ── 지면용 컴포넌트 ──────────────────────────────────────────
+   화면 컴포넌트를 그대로 옮기면 둥근 상자가 줄줄이 깔려 종이에서는
+   답답하다. 상자와 그림자를 걷고 괘선으로 묶는 편집 방식으로 바꾼다 */
+.pdfdoc .det .card, .pdfdoc .det .part, .pdfdoc .det .tsitem,
+.pdfdoc .det .dtable, .pdfdoc .det .feats, .pdfdoc .det .cards, .pdfdoc .det .parts,
+.pdfdoc .det .drow, .pdfdoc .det .feat, .pdfdoc .det .c {
+  background: none !important; border: 0 !important; border-radius: 0 !important;
+  box-shadow: none !important }
+.pdfdoc .det .card, .pdfdoc .det .part, .pdfdoc .det .tsitem {
+  border-top: 1px solid var(--ink) !important; padding: 15px 0 0 !important }
+.pdfdoc .det .drow, .pdfdoc .det .feat {
+  border-top: 1px solid var(--line) !important; padding: 12px 0 !important }
+.pdfdoc .det .dtable, .pdfdoc .det .feats, .pdfdoc .det .cards, .pdfdoc .det .parts {
+  padding: 0 !important; overflow: visible !important }
+.pdfdoc .det .card .n, .pdfdoc .det .part .no {
+  display: inline-block; font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--brand); font-weight: 700; background: none !important; padding: 0 !important;
+  margin-bottom: 7px }
+.pdfdoc .det .card h4, .pdfdoc .det .part h4 {
+  font-size: 15.5px; font-weight: 700; letter-spacing: -.018em; margin-bottom: 7px }
+.pdfdoc .det .card p, .pdfdoc .det .part li {
+  font-size: 12.6px; line-height: 1.66; color: var(--sub) }
+.pdfdoc .det .part ul { margin: 0; padding-left: 15px }
+.pdfdoc .det .drow .k { font-size: 11.5px; letter-spacing: .04em; color: var(--muted) }
+.pdfdoc .det .drow .v { font-size: 12.8px; line-height: 1.66 }
+.pdfdoc .det .feat b { display: block; font-size: 13.5px; font-weight: 700;
+  letter-spacing: -.015em; margin-bottom: 3px }
+.pdfdoc .det .feat { font-size: 12.4px; line-height: 1.6; color: var(--sub) }
+
+/* 트러블슈팅 — 세 단계를 괘선으로 나누고 해결만 색을 준다 */
+.pdfdoc .det .tsitem .t { font-size: 15px; font-weight: 700; letter-spacing: -.018em;
+  margin-bottom: 11px }
+.pdfdoc .det .tsflow .b { background: none !important; border: 0 !important;
+  border-radius: 0 !important; border-left: 1px solid var(--line) !important;
+  padding: 0 0 0 14px !important }
+.pdfdoc .det .tsflow .b.res { border-left-color: var(--brand) !important }
+.pdfdoc .det .tsflow .lab { font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; background: none !important; padding: 0 !important }
+.pdfdoc .det .tsflow .b.res .lab { color: var(--brand) }
+.pdfdoc .det .tsflow p { font-size: 12.2px; line-height: 1.64; color: var(--sub) }
+
+/* 지표 — 상자 대신 괘선. 숫자는 등폭으로 세로줄을 맞춘다 */
+.pdfdoc .det .ov { border: 0 !important; border-top: 1px solid var(--ink) !important;
+  border-radius: 0 !important; background: none !important; gap: 0 !important }
+.pdfdoc .det .ov .c { padding: 14px 0 0 !important; border-left: 0 !important }
+.pdfdoc .det .ov b { font-size: 34px; font-weight: 700; letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums; line-height: 1 }
+.pdfdoc .det .ov span { display: block; margin-top: 6px; font-size: 11.5px; color: var(--muted) }
+.pdfdoc .det .figure { border: 0 !important; border-radius: 0 !important;
+  background: none !important; padding: 0 !important }
+.pdfdoc .det .figure .cap { margin-top: 10px; font-size: 11.5px; color: var(--muted);
+  padding: 0 !important; border: 0 !important }
+.pdfdoc .det .rline { color: var(--brand) }
+.pdfdoc .det code { background: none !important; padding: 0 !important;
+  color: var(--ink); font-weight: 600 }
+
+/* 화면 사진 — 액자 대신 얇은 괘선 하나 */
+.pf { border: 0 !important; border-radius: 0 !important; background: none !important }
+.pf img { border: 1px solid var(--line) }
+.pf figcaption { border: 0 !important; padding: 8px 0 0 !important; color: var(--muted) }
+
+/* 스킬 — 칩 대신 글자 굵기로 주력을 가른다. 알약 버튼은 화면의 언어다 */
+.skmatrix { border-top: 1px solid var(--line) }
+.smrow { display: grid; grid-template-columns: 148px 1fr; gap: 32px;
+  padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline }
+.smcat { font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700 }
+.smlist { display: flex; flex-wrap: wrap; gap: 6px 0 }
+.smlist span { font-size: 15px; letter-spacing: -.012em; line-height: 1.7 }
+.smlist span + span::before { content: "·"; color: var(--line); margin: 0 10px }
+.smk { font-weight: 700; color: var(--ink) }
+.smn { font-weight: 450; color: var(--muted) }
+
+.skdrow { display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px }
+.skdrow + .skdrow { margin-top: 0 }
+.skd { padding: 15px 0; border-top: 1px solid var(--line) }
+.skd b { font-size: 15.5px; font-weight: 700; letter-spacing: -.015em }
+.skd i { font-style: normal; font-size: 11px; letter-spacing: .04em; color: var(--brand, var(--blue));
+  font-weight: 700; margin-left: 9px }
+.skd p { margin-top: 7px; font-size: 12.6px; line-height: 1.68; color: var(--sub) }
 
 /* 절 머리 — 제목 왼쪽, 리드 오른쪽. 지면 폭을 다 쓴다 */
 .sechd { display: grid; grid-template-columns: .82fr 1.5fr; gap: 48px; align-items: start;
@@ -747,8 +840,7 @@ def head_html(extra_css):
     det = scope(style_of(read('projects/cogi.html')), '.det')
     det += scope(style_of(read('projects/omong.html')), '.det')
     return ('<title>정상연 — 백엔드 개발자 포트폴리오</title>'
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/'
-            'dist/web/variable/pretendardvariable-dynamic-subset.min.css">'
+            '<link rel="stylesheet" href="assets/font/pretendard.css">'
             '<style>%s\n%s\n%s</style>' % (base, det, extra_css))
 
 
@@ -756,8 +848,7 @@ def docs_head():
     base = style_of(read('index.html'))
     root = re.search(r':root\s*\{(.*?)\}', base, re.S).group(1)
     return ('<title>정상연 — 포트폴리오 산출물</title>'
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/'
-            'dist/web/variable/pretendardvariable-dynamic-subset.min.css">'
+            '<link rel="stylesheet" href="assets/font/pretendard.css">'
             '<style>:root{%s}%s</style>' % (root, DOCS_CSS))
 
 
@@ -792,6 +883,8 @@ def main():
     print('본편')
     src, n = compose(build_blocks(), head_html(PRINT_CSS + FIT_CSS),
                      '정상연 · 포트폴리오', '_measure.html', '_pdf.html')
+    bad = pdfkit.assert_fits(src)
+    print('  넘치는 쪽 %s' % (', '.join(bad) if bad else '없음'))
     size, pg = pdfkit.print_pdf(src, os.path.join(OUT, MAIN_PDF))
     print('  %s  %.1fMB  %d쪽 (조판 %d쪽)' % (MAIN_PDF, size / 1048576.0, pg, n))
 

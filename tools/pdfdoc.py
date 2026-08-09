@@ -133,6 +133,27 @@ def project(path):
     return out
 
 
+def skills():
+    """스킬을 분류·주력 여부와 함께 뽑고, 설명은 주력만 남긴다."""
+    s = read('index.html')
+    sk = s[s.index('<div class="skcols'):s.index('<div class="skpanel')]
+    cats = []
+    for m in re.finditer(r'<div class="skcol">\s*<h4>(.*?)</h4>(.*?)(?=<div class="skcol">|$)', sk, re.S):
+        items = [(sid, name.strip(), 'core' in cls)
+                 for cls, sid, name in re.findall(
+                     r'<button class="(sk[^"]*)" data-sk="([^"]+)">([^<]+)', m.group(2))]
+        cats.append({'name': m.group(1).strip(), 'items': items})
+
+    panel = grab(s[s.index('<div class="skpanel'):], '<div class="skpanel')
+    desc = {}
+    for el in children(panel):
+        sid = one(r'id="sk-([^"]+)"', el)
+        desc[sid] = {'name': one(r'<b>(.*?)<i>', el),
+                     'level': one(r'<i>(.*?)</i>', el),
+                     'text': one(r'<p>(.*?)</p>', el)}
+    return cats, desc
+
+
 # ─────────────────────────── 메인 페이지 ───────────────────────────
 
 def index_parts():

@@ -83,10 +83,12 @@ def attr(el, name):
 
 def measure_html(body, head, tmp, chrome=CHROME):
     """data-bid가 붙은 요소들의 높이를 한 번에 잰다."""
-    probe = ('<script>addEventListener("load",function(){var o={};'
+    # 글꼴이 붙은 뒤에 재야 한다. 대체 글꼴로 재면 인쇄본과 높이가 어긋나 잘린다
+    probe = ('<script>addEventListener("load",function(){'
+             'document.fonts.ready.then(function(){var o={};'
              'document.querySelectorAll("[data-bid]").forEach(function(e){'
              'o[e.dataset.bid]=Math.ceil(e.getBoundingClientRect().height)});'
-             'document.title="MEAS"+JSON.stringify(o)});</script>')
+             'document.title="MEAS"+JSON.stringify(o)})});</script>')
     css = ('<style>.mpage{width:%dpx;padding:0 %dpx;box-sizing:border-box}'
            '.mblk{overflow:hidden}</style>' % (PAGE_W, PAD_X))
     io.open(tmp, 'w', encoding='utf-8', newline='').write(
@@ -163,6 +165,29 @@ def render_pages(pages, foot_title, budget=BODY_H):
         out.append('<section class="page"%s><div class="pgbody" style="gap:%.1fpx">%s</div>%s</section>'
                    % (brand, gap, ''.join(b.html for b in page), foot))
     return ''.join(out)
+
+
+def assert_fits(src, budget=None, chrome=CHROME):
+    """인쇄 직전에 쪽마다 실제 높이를 재어 넘치는 쪽이 없는지 확인한다."""
+    budget = budget or BODY_H
+    probe = ('<script>addEventListener("load",function(){document.fonts.ready.then(function(){'
+             'var o=[];document.querySelectorAll(".pgbody").forEach(function(e,i){'
+             'var h=Math.ceil(e.getBoundingClientRect().height);'
+             'if(h>%d)o.push((i+1)+":"+h)});'
+             'document.title="FIT["+o.join(",")+"]"})});</script>' % budget)
+    tmp = src.replace('.html', '_fit.html')
+    io.open(tmp, 'w', encoding='utf-8', newline='').write(
+        io.open(src, encoding='utf-8').read().replace('</body>', probe + '</body>'))
+    out = subprocess.run(
+        [chrome, '--headless=new', '--disable-gpu', '--no-sandbox',
+         '--user-data-dir=' + os.path.join(os.environ.get('TEMP', '.'), 'cr_fit'),
+         '--window-size=%d,%d' % (PAGE_W, PAGE_H), '--virtual-time-budget=90000',
+         '--dump-dom', 'file:///' + tmp.replace(os.sep, '/')],
+        capture_output=True).stdout.decode('utf-8', 'replace')
+    os.remove(tmp)
+    m = re.search(r'<title>FIT\[(.*?)\]</title>', out, re.S)
+    bad = [x for x in (m.group(1).split(',') if m and m.group(1) else []) if x]
+    return bad
 
 
 def print_pdf(src, out, chrome=CHROME):
