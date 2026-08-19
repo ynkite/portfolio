@@ -240,14 +240,14 @@ COVER = '''<div class="cvwrap">
 </div>'''
 
 TOC_ROWS = [
-    ('프로필', '이름 · 학력 · 스킬 · 경력 · 연락처'),
-    ('스킬', 'Backend · AI · DB · Frontend, 칩별 설명 21건'),
+    ('프로필', '이름 · 학력 · 교육 · 경력 · 연락처'),
+    ('스킬', 'Backend · AI · DB · Infra · Frontend'),
     ('자격증 · 수상 · 교육', '자격증 5 · 경진대회 8 · KDT 1024h'),
     ('01 COGI', 'AI 코드리뷰 학습 플랫폼 — 개요 · 실제 화면 6장 · 상세'),
     ('02 TripLinker', 'AI 여행 플래너 — 개요 · 실제 화면 6장 · 상세'),
     ('03 오몽', '키오스크 도우미 — 개요 · 실제 화면 6장 · 상세'),
     ('04 더 많은 작업', 'StagePass · WindyCamp · DEVICE SHOP · PetVillage · Triplan · Analyze Festa'),
-    ('링크 · 연락처', ''),
+    ('링크 · 연락처', '010-4211-3521 · j.sangyeon6@gmail.com'),
 ]
 
 
@@ -263,25 +263,43 @@ def toc_html():
       <div class="tsblk"><b>2</b><span>팀장을 맡은<br>프로젝트</span></div>
       <div class="tsblk"><b>1024h</b><span>대우능력개발원<br>KDT 이수</span></div>
       <div class="tsblk"><b>8회</b><span>교내외<br>경진대회 수상</span></div>
-      <p class="tsnote">산출물 문서는 17종 1,526행입니다.
-        요구사항 정의서, 기능 정의서, WBS, API 명세서, 테이블 정의서, 테스트 케이스, AI 활용 로그.
-        분량이 커서 별첨 <a href="%s">「포트폴리오_정상연_산출물.pdf」</a>로 나눴습니다.</p>
     </aside>
   </div>
-</div>''' % (rows, DOCS_URL)
+</div>''' % rows
 
 
 CH_TOC = '개요 · 실제 화면 · 분석 · 설계 · 개발 · 배포와 테스트 · 담당 파트 · 트러블슈팅 · 주요 기능'
 
 
 def chapter_html(no, name, brand, kick, desc, meta, chips, links, toc=CH_TOC):
+    """장 표지. 제목은 위, 기간·기술·링크는 아래 가로대에 세 칸으로 세운다.
+
+    알약 칩을 흘려 두면 줄이 들쭉날쭉하게 접히고, 버튼을 가운데 두면
+    지면이 슬라이드처럼 보인다. 활자로 가르고 왼쪽에 맞춘다.
+    """
+    stack = ' · '.join(re.findall(r'<span[^>]*>(.*?)</span>', chips)) if chips else ''
+    cells = []
+    if meta:
+        bits = [x.strip() for x in re.split(r'\s*\|\s*', re.sub(r'<[^>]+>', '', meta)) if x.strip()]
+        # 칸이 좁으면 줄로 쌓고, 가로대를 혼자 쓰면 한 줄로 편다
+        cells.append(('기간 · 팀', (' · ' if not (stack or links) else '<br>').join(bits)))
+    if stack:
+        cells.append(('기술', stack))
+    rail = ''.join('<div class="chcell"><b>%s</b><span>%s</span></div>' % kv for kv in cells)
+    n = len(cells)
+    if links:
+        rail += '<div class="chcell chlinks"><b>링크</b>%s</div>' % links
+        n += 1
+    # 칸 수는 장마다 다르다. 세 칸으로 못 박으면 기술·링크가 없는 장에서
+    # 오른쪽 두 칸이 빈 채로 남아 가로대가 한쪽으로 쏠린다
+    cols = {1: '1fr', 2: '240px 1fr'}.get(n, '190px 1fr 220px')
+    rail = '<div class="chrail" style="grid-template-columns:%s">%s</div>' % (cols, rail)
     return ('<div class="det chapwrap" style="--brand:%s"><div class="chap">'
             '<div class="chno">%s</div>'
             '<div class="chbody"><div class="chkick">%s</div><h2>%s</h2>'
-            '<div class="chdesc">%s</div><div class="chmeta">%s</div>'
-            '%s%s</div></div>'
+            '<div class="chdesc">%s</div></div></div>%s'
             '<div class="chtoc"><b>이 장의 구성</b><span>%s</span></div></div>'
-            % (brand, no, kick, name, desc, meta, chips, links, toc))
+            % (brand, no, kick, name, desc, rail, toc))
 
 
 # ─────────────────────────── 블록 만들기 ───────────────────────────
@@ -320,8 +338,204 @@ def maybe_chunk(el):
     return [el]
 
 
+DOC_KEYS = ('req', 'func', 'wbs', 'api')
+DOC_JS = {'work': 'cogi', 'triplinker': 'tl', 'omong': 'om'}
+
+
+def docs_page(sec, brand, tag, head=None):
+    """산출물 네 종을 한 쪽에 4분할로 싣는다.
+
+    읽히라고 넣는 지면이 아니다. 이런 문서를 실제로 썼다는 것만 보이면 된다.
+    그래서 글자는 작게 두고 넘치는 부분은 지면에서 잘라 낸다.
+    전문은 별첨 PDF에 있다.
+    """
+    d = pdfdoc.docsets(DOC_JS[sec])
+    sheets = ''
+    for k in DOC_KEYS:
+        s = d.get(k)
+        if not s:
+            continue
+        thead = ''.join('<th>%s</th>' % esc(h) for h in s['head'])   # 인자 head 와 겹치지 않게
+        n = len(s['head'])
+        body = ''
+        # 행은 세 가지 꼴이다 — 칸 목록, 색을 입힌 {'c': [...]}, 묶음 제목 {'g': ...}.
+        # 그대로 훑으면 키 이름만 찍혀 빈 표로 보인다
+        for r in s['rows'][:22]:
+            if isinstance(r, dict) and 'g' in r:
+                body += '<tr><td class="dpg" colspan="%d">%s</td></tr>' % (n, esc(r['g']))
+                continue
+            cs = r['c'] if isinstance(r, dict) else r
+            body += '<tr>%s</tr>' % ''.join('<td>%s</td>' % esc(c) for c in cs)
+        sheets += ('<div class="dpcell"><div class="dphd"><b>%s</b>'
+                   '<span>%d행</span></div><div class="dpsheet">'
+                   '<table><thead><tr>%s</tr></thead><tbody>%s</tbody></table>'
+                   '</div></div>' % (esc(s['label']), len(s['rows']), thead, body))
+    return ('<div class="det fillblk dpage" style="--brand:%s">%s'
+            '<div class="dpgrid">%s</div></div>'
+            % (brand,
+               head or sechd('DOCUMENTS', '산출물',
+                             '요구사항 정의서 · 기능 정의서 · WBS · API 명세서를 직접 작성했습니다.<br>'
+                             '전문은 별첨 「포트폴리오_정상연_산출물.pdf」에 실었습니다.'),
+               sheets))
+
+
+def shot_dims(shots):
+    """화면 사진의 원래 크기. 자르지 않고 지면에 앉히려면 비율을 알아야 한다."""
+    out = {}
+    for f, _ in shots:
+        with Image.open(os.path.join(ROOT, 'assets', 'image', f)) as im:
+            out[f] = im.size
+    return out
+
+
 def wrap_det(html, brand):
     return '<div class="det" style="--brand:%s"><div class="wrap">%s</div></div>' % (brand, html)
+
+
+# 절이 끝났다는 신호. 쉼표는 이 어미 뒤에 올 때만 줄을 넘긴다.
+# 모든 쉼표에서 넘기면 "인증·보안, AI 일정 생성, 경로·동선," 같은 나열이
+# 낱줄로 흩어진다
+CONNECT = re.compile(r'(?:고|며|면서|지만|는데|아서|어서|해서|하여|되어|따라)\s*,\s+(?=\S)')
+
+
+def brk(html):
+    """뜻이 끝나는 자리에서만 줄을 넘긴다.
+
+    폭에 맡기면 "…학습 카드와 퀴즈로 / 만들어 주는 서비스입니다" 처럼
+    문장 한가운데가 끊긴다. 마침표 뒤와 연결 어미 뒤에서만 넘긴다.
+    """
+    if not html:
+        return html
+    s = re.sub(r'<br\s*/?>', ' ', html)          # 사이트가 박아 둔 줄바꿈은 걷는다
+    s = re.sub(r'\s+', ' ', s).strip()
+    # 숫자 사이 마침표(43.202.36.123)는 뒤에 공백이 없으므로 걸리지 않는다
+    s = re.sub(r'(?<=\.)\s+(?=\S)', '<br>', s)
+    return CONNECT.sub(lambda m: m.group(0).rstrip()[:-1] + ',<br>', s)
+
+
+def clauses(html):
+    """쉼표·마침표를 경계로 조각내 각 조각을 한 덩어리로 묶는다.
+
+    줄이 넘칠 때 브라우저가 조각 사이에서만 끊으므로 줄 끝이 늘 `,` 나 `.` 이
+    된다. 한 조각이 줄보다 길면 그 안에서 접히니 넘쳐 잘릴 일은 없다.
+    태그 밖 글자만 자른다 — <code> 안이나 속성값을 건드리면 마크업이 깨진다.
+    """
+    if not html or '<' == html.strip()[:1] and '>' not in html:
+        return html
+    out, buf, depth, i = [], '', 0, 0
+    while i < len(html):
+        c = html[i]
+        if c == '<':
+            depth += 1
+        elif c == '>':
+            depth -= 1
+        buf += c
+        if depth == 0 and c in ',.' and i + 1 < len(html) and html[i + 1] == ' ':
+            out.append(buf)
+            buf = ''
+            i += 1          # 조각 사이 공백은 버린다. inline-block 이 간격을 만든다
+        i += 1
+    if buf:
+        out.append(buf)
+    if len(out) < 2:
+        return html
+    return ' '.join('<span class="cl">%s</span>' % x.strip() for x in out if x.strip())
+
+
+def run_head(sec):
+    return (sec['step'], sec['title'])
+
+
+def sechd(step, title, lead):
+    return ('<div class="sechd"><div><div class="step">%s</div>'
+            '<h2 class="stitle">%s</h2></div>'
+            '<div class="sectxt"><p class="lead">%s</p></div></div>' % (step, title, lead))
+
+
+# ─────────────────── 프로필 · 스킬 · 자격증 지면 ───────────────────
+
+def profile_page(lead):
+    """이름·연락처를 왼쪽 기둥에, 이력을 오른쪽 표에 세운다.
+
+    사이트의 3×3 표를 그대로 옮기면 지면에서 서식 문서로 읽힌다.
+    값은 그대로 두고 지면 구조만 새로 짠다.
+    """
+    p = pdfdoc.profile()
+    name = p.get('이름', '')
+    kr = name.split('(')[0].strip()
+    en = name[name.find('(') + 1:name.rfind(')')].strip() if '(' in name else ''
+    parts = [x.strip() for x in p.get('연락처', '').split('·')]
+    mail = next((x for x in parts if '@' in x), '')
+    tel = next((x for x in parts if '@' not in x), '')
+    contact = [('메일', mail), ('전화', tel),
+               ('깃허브', p.get('GitHub', '')), ('블로그', p.get('기술 블로그', ''))]
+    rows = [('학력', p.get('학력', '')),
+            ('교육', p.get('교육', '')),
+            ('경력', p.get('경력', '')),
+            ('자격 · 수상', p.get('자격증 · 수상', '')),
+            ('주력 스킬', p.get('스킬', '')),
+            ('대표 프로젝트', p.get('대표 프로젝트', ''))]
+    return ('<div class="fillblk pfpage">'
+            '<div class="pfid"><div class="pfrole">Backend Developer</div>'
+            '<h2 class="pfname">%s</h2><div class="pfen">%s · %s</div>'
+            '<dl class="pfct">%s</dl></div>'
+            '<div class="pfbody"><div class="step">PROFILE</div>'
+            '<h2 class="stitle">프로필</h2><p class="pflead">%s</p>'
+            '<div class="pftable">%s</div></div></div>'
+            % (kr, en, p.get('생년월일', ''),
+               ''.join('<div><dt>%s</dt><dd>%s</dd></div>' % kv for kv in contact),
+               lead,
+               ''.join('<div class="pfr"><b>%s</b><span>%s</span></div>' % kv for kv in rows)))
+
+
+def skills_page():
+    """분류를 왼쪽 기둥에 세우고 이름만 늘어놓는다. 설명은 싣지 않는다."""
+    cats, _ = pdfdoc.skills()
+    rows = ''
+    for c in cats:
+        groups = ''
+        for cls, tag in (('smcore', 'smk'), ('smrest', 'smn')):
+            names = ''.join('<span class="%s">%s</span>' % (tag, n)
+                            for _, n, k in c['items'] if k == (tag == 'smk'))
+            if names:   # 주력이 없는 분류에 빈 줄을 남기면 이름이 아래로 쏠린다
+                groups += '<div class="%s">%s</div>' % (cls, names)
+        rows += ('<div class="smrow"><div class="smcat">%s</div>'
+                 '<div class="smlist">%s</div></div>' % (c['name'], groups))
+    return ('<div class="fillblk skpage">%s<div class="skmatrix">%s</div></div>'
+            % (sechd('SKILLS', '스킬',
+                     ''),
+               rows))
+
+
+def cr_rows(rows):
+    return ''.join(
+        '<div class="crrow"><div class="crn"><b>%s</b><em>%s</em></div>'
+        '<div class="crv">%s<span>%s</span></div></div>'
+        % (r['nm'], r['sub'], '<i>%s</i>' % r['tag'] if r['tag'] else '', r['val'])
+        for r in rows)
+
+
+def credits_pages():
+    """자격증·수상은 한 쪽에 나란히, 교육은 두 단으로. 접힌 상자를 걷어 낸다."""
+    cr = pdfdoc.credits()
+    lic, awd, edu = cr[0], cr[1], cr[2]
+    col = ('<div class="crcol"><div class="crhd"><b>%s</b><span>%s</span></div>'
+           '%s<p class="crnote">%s</p></div>')
+    page1 = ('<div class="fillblk crpage">%s<div class="crgrid">%s%s</div></div>'
+             % (sechd('CREDITS', '자격증 · 수상',
+                      '자격증 5건을 취득했고, 교내외 경진대회에서 8회 수상했습니다.'),
+                col % (lic['title'], lic['sub'], cr_rows(lic['rows']), lic['note']),
+                col % (awd['title'], awd['sub'], cr_rows(awd['rows']), awd['note'])))
+    half = (len(edu['rows']) + 1) // 2
+    page2 = ('<div class="fillblk crpage">%s'
+             '<div class="crhd"><b>%s</b><span>%s</span></div>'
+             '<div class="edugrid"><div>%s</div><div>%s</div></div>'
+             '<p class="crnote">%s</p></div>'
+             % (sechd('EDUCATION', '교육',
+                      '대우능력개발원 KDT 과정에서 1024시간을 이수했습니다.'),
+                edu['title'], edu['sub'],
+                cr_rows(edu['rows'][:half]), cr_rows(edu['rows'][half:]), edu['note']))
+    return [page1, page2]
 
 
 def build_blocks():
@@ -332,47 +546,11 @@ def build_blocks():
     B.append(Block(COVER.replace('{site}', SITE), newpage=True))
     B.append(Block(toc_html(), newpage=True, tag='목차'))
 
-    # ── 프로필 : 왼쪽 표, 오른쪽 소개
-    B.append(Block(
-        '<div class="sechd"><div><div class="step">PROFILE</div><h2 class="stitle">프로필</h2></div>'
-        '<div class="sectxt"><p class="lead">%s</p></div></div>' % ix['lead'],
-        newpage=True, keepnext=True, tag='프로필'))
-    B.append(Block(ix['abgrid'], tag='프로필', head=('PROFILE', '프로필')))
-
-    # ── 스킬 : 칩을 걷고 글자 굵기로 주력을 가른다. 설명은 주력만
-    cats, desc = pdfdoc.skills()
-    rows = ''
-    for c in cats:
-        names = ''.join(
-            '<span class="%s">%s</span>' % ('smk' if k else 'smn', n) for _, n, k in c['items'])
-        rows += '<div class="smrow"><div class="smcat">%s</div><div class="smlist">%s</div></div>' % (
-            c['name'], names)
-    B.append(Block(
-        '<div class="sechd"><div><div class="step">SKILLS</div><h2 class="stitle">스킬</h2></div>'
-        '<div class="sectxt"><p class="lead">굵게 쓴 것이 주력입니다. 설명은 주력 열 개만 실었습니다.'
-        '<br>나머지는 실무에서 쓸 수 있는 수준으로 익혔습니다.</p></div></div>',
-        newpage=True, keepnext=True, tag='스킬'))
-    B.append(Block('<div class="skmatrix">%s</div>' % rows, tag='스킬', head=('SKILLS', '스킬')))
-
-    core = [(sid, desc[sid]) for c in cats for sid, _, k in c['items'] if k and sid in desc]
-    B.append(Block('<h3 class="pgh">주력 스킬</h3>', keepnext=True, tag='스킬', head=('SKILLS','주력 스킬')))
-    for pair in pdfpages.chunk(core, 2):
-        cells = ''.join(
-            '<div class="skd"><b>%s</b><i>%s</i><p>%s</p></div>' % (d['name'], d['level'], d['text'])
-            for _, d in pair)
-        B.append(Block('<div class="skdrow">%s</div>' % cells, tag='스킬', head=('SKILLS', '주력 스킬')))
-
-    # ── 자격증 · 수상 · 교육
-    B.append(Block(
-        '<div class="sechd"><div><div class="step">CREDITS</div>'
-        '<h2 class="stitle">자격증 · 수상 · 교육</h2></div>'
-        '<div class="sectxt"><p class="lead">자격증 5건을 취득했고, 교내외 경진대회에서 8회 수상했습니다.'
-        '<br>대우능력개발원 KDT는 1024시간을 이수했습니다.</p></div></div>',
-        newpage=True, keepnext=True, tag='자격증 · 수상'))
-    for f in ix['folds']:
-        f = f.replace('<details class="fold"', '<details open class="fold"')
-        f = re.sub(r'\sname="credits"', '', f)   # 배타 아코디언이면 하나만 열린다
-        B.append(Block(f, tag='자격증 · 수상', head=('CREDITS', '자격증 · 수상 · 교육')))
+    B.append(Block(profile_page(ix['lead']), newpage=True, tag='프로필',
+                   fixh=pdfkit.BODY_H))
+    B.append(Block(skills_page(), newpage=True, tag='스킬', fixh=pdfkit.BODY_H))
+    for html in credits_pages():
+        B.append(Block(html, newpage=True, tag='자격증 · 수상', fixh=pdfkit.BODY_H))
 
     # ── 프로젝트 세 장
     for ch in CHAPTERS:
@@ -392,29 +570,36 @@ def build_blocks():
             '<h2 class="stitle">개요</h2>'
             '<div class="rline">%s</div><p class="lead">%s</p>%s%s</div>'
             '<div class="ovshot">%s</div></div>'
-            % (ov['rline'], ov['lead'], det_only(ovhtml, brand), feat['bullets'],
+            % (ov['rline'], brk(ov['lead']), det_only(ovhtml, brand), feat['bullets'],
                feat['device']),
             newpage=True, tag=tag))
 
-        # 한 문장 쪽 — 문제와 해결을 크게, 지표는 그 아래
-        q, a = STATEMENT[ch['sec']]
-        B.append(Block(
-            '<div class="det stmt" style="--brand:%s"><div class="stmtno">%s</div>'
-            '<p class="stmtq">%s</p><p class="stmta">%s</p>%s</div>'
-            % (brand, ch['no'], q, a, ovhtml),
-            newpage=True, tag=tag))
-
+        # 화면은 한 쪽을 통째로 쓴다. 대표 한 장만 크게 싣고 나머지를 작게
+        # 늘어놓으면 나머지가 안 읽힌다. 전부 같은 크기로 크게 싣는다
         kind, shots = SHOTS[ch['sec']]
-        # 대표 화면 한 장을 크게 — 포트폴리오에서 화면이 주인공이다
-        f0, c0 = shots[0]
-        B.append(Block(
-            '<div class="det hero1" style="--brand:%s"><img src="assets/image/%s" alt="%s">'
-            '<div class="cap">%s</div></div>' % (brand, f0, c0, c0),
-            newpage=True, tag=tag))
-        B += pdfpages.shot_pages(kind, shots[1:], brand, tag)
+        B += pdfpages.shot_pages(kind, shots, brand, tag, pdfkit.BODY_H, shot_dims(shots))
 
-        for sec in pj['sections'][1:]:
-            B += pdfpages.section_pages(sec, brand, tag)
+        for si, sec in enumerate(pj['sections'][1:]):
+            secb = pdfpages.section_pages(sec, brand, tag,
+                                          grp='%s-%d' % (ch['sec'], si), brk=clauses,
+                                          budget=pdfkit.BODY_H)
+            # 분석 바로 뒤에 산출물 미리보기 한 쪽.
+            # 분석에 실을 블록이 없으면 절 머리만 있는 빈 쪽이 생기므로
+            # 산출물을 그 쪽에 얹어 한 쪽으로 합친다
+            if sec['step'].endswith('ANALYSIS'):
+                if not [b for b in sec['blocks'] if b['t'] != 'docs']:
+                    B.append(Block(
+                        docs_page(ch['sec'], brand, tag,
+                                  head=pdfpages.sec_head(sec['step'], sec['title'],
+                                                         sec['lead'], sec['rline'])),
+                        newpage=True, tag=tag, fixh=pdfkit.BODY_H, head=run_head(sec)))
+                    continue
+                B += secb
+                B.append(Block(docs_page(ch['sec'], brand, tag),
+                               newpage=True, tag=tag, fixh=pdfkit.BODY_H,
+                               head=('DOCUMENTS', '산출물')))
+                continue
+            B += secb
 
     # ── 더 많은 작업 : 한 쪽에 둘씩
     B.append(Block(chapter_html('04', '더 많은 작업', '#2b2b30', 'More Work',
@@ -442,7 +627,10 @@ def build_blocks():
         '<div class="sectxt"><p class="lead">소스와 커밋 기록은 GitHub에, 트러블슈팅은 블로그에 정리했습니다.'
         '<br>채용 문의는 메일이 가장 빠릅니다.</p></div></div>',
         newpage=True, keepnext=True, tag='링크'))
-    B.append(Block(ix['archcards'], tag='링크', head=('LINK', '링크 · 연락처')))
+    # 이모지는 화면에서는 살지만 인쇄하면 컬러 비트맵으로 박혀
+    # 흑백 편집 지면에서 혼자 떠 보인다. 활자로만 세운다
+    B.append(Block(re.sub(r'<span class="ic">.*?</span>', '', ix['archcards']),
+                   tag='링크', head=('LINK', '링크 · 연락처')))
 
     for b in B:
         b.html = re.sub(r'<button class="(?:pbtn|tbtn)"[^>]*data-lb="[^"]*"[^>]*>.*?</button>',
@@ -470,8 +658,14 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
   break-after: page; break-inside: avoid }
 .page:last-child { break-after: auto }
 .page.bleed { padding: 0 }
-.pgbody { display: flex; flex-direction: column }
+/* 본문 상자에 조판 예산만큼 높이를 준다. 이래야 지면을 채우는 블록이
+   남은 자리를 정확히 알아 아래가 텅 비지 않는다 */
+.pgbody { display: flex; flex-direction: column; height: __BODYH__px }
 .pgbody > * { flex: none }
+/* 지면을 채우는 블록. display 는 건드리지 않는다 — 여기서 flex 를 박으면
+   .pfpage 같은 격자 지면이 특정도에 밀려 통째로 무너진다 */
+.pgbody > .fillblk { flex: 1 1 auto; min-height: 0 }
+.pgbody > .det.fillblk { display: flex; flex-direction: column }
 
 /* 이어지는 쪽 머리 — 여기가 어느 절인지 한 줄로 알린다 */
 .runhd { position: absolute; top: 46px; left: 64px; right: 64px;
@@ -553,7 +747,7 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .tochd h2 { font-size: 40px; letter-spacing: -.04em; line-height: 1 }
 .tocgrid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 54px }
 .toclist { list-style: none; counter-reset: t; margin: 0; padding: 0 }
-.toclist li { counter-increment: t; padding: 10px 0; border-bottom: 1px solid var(--line) }
+.toclist li { counter-increment: t; padding: 8px 0; border-bottom: 1px solid var(--line) }
 .toclist li::before { content: counter(t, decimal-leading-zero); font-size: 11px; font-weight: 700;
   color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 14px }
 .toclist b { font-size: 16.5px; font-weight: 650; letter-spacing: -.012em }
@@ -567,12 +761,17 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .tsnote a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px }
 
 /* 장 표지 */
-.chapwrap { min-height: 634px; display: flex; flex-direction: column; justify-content: center }
-.chap { display: grid; grid-template-columns: 168px 1fr; gap: 8px; align-items: start }
-.chtoc { margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line);
+/* 조판 예산(pdfkit.BODY_H)보다 커지면 통째로 축소돼 활자 크기가 어긋난다.
+   한 칸 아래로 잡아 둔다 */
+.chapwrap { min-height: 628px; display: flex; flex-direction: column }
+.chap { display: grid; grid-template-columns: 168px 1fr; gap: 8px; align-items: start;
+  padding-top: 26px }
+/* 링크 버튼이 아래 괘선에 붙지 않게 숨을 둔다 */
+.chtoc { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--line);
   display: flex; gap: 16px; align-items: baseline; font-size: 12.5px; color: var(--muted) }
-.chtoc b { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--brand); font-weight: 700; flex: none }
+/* 한글은 자간을 벌리면 "이 장 의 구 성" 처럼 낱자로 흩어진다 */
+.chtoc b { font-size: 11px; letter-spacing: .01em; color: var(--brand);
+  font-weight: 700; flex: none }
 .chno { font-size: 104px; font-weight: 700; line-height: .8; letter-spacing: -.06em;
   color: var(--brand); opacity: .16; font-variant-numeric: tabular-nums }
 .chbody { border-left: 1px solid var(--line); padding-left: 40px }
@@ -590,24 +789,27 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
    글자 크기 차이로 위계를 만든다. 테두리와 그림자는 쓰지 않는다 */
 .pdfdoc .det .card, .pdfdoc .det .part, .pdfdoc .det .tsitem {
   background: #f5f5f7 !important; border: 0 !important; border-radius: 20px !important;
-  padding: 22px 24px !important; box-shadow: none !important }
-.pdfdoc .det .cards, .pdfdoc .det .parts { gap: 16px !important; padding: 0 !important }
+  padding: 18px 21px !important; box-shadow: none !important }
+.pdfdoc .det .cards, .pdfdoc .det .parts { gap: 14px !important; padding: 0 !important }
 .pdfdoc .det .card .n, .pdfdoc .det .part .no {
   display: block; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
   color: var(--brand); font-weight: 700; background: none !important; padding: 0 !important;
-  margin-bottom: 9px }
+  margin-bottom: 7px }
 .pdfdoc .det .card h4, .pdfdoc .det .part h4 {
-  font-size: 17px; font-weight: 700; letter-spacing: -.024em; margin-bottom: 9px }
+  font-size: 16.5px; font-weight: 700; letter-spacing: -.024em; margin-bottom: 7px }
 .pdfdoc .det .card p, .pdfdoc .det .part li {
-  font-size: 13.4px; line-height: 1.66; color: var(--sub); letter-spacing: -.004em }
+  font-size: 13.2px; line-height: 1.56; color: var(--sub); letter-spacing: -.004em }
 .pdfdoc .det .part ul { margin: 0; padding-left: 16px }
+/* 줄 끝이 늘 쉼표나 마침표가 되게 조각을 한 덩어리로 묶는다.
+   조각 사이에서만 줄이 넘어가고, 조각이 줄보다 길면 그 안에서 접힌다 */
+.pdfdoc .cl { display: inline-block }
 
 /* 표 — 상자를 없애고 넓은 줄 간격으로 읽게 한다 */
 .pdfdoc .det .dtable { background: none !important; border: 0 !important;
   border-radius: 0 !important; padding: 0 !important; overflow: visible !important }
 .pdfdoc .det .drow { background: none !important; border: 0 !important;
   border-top: 1px solid rgba(0,0,0,.08) !important; border-radius: 0 !important;
-  padding: 16px 0 !important; box-shadow: none !important }
+  padding: 12px 0 !important; box-shadow: none !important }
 .pdfdoc .det .drow .k { font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
   color: var(--muted); font-weight: 700 }
 .pdfdoc .det .drow .v { font-size: 13.6px; line-height: 1.66; letter-spacing: -.006em }
@@ -653,12 +855,6 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .pdfdoc .det code { background: none !important; padding: 0 !important;
   color: var(--ink); font-weight: 600 }
 
-.pf { border: 0 !important; border-radius: 22px !important;
-  background: #f5f5f7 !important; padding: 20px 20px 0 !important; overflow: hidden }
-.pf img { border-radius: 10px 10px 0 0; display: block }
-.pf figcaption { border: 0 !important; padding: 14px 4px !important; text-align: center;
-  font-size: 12px; color: var(--muted); background: none !important }
-
 /* 한 문장 쪽 — 여백을 크게 두고 활자로만 말한다 */
 .stmt { min-height: 600px; display: flex; flex-direction: column; justify-content: center;
   padding: 0 40px }
@@ -668,27 +864,25 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
   color: var(--ink); max-width: 20ch }
 .stmta { margin-top: 26px; font-size: 19px; line-height: 1.6; letter-spacing: -.022em;
   color: var(--sub); font-weight: 550; max-width: 34ch }
-.stmt .ov { margin-top: 52px; display: grid !important;
-  grid-template-columns: repeat(3, max-content) !important; gap: 0 72px !important }
-
-/* 대표 화면 — 거의 전면으로 */
-.hero1 { background: #f5f5f7; border-radius: 24px; padding: 30px 30px 0;
-  box-sizing: border-box }
-.hero1 img { width: 100%; max-height: 520px; object-fit: contain; border-radius: 10px; display: block }
-.hero1 .cap { padding: 18px 0 26px; text-align: center; font-size: 12.5px; color: var(--muted) }
+/* .pdfdoc .det .ov 가 gap 을 0 으로 눌러 두었다. 여기가 더 구체적이어야
+   숫자 밑 설명이 서로 붙지 않는다 */
+.pdfdoc .det.stmt .ov { margin-top: 52px; display: grid !important;
+  grid-template-columns: repeat(3, max-content) !important; gap: 0 78px !important }
 
 /* 절 머리 — 제목 왼쪽, 리드 오른쪽. 지면 폭을 다 쓴다 */
 .sechd { display: grid; grid-template-columns: .9fr 1.4fr; gap: 52px; align-items: start;
-  padding-bottom: 26px }
+  padding-bottom: 18px }
 .sechd .step { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
   color: var(--brand, var(--muted)); font-weight: 700 }
-.sechd .stitle { font-size: 46px; line-height: 1.0; letter-spacing: -.045em; margin-top: 12px }
-.sectxt .rline { font-size: 14px; font-weight: 650; letter-spacing: -.012em;
-  color: var(--brand, var(--ink)); margin-bottom: 9px }
-.sectxt .lead { font-size: 14.6px; line-height: 1.72; color: var(--sub); letter-spacing: -.006em }
+.sechd .stitle { font-size: 40px; line-height: 1.0; letter-spacing: -.042em; margin-top: 11px }
+.sectxt .rline { font-size: 13.6px; font-weight: 650; letter-spacing: -.012em;
+  color: var(--brand, var(--ink)); margin-bottom: 8px }
+.sectxt .lead { font-size: 13.9px; line-height: 1.62; color: var(--sub); letter-spacing: -.006em }
 
 /* 개요 — 왼쪽 글과 지표, 오른쪽 화면 */
-.ovpage { display: grid; grid-template-columns: 1.02fr 1fr; gap: 44px; align-items: start }
+/* 글단을 넓혀야 절이 통째로 한 줄에 들어간다. 좁으면 애써 넣은 줄바꿈
+   뒤에서 또 한 번 접혀 두 번 끊긴 것처럼 보인다 */
+.ovpage { display: grid; grid-template-columns: 1.32fr 1fr; gap: 38px; align-items: start }
 .ovpage .tech { margin-top: 16px }
 .ovpage .tech li { font-size: 11.8px; line-height: 1.5; margin-bottom: 4px }
 .ovpage .step { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
@@ -697,16 +891,24 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .ovpage .rline { font-size: 14px; font-weight: 650; color: var(--brand); margin-bottom: 10px }
 .ovpage .lead { font-size: 12.8px; line-height: 1.68; color: var(--sub); margin-bottom: 14px }
 .ovpage .ovshot { justify-self: stretch; align-self: center }
+/* 지표 개수가 프로젝트마다 다르다. 3칸 격자에 4개를 넣으면 마지막 하나가
+   홀로 다음 줄로 떨어진다. 줄로 흘려 개수와 무관하게 서게 한다 */
+.pdfdoc .det .ovpage .ov { display: flex !important; flex-wrap: wrap;
+  gap: 14px 26px !important; margin-top: 22px }
+.pdfdoc .det .ovpage .ov .c { flex: 0 0 auto }
+.pdfdoc .det .ovpage .ov b { font-size: 27px }
+.pdfdoc .det .ovpage .ov span { margin-top: 5px; font-size: 11.5px }
 /* 좁은 단에서 목업 둘을 나란히 두면 세로로 접혀 지면을 먹는다.
    개요에는 큰 화면 하나만 싣고 폰만 있는 프로젝트는 그대로 둔다 */
 .ovpage .ovshot .browser + .mockimg { display: none }
 .ovpage .ovshot .browser { max-width: 100% !important }
-.ovpage .ovshot .mockimg { max-width: 210px !important; margin: 0 auto }
+/* 폰 화면 하나뿐인 개요는 목업을 키워야 지면이 찬다 */
+.ovpage .ovshot .mockimg { max-width: 292px !important; margin: 0 auto }
 
 /* 쪽 단위 격자 — 개수를 정해 두었으니 폭은 균등하게 */
-.pgcards, .pgparts { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px }
+.pgcards, .pgparts { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 16px }
 .pgcards + .pgcards, .pgparts + .pgparts, .pgfeats + .pgfeats { margin-top: 16px }
-.pgfeats { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px }
+.pgfeats { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 12px }
 .pgts { display: grid !important; grid-template-columns: 1fr !important; gap: 12px }
 /* 한 쪽에 세 건이 들어가도록 조인다. 세 건이 한눈에 보여야 흐름이 읽힌다 */
 .pgts .tsitem { padding: 15px 18px }
@@ -716,26 +918,41 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .pgts .tsflow p { font-size: 12.2px; line-height: 1.62 }
 .pgts .tsflow .lab { font-size: 10px; margin-bottom: 5px }
 .pgpress { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px }
+/* 표는 한 덩어리로 짠다. 항목마다 아래에 빈 자리를 두지 않는다 */
 .pgdtable { display: block !important }
+.pdfdoc .det .pgdtable .drow { padding: 12px 0 !important;
+  display: grid !important; grid-template-columns: 150px 1fr !important; gap: 28px }
+.pdfdoc .det .pgdtable .drow:first-child { border-top: 0 !important; padding-top: 2px !important }
+.pdfdoc .det .pgdtable .drow .k { font-size: 11.5px; letter-spacing: .01em;
+  text-transform: none; color: var(--muted); font-weight: 650 }
+.pdfdoc .det .pgdtable .drow .v { font-size: 14px; line-height: 1.6; letter-spacing: -.008em }
 .pgskp { columns: 2; column-gap: 44px }
 .pgskp .skp { break-inside: avoid; padding: 9px 0; border-bottom: 1px solid var(--line) }
-.pgfigure img { max-height: 590px; width: auto; max-width: 100%; margin: 0 auto; display: block }
 
 /* 쪽 안쪽 제목 */
 .pgh { font-size: 15px; font-weight: 650; letter-spacing: -.01em; color: var(--sub);
   padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 16px }
 
-/* 실제 화면 */
-.pfgrid { display: grid; gap: 12px; align-items: start }
-.pfgrid.pfwide { grid-template-columns: 1fr 1fr }
-.pfgrid.pfphone { grid-template-columns: repeat(3, 1fr) }
-.pf { margin: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff }
-.pf img { width: 100%; display: block }
-.pfgrid.pfphone .pf img { background: #f7f7f9 }
-.pf figcaption { padding: 7px 10px; font-size: 11px; color: var(--sub);
-  border-top: 1px solid var(--line); letter-spacing: .01em }
-.tilepf { margin: 14px 0 0 }
-.tilepf img { aspect-ratio: 16 / 10; object-fit: cover; object-position: top center }
+/* 실제 화면 — 지면을 통째로 쓴다. 포트폴리오에서 화면이 주인공이다.
+   자르지 않는다(contain). 잘라서 맞추면 만든 것을 못 보여 준다 */
+.fillblk .sechd { flex: none }
+.pfgrid { display: flex; gap: 14px; flex: 1 1 auto; min-height: 0;
+  align-items: center; justify-content: center }
+.pf { margin: 0; border: 0; border-radius: 22px; overflow: hidden; background: #f5f5f7;
+  box-sizing: border-box; padding: 22px 22px 0; max-width: 100% }
+.pf img { width: 100%; height: auto; border-radius: 8px; display: block }
+.pf figcaption { padding: 15px 4px; text-align: center;
+  font-size: 12.5px; color: var(--muted); border: 0; letter-spacing: .012em }
+
+/* 더 많은 작업 — 격자 안 미리보기. 여기서도 자르지 않는다 */
+.tilepf { margin: 14px 0 0; border: 0; border-radius: 14px; background: #fff;
+  overflow: hidden; padding: 0 }
+/* 높이를 못 박고 contain 하면 세로로 긴 전체 페이지 캡처 둘레에 흰 여백만
+   남는다. 면이 사진을 감싸게 두어 빈 상자가 생기지 않게 한다 */
+.tilepf img { max-height: 300px; max-width: 100%; width: auto; height: auto;
+  margin: 0 auto; background: #fff; border-radius: 10px; display: block }
+.tilepf figcaption { padding: 9px 4px 0; text-align: center; font-size: 11.5px;
+  color: var(--muted); border: 0 }
 .dochint { font-size: 13px; color: var(--muted); margin-top: 12px }
 .dochint a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px }
 
@@ -743,17 +960,137 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .pdfdoc .device.duo { width: min(620px, 100%) }
 .pdfdoc .browser { max-width: 600px }
 .pdfdoc .mockimg { max-width: 210px }
-.pdfdoc .det .figure img { max-height: 520px; width: auto; max-width: 100%;
+.pdfdoc .det .figure img { max-height: 548px; width: auto; max-width: 100%;
   margin: 0 auto; display: block }
-.pfgrid.pfwide .pf img { aspect-ratio: 16 / 9; object-fit: cover; object-position: top center }
-.pfgrid.pfphone { grid-template-columns: repeat(3, 1fr) }
-.pfgrid.pfphone .pf img { height: 566px; object-fit: contain; background: #f7f7f9 }
 
-/* 더 많은 작업 — 한 줄에 두 장. 사진이 읽히는 최소 크기다 */
+/* 쪽 하나를 쓰는 도식. 감싼 면·설명줄까지 합쳐 예산 안에 들어와야 한다.
+   넘기면 조판기가 통째로 줄여 도식과 설명 글자가 같이 작아진다.
+   위 `.figure img` 와 특정도가 같으므로 반드시 뒤에 와야 이긴다 */
+.pdfdoc .det .pgfigure { margin-top: 0 !important }
+.pdfdoc .det .pgfigure img { max-height: 536px }
+/* 절 머리와 도식이 한 쪽을 같이 쓰는 지면. 도식이 남은 자리를 채운다 */
+.figpage { display: flex; flex-direction: column }
+.figpage .sechd { flex: none }
+.pdfdoc .det.figpage .pgfigure { flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column; justify-content: center }
+.pdfdoc .det.figpage .pgfigure img { max-height: none; flex: 0 1 auto;
+  min-height: 0; object-fit: contain }
+
+/* 더 많은 작업 — 한 줄에 두 장. 사진이 읽히는 최소 크기다.
+   사이트에서는 설명 문단이 늘어나 아래를 채운다. 지면에서는 사진 높이가
+   짝마다 달라서, 그대로 두면 옆칸끼리 사진 시작 높이가 어긋난다.
+   설명은 제 높이로 두고 버튼만 바닥에 붙인다 */
 .pairtile { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px }
-.pairtile .tilepf img { aspect-ratio: 16 / 10 }
+.pdfdoc .pairtile .tile p { flex: none !important }
+.pdfdoc .pairtile .tbtns { margin-top: auto !important; padding-top: 8px }
 .pdfdoc .skpx { padding: 11px 0; border-bottom: 1px solid var(--line) }
-'''
+
+/* ── 프로필 ───────────────────────────────────────────────────
+   이름과 연락처를 왼쪽 기둥에 세우고 이력은 오른쪽 표로 읽힌다.
+   서식 문서의 3×3 표가 아니라 사람을 먼저 보여주는 지면이다 */
+.pfpage { display: grid; grid-template-columns: .82fr 1.18fr; gap: 64px;
+  align-content: center }
+.pfid { border-right: 1px solid var(--line); padding-right: 56px }
+.pfrole { font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--blue); font-weight: 700 }
+.pfname { font-size: 68px; line-height: .96; letter-spacing: -.055em; margin: 14px 0 12px }
+.pfen { font-size: 13.5px; color: var(--muted); letter-spacing: .01em }
+.pfct { margin: 40px 0 0; display: grid; gap: 13px }
+.pfct > div { display: grid; grid-template-columns: 52px 1fr; gap: 14px; align-items: baseline }
+.pfct dt { font-size: 11px; letter-spacing: .1em; color: var(--muted) }
+.pfct dd { margin: 0; font-size: 14px; font-weight: 550; letter-spacing: -.01em; color: var(--ink) }
+.pfbody .step { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700 }
+.pfbody .stitle { font-size: 40px; line-height: 1; letter-spacing: -.042em; margin: 11px 0 0 }
+.pflead { margin: 20px 0 30px; font-size: 14.2px; line-height: 1.72;
+  color: var(--sub); letter-spacing: -.006em }
+.pftable { display: grid }
+.pfr { display: grid; grid-template-columns: 116px 1fr; gap: 22px; align-items: baseline;
+  padding: 15px 0; border-top: 1px solid var(--line) }
+.pfr b { font-size: 11.5px; letter-spacing: .06em; color: var(--muted); font-weight: 650 }
+.pfr span { font-size: 14.6px; font-weight: 550; letter-spacing: -.014em; line-height: 1.5 }
+
+/* ── 스킬 ─────────────────────────────────────────────────────
+   알약 칩을 걷고 활자 굵기로만 주력을 가른다. 분류는 왼쪽 기둥에 세워
+   눈이 한 번만 훑으면 되게 한다. 설명은 싣지 않는다 */
+.skpage { display: flex; flex-direction: column }
+.skmatrix { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0 }
+.smrow { display: grid; grid-template-columns: 158px 1fr; gap: 34px;
+  align-content: center; padding: 15px 0; border-top: 1px solid var(--line);
+  flex: 1 1 0; min-height: 0 }
+.smrow:first-child { border-top: 0 }
+.smcat { font-size: 11.5px; letter-spacing: .16em; color: var(--muted); font-weight: 700;
+  align-self: center }
+.smlist { display: grid; gap: 11px }
+.smcore, .smrest { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline }
+.smk { font-size: 21px; font-weight: 700; letter-spacing: -.028em; color: var(--ink) }
+.smn { font-size: 14.5px; font-weight: 450; letter-spacing: -.008em; color: var(--muted) }
+
+/* ── 산출물 미리보기 ─────────────────────────────────────────
+   읽으라고 넣는 지면이 아니다. 이런 문서를 실제로 썼다는 것만 보이면 된다.
+   그래서 글자는 작게 두고 넘치는 줄은 지면에서 잘라 낸다 */
+.dpage { display: flex; flex-direction: column }
+/* 1fr 은 minmax(auto,1fr) 이라 표가 길면 칸이 늘어나 지면을 뚫는다.
+   minmax(0,1fr) 이라야 칸 안에서 잘린다 */
+.dpgrid { flex: 1 1 auto; min-height: 0; display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows: minmax(0,1fr) minmax(0,1fr); gap: 18px 20px }
+.dpcell { min-height: 0; display: flex; flex-direction: column;
+  background: #f5f5f7; border-radius: 16px; padding: 14px 14px 0; overflow: hidden }
+.dphd { flex: none; display: flex; align-items: baseline; gap: 8px; padding-bottom: 10px }
+.dphd b { font-size: 13px; font-weight: 700; letter-spacing: -.018em }
+.dphd span { margin-left: auto; font-size: 10.5px; color: var(--muted);
+  font-variant-numeric: tabular-nums }
+.dpsheet { flex: 1 1 auto; min-height: 0; overflow: hidden;
+  background: #fff; border-radius: 8px 8px 0 0; padding: 8px 10px 0 }
+.dpsheet table { width: 100%; table-layout: fixed; border-collapse: collapse }
+.dpsheet th, .dpsheet td { font-size: 6.2px; line-height: 1.5; text-align: left;
+  padding: 2px 4px 2px 0; overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; letter-spacing: 0 }
+.dpsheet th { font-weight: 700; color: var(--sub); border-bottom: .6px solid rgba(0,0,0,.22) }
+.dpsheet td { color: var(--muted); border-bottom: .6px solid rgba(0,0,0,.05) }
+.dpsheet td.dpg { font-weight: 700; color: var(--sub); background: rgba(0,0,0,.04) }
+
+/* ── 자격증 · 수상 · 교육 ─────────────────────────────────────
+   사이트의 접히는 상자를 걷고 괘선으로만 가른다 */
+.crpage { display: flex; flex-direction: column }
+.crgrid { display: grid; grid-template-columns: 1fr 1.16fr; gap: 54px; margin-top: 4px;
+  flex: 1 1 auto; min-height: 0 }
+.crcol { display: flex; flex-direction: column }
+.crhd { padding-bottom: 13px; border-bottom: 1.5px solid var(--ink) }
+.crhd b { display: block; font-size: 17px; font-weight: 700; letter-spacing: -.024em }
+.crhd span { display: block; margin-top: 5px; font-size: 12px; color: var(--muted);
+  line-height: 1.5 }
+.crrow { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: baseline;
+  padding: 7px 0; border-bottom: 1px solid var(--line) }
+.crn b { display: block; font-size: 13.8px; font-weight: 650; letter-spacing: -.016em }
+.crn em { display: block; margin-top: 2px; font-style: normal; font-size: 11.4px;
+  color: var(--muted); line-height: 1.4 }
+.crv { text-align: right; white-space: nowrap }
+.crv i { display: block; font-style: normal; font-size: 12px; font-weight: 700;
+  color: var(--blue); letter-spacing: -.01em }
+.crv span { display: block; margin-top: 3px; font-size: 11.5px; color: var(--muted);
+  font-variant-numeric: tabular-nums }
+.crnote { margin-top: auto; padding-top: 14px; font-size: 11px; line-height: 1.55;
+  color: var(--muted) }
+.edugrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 54px; margin-top: 2px }
+.edugrid .crv span { color: var(--ink); font-weight: 650; font-size: 13px }
+
+/* ── 장 표지 아래 가로대 ──────────────────────────────────────
+   칩을 흘리면 줄이 들쭉날쭉 접히고, 버튼을 가운데 두면 슬라이드처럼 보인다 */
+/* 제목 위쪽에 숨을 두고 기간·기술·링크는 지면 아래에 모아 붙인다.
+   가로대와 장 구성 사이가 비면 지면 한가운데에 구멍이 생긴다 */
+.chrail { margin-top: auto; padding-top: 22px; border-top: 1px solid var(--line);
+  display: grid; gap: 40px; align-items: start }
+/* 한글 라벨이라 자간을 벌리지 않는다. 괘선 아래 작은 표제처럼 앉힌다 */
+.chcell b { display: block; font-size: 11px; letter-spacing: .01em;
+  color: var(--brand); font-weight: 700; margin-bottom: 11px }
+.chcell span { font-size: 13.4px; line-height: 1.62; color: var(--sub); letter-spacing: -.008em }
+.pdfdoc .det .chlinks .links { display: flex !important; justify-content: flex-start !important;
+  gap: 9px; margin: 0 !important; flex-direction: column; align-items: flex-start }
+.pdfdoc .det .chlinks .links a { margin: 0 }
+.pdfdoc .det .chapwrap .chdesc { max-width: 30ch }
+'''.replace('__BODYH__', str(pdfkit.BODY_H))
 
 
 # ─────────────────────────── 별첨 ───────────────────────────
@@ -909,6 +1246,8 @@ def compose(blocks, head, foot_title, tmp_measure, tmp_out):
         print('  ! 한 쪽보다 큰 블록 %d개 (최대 %dpx) — 축소해 담는다'
               % (len(over), max(b.h for b in over)))
         for b in over:
+            print('      %4dpx  %s  %s' % (b.h, b.tag, re.sub(r'\s+', ' ', b.html)[:96]))
+        for b in over:
             b.html = ('<div class="fitpage" style="--fit:%.4f">%s</div>'
                       % (pdfkit.BODY_H / float(b.h) * .985, b.html))
             b.h = pdfkit.BODY_H
@@ -935,7 +1274,7 @@ def main():
                      '정상연 · 포트폴리오', '_measure.html', '_pdf.html')
     bad = pdfkit.assert_fits(src)
     print('  넘치는 쪽 %s' % (', '.join(bad) if bad else '없음'))
-    size, pg = pdfkit.print_pdf(src, os.path.join(OUT, MAIN_PDF))
+    size, pg = pdfkit.print_pdf(src, os.path.join(OUT, MAIN_PDF), expect=n)
     print('  %s  %.1fMB  %d쪽 (조판 %d쪽)' % (MAIN_PDF, size / 1048576.0, pg, n))
 
     print('별첨')

@@ -7,6 +7,7 @@
 디자인은 사이트 컴포넌트를 그대로 다시 그려 붙인다.
 """
 import io
+import json
 import os
 import re
 
@@ -152,6 +153,60 @@ def skills():
                      'level': one(r'<i>(.*?)</i>', el),
                      'text': one(r'<p>(.*?)</p>', el)}
     return cats, desc
+
+
+def untag(s):
+    """앵커 같은 화면용 태그를 걷고 글자만 남긴다."""
+    return re.sub(r'\s+', ' ', re.sub(r'</?a[^>]*>', '', s)).strip()
+
+
+def profile():
+    """프로필 표를 항목 사전으로 뽑는다. 지면은 이 값으로 새로 짠다."""
+    s = read('index.html')
+    top = s[s.index('<section class="about'):s.index('<section class="skills-sec')]
+    out = {}
+    for cell in children(grab(top, '<div class="abgrid'), 'div'):
+        # 속성 앞에 줄바꿈이 끼어 있는 칸이 있다. class="k" 를 통째로 찾으면 놓친다
+        k = one(r'<span[^>]*class="k"[^>]*>(.*?)</span>', cell)
+        v = one(r'<span[^>]*class="v[^"]*"[^>]*>(.*?)</span>', cell)
+        if k:
+            out[untag(k)] = untag(v)
+    return out
+
+
+def docsets(name):
+    """산출물 문서 데이터를 읽는다. 지면에는 미리보기로만 싣는다."""
+    s = read('assets/docs-%s.js' % name)
+    return json.loads(s[s.index('{'):s.rindex('}') + 1])
+
+
+def credits():
+    """자격증·수상·교육을 자료로 뽑는다.
+
+    사이트의 <details> 를 그대로 옮기면 지면에서는 접힌 상자로 보인다.
+    값만 가져와 인쇄용 표로 다시 짠다.
+    """
+    s = read('index.html')
+    cr = s[s.index('<section class="credits'):s.index('<section class="feat gray')]
+    out = []
+    for f in children(grab(cr, '<div class="folds')):
+        if '<details' not in f:
+            continue
+        rows = []
+        for r in children(grab(f, '<div class="frows">')):
+            rows.append({
+                'nm': untag(one(r'<div class="nm">(.*?)</div>', r)),
+                'sub': untag(one(r'<div class="og">(.*?)</div>', r)
+                             or one(r'<div class="kw">(.*?)</div>', r)),
+                'tag': untag(one(r'<span class="pz">(.*?)</span>', r)),
+                'val': untag(one(r'<div class="dt">.*?</span>(.*?)</div>', r)
+                             or one(r'<div class="hr">(.*?)</div>', r)),
+            })
+        out.append({'title': untag(one(r'<div class="ft">(.*?)</div>', f)),
+                    'sub': untag(one(r'<div class="fs">(.*?)</div>', f)),
+                    'note': untag(one(r'<div class="foldnote">(.*?)</div>', f)),
+                    'rows': rows})
+    return out
 
 
 # ─────────────────────────── 메인 페이지 ───────────────────────────
