@@ -906,9 +906,13 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .ovpage .ovshot .mockimg { max-width: 292px !important; margin: 0 auto }
 
 /* 쪽 단위 격자 — 개수를 정해 두었으니 폭은 균등하게 */
-.pgcards, .pgparts { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 16px }
+/* 칸 수는 줄에 담긴 개수를 따른다(--cols). 3칸에 2개만 놓으면 오른쪽 한 칸이
+   사라진 것처럼 보인다. !important 를 쓰므로 인라인 값이 아니라 변수로 받는다 */
+.pgcards, .pgparts { display: grid !important;
+  grid-template-columns: repeat(var(--cols, 3), 1fr) !important; gap: 16px }
 .pgcards + .pgcards, .pgparts + .pgparts, .pgfeats + .pgfeats { margin-top: 16px }
-.pgfeats { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 12px }
+.pgfeats { display: grid !important;
+  grid-template-columns: repeat(var(--cols, 3), 1fr) !important; gap: 12px }
 .pgts { display: grid !important; grid-template-columns: 1fr !important; gap: 12px }
 /* 한 쪽에 세 건이 들어가도록 조인다. 세 건이 한눈에 보여야 흐름이 읽힌다 */
 .pgts .tsitem { padding: 15px 18px }
@@ -917,7 +921,8 @@ body { -webkit-print-color-adjust: exact; print-color-adjust: exact }
 .pgts .tsflow .b { padding: 10px 12px }
 .pgts .tsflow p { font-size: 12.2px; line-height: 1.62 }
 .pgts .tsflow .lab { font-size: 10px; margin-bottom: 5px }
-.pgpress { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px }
+.pgpress { display: grid !important;
+  grid-template-columns: repeat(var(--cols, 2), 1fr) !important; gap: 16px }
 /* 표는 한 덩어리로 짠다. 항목마다 아래에 빈 자리를 두지 않는다 */
 .pgdtable { display: block !important }
 .pdfdoc .det .pgdtable .drow { padding: 12px 0 !important;

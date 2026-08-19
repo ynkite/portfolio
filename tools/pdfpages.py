@@ -121,7 +121,9 @@ def section_pages(sec, brand, tag, grp='', brk=None, budget=0):
                     body = linebreak(body, brk)
                 # 칸 수를 줄에 담긴 개수에 맞춘다. 3칸 격자에 2개만 놓으면
                 # 오른쪽 한 칸이 사라진 것처럼 보인다
-                cols = ' style="grid-template-columns:repeat(%d,1fr)"' % len(part)                     if len(part) < PER[t] else ''
+                # 칸 수를 줄에 담긴 개수에 맞춘다. CSS 가 !important 라
+                # 변수로 넘겨야 먹는다
+                cols = (' style="--cols:%d"' % len(part)) if len(part) < PER[t] else ''
                 emit(det('<div class="%s pg%s"%s>%s</div>' % (t, t, cols, body), brand))
         elif t in ('ov', 'prose', 'raw'):
             emit(det(b['html'], brand))
