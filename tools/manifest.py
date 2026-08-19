@@ -31,7 +31,8 @@ def referenced():
         s = io.open(page, encoding='utf-8').read()
         base = os.path.dirname(page)
         # 마크업의 src/href
-        for m in re.findall(r'(?:src|href)="((?!https?:|mailto:|tel:|#|data:)[^"]+)"', s):
+        # poster 도 자산을 가리킨다. 빠뜨리면 영상 첫 화면이 404 난다
+        for m in re.findall(r'(?:src|href|poster)="((?!https?:|mailto:|tel:|#|data:)[^"]+)"', s):
             out.add(_norm(os.path.join(base, unquote(m.split('#')[0].split('?')[0]))))
         # 스크립트 안에 문자열로 박아 둔 갤러리 사진
         for m in re.findall(r"'((?:\.\./)?assets/[^']+\.(?:%s))'" % ASSET_EXT, s):
