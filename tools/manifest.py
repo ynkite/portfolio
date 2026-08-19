@@ -13,6 +13,10 @@ from urllib.parse import unquote
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ['index.html'] + sorted(glob.glob('projects/*.html'))
 SKIP_DIRS = ('프로젝트 사진', '_backup', '_workspace', '__pycache__')
+# 어느 HTML도 가리키지 않지만 올려야 하는 것 — 본편 PDF가 이 주소로 링크한다
+EXTRA = ('assets/포트폴리오_정상연_산출물.pdf',
+         'assets/font/pretendard.css',
+         'assets/font/PretendardVariable.woff2')
 ASSET_EXT = r'png|jpg|jpeg|svg|mp4|pdf|webp|ico'
 
 
@@ -27,7 +31,8 @@ def referenced():
         s = io.open(page, encoding='utf-8').read()
         base = os.path.dirname(page)
         # 마크업의 src/href
-        for m in re.findall(r'(?:src|href)="((?!https?:|mailto:|tel:|#|data:)[^"]+)"', s):
+        # poster 도 자산을 가리킨다. 빠뜨리면 영상 첫 화면이 404 난다
+        for m in re.findall(r'(?:src|href|poster)="((?!https?:|mailto:|tel:|#|data:)[^"]+)"', s):
             out.add(_norm(os.path.join(base, unquote(m.split('#')[0].split('?')[0]))))
         # 스크립트 안에 문자열로 박아 둔 갤러리 사진
         for m in re.findall(r"'((?:\.\./)?assets/[^']+\.(?:%s))'" % ASSET_EXT, s):
@@ -54,7 +59,7 @@ def present():
 
 def plan():
     """(올릴 파일, 빼는 파일) 을 돌려준다."""
-    ref = referenced()
+    ref = referenced() | set(EXTRA)
     have = present()
     keep, drop = set(['index.html']), set()
     for p in have:
