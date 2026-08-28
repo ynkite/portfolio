@@ -1624,7 +1624,7 @@
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><code>geocodeOnce()</code>에 지역 필터 추가. <b>질의 첫 토큰을 지역 키워드로</b> 사용하고 <code>address_name</code>에 지역이 없는 결과는 버림.</p>
+              <p><code>geocodeOnce()</code>에 지역 필터 추가.<br><b>질의 첫 토큰을 지역 키워드로</b> 사용하고<br><code>address_name</code>에 지역이 없는 결과는 버림.</p>
             </div>
           </div>
           <div class="commit">fix(Backend): geocodeOnce 지역 필터 추가 — 동명 타지역 오인식 차단</div>
@@ -1634,15 +1634,15 @@
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>LLM이 만든 일정의 방문 순서 어긋남. 확정 전 일정이 사라짐.</p>
+              <p>LLM이 만든 일정의 방문 순서 어긋남.<br>확정 전 일정이 사라짐.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>생성 결과를 그대로 사용. 순서 검증·보존 단계가 없음.</p>
+              <p>생성 결과를 그대로 사용.<br>순서 검증·보존 단계가 없음.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><code>validateAndFixWithClaude()</code>를 순서 검증 전용으로 연결. 그러나 검증 모델이 순서를 고치며 <b>존재하지 않는 장소를 새로 생성</b>. 생성 흐름에서 제외하고 순서·거리 보정을 <code>postProcessRoute()</code> 코드로 옮김.</p>
+              <p><code>validateAndFixWithClaude()</code>를 순서 검증 전용으로 연결.<br>그러나 검증 모델이 순서를 고치며 <b>존재하지 않는 장소를 새로 생성</b>.<br>생성 흐름에서 제외하고<br>순서·거리 보정을 <code>postProcessRoute()</code> 코드로 옮김.</p>
             </div>
           </div>
           <div class="commit">feat: validateAndFixWithClaude 재활성화 — 순서 검증 전용 · fix: 미확정 일정 보존 추가</div>
@@ -1652,7 +1652,7 @@
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>주 모델 무응답 시 일정 생성 전체 중단. 단일 장애 지점.</p>
+              <p>주 모델 무응답 시 일정 생성 전체 중단.<br>단일 장애 지점.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
@@ -1660,7 +1660,7 @@
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><code>buildRouteWithAI()</code>가 Claude 호출, <code>catch</code>에서 Groq로 전환. 챗봇은 Claude · Groq · Gemini 3단 구성.</p>
+              <p><code>buildRouteWithAI()</code>가 Claude 호출,<br><code>catch</code>에서 Groq로 전환.<br>챗봇은 Claude · Groq · Gemini 3단 구성.</p>
             </div>
           </div>
           <div class="commit">feat: buildRouteWithAI 추가 및 assembleCandidates 내부 교체</div>
@@ -1670,15 +1670,15 @@
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>장소마다 카카오 자동차 경로 API 호출. 경로 생성 지연.</p>
+              <p>장소마다 카카오 자동차 경로 API 호출.<br>경로 생성 지연.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>근거리까지 전부 도로 거리 조회. 좌표도 계산 시마다 재조회.</p>
+              <p>근거리까지 전부 도로 거리 조회.<br>좌표도 계산 시마다 재조회.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><b>하버사인 직선거리로 1차 선별</b>, <b>20km 초과</b>일 때만 <code>carDirections()</code> 호출.<br>좌표는 <code>geocodeOnce()</code>로 1회 조회 후 거리·시간·비용 계산에 재사용.</p>
+              <p><b>하버사인 직선거리로 1차 선별</b>,<br><b>20km 초과</b>일 때만 <code>carDirections()</code> 호출.<br>좌표는 <code>geocodeOnce()</code>로 1회 조회 후 거리·시간·비용 계산에 재사용.</p>
             </div>
           </div>
           <div class="commit">Trip-linker 경로 최적화 및 숙소 배치 수정 · 지도 동선 이슈 7건 수정</div>

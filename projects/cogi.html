@@ -1650,15 +1650,15 @@
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>약점 화면과 스킬 추천 화면 동시 진입 시 <b>500 오류</b>. React StrictMode 이중 실행에서도 재현.</p>
+              <p>약점 화면과 스킬 추천 화면 동시 진입 시 <b>500 오류</b>.<br>React StrictMode 이중 실행에서도 재현.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>조회 API 가 매 호출마다 <code>deleteByUserId</code> 후 재삽입. 뒤 트랜잭션이 앞에서 이미 지운 행을 다시 삭제.</p>
+              <p>조회 API 가 매 호출마다 <code>deleteByUserId</code> 후 재삽입.<br>뒤 트랜잭션이 앞에서 이미 지운 행을 다시 삭제.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>집계 테이블 쓰기 제거. <code>getWeaknessStats()</code> 에서 <b>조회 시점 계산</b>으로 전환.</p>
+              <p>집계 테이블 쓰기 제거.<br><code>getWeaknessStats()</code> 에서 <b>조회 시점 계산</b>으로 전환.</p>
             </div>
           </div>
           <div class="commit">fix: 약점 통계 재집계 동시 호출 시 500 · fix: 약점·강의·스킬추천 500과 PR 피커가 실제 레포를 못 보던 것</div>
@@ -1668,15 +1668,15 @@
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>같은 카드인데 퀴즈 생성이 <b>성공하기도, JSON 파싱에서 실패하기도</b>. 재현 조건 불명확.</p>
+              <p>같은 카드인데 퀴즈 생성이 <b>성공하기도, JSON 파싱에서 실패하기도</b>.<br>재현 조건 불명확.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>프롬프트가 문제 본문에 코드블록을 요구 → 모델이 raw 개행을 그대로 출력. 스키마에 없는 키 하나에 역직렬화 전체 실패.</p>
+              <p>프롬프트가 문제 본문에 코드블록을 요구 → 모델이 raw 개행을 그대로 출력.<br>스키마에 없는 키 하나에 역직렬화 전체 실패.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>AI 응답 전용 <code>LENIENT_JSON</code> 리더 분리. 제어문자 허용 · 미지 키 무시. <b>공용 ObjectMapper 는 미변경.</b></p>
+              <p>AI 응답 전용 <code>LENIENT_JSON</code> 리더 분리.<br>제어문자 허용 · 미지 키 무시.<br><b>공용 ObjectMapper 는 미변경.</b></p>
             </div>
           </div>
           <div class="commit">fix: 문제 생성이 될 때도 있고 안 될 때도 있던 원인</div>
@@ -1694,7 +1694,7 @@
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>연결 <b>10초</b> · 응답 <b>60초</b> 명시. 실패는 <code>AI_MODEL_CALL_FAILED</code> 로 올려 화면에 종료 상태 표시.</p>
+              <p>연결 <b>10초</b> · 응답 <b>60초</b> 명시.<br>실패는 <code>AI_MODEL_CALL_FAILED</code> 로 올려 화면에 종료 상태 표시.</p>
             </div>
           </div>
           <div class="commit">fix: 빌드 깨짐과 AI 호출 실패 무반응 수정</div>
@@ -1704,15 +1704,15 @@
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>실제 모델 연동 시 <b>400 과 빈 응답</b>이 섞여 나옴. 이슈가 많은 리뷰에서는 JSON 이 중간에서 잘림.</p>
+              <p>실제 모델 연동 시 <b>400 과 빈 응답</b>이 섞여 나옴.<br>이슈가 많은 리뷰에서는 JSON 이 중간에서 잘림.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>OpenAI 신형은 <code>max_tokens</code> 거부, <code>max_completion_tokens</code> 요구. Claude 확장 사고 모델은 <code>content[0]</code> 이 thinking 블록이라 텍스트가 빔.</p>
+              <p>OpenAI 신형은 <code>max_tokens</code> 거부,<br><code>max_completion_tokens</code> 요구.<br>Claude 확장 사고<br>모델은 <code>content[0]</code> 이 thinking 블록이라 텍스트가 빔.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>호출 경로를 <code>callOpenAiCompatible()</code> · <code>callAnthropic()</code> 으로 분기. <code>type=="text"</code> 블록만 추출, 상한 <b>8192</b> 로 상향.</p>
+              <p>호출 경로를 <code>callOpenAiCompatible()</code> · <code>callAnthropic()</code> 으로 분기.<br><code>type=="text"</code> 블록만 추출, 상한 <b>8192</b> 로 상향.</p>
             </div>
           </div>
           <div class="commit">fix: AI 모델 실제 API 연동 시 발생하는 파싱/파라미터 오류 수정 · feat: AI 모델별 provider 라우팅 구조 분리

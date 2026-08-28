@@ -1518,7 +1518,7 @@
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>프로바이더를 <code>mock</code>으로 두면 <b>0단계 DB·사전 폴백만으로</b> 화면읽기·번역 동작. AI 없이도 전체 흐름 시연 가능.</p>
+              <p>프로바이더를 <code>mock</code>으로<br>두면 <b>0단계 DB·사전 폴백만으로</b> 화면읽기·번역 동작.<br>AI 없이도 전체 흐름 시연 가능.</p>
             </div>
           </div>
           <div class="mono">design: AI Provider 추상화 + kiosk.ai.provider=mock 폴백</div>
@@ -1536,7 +1536,7 @@
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>브랜드를 몰라도 <b>일반 메뉴판으로 인식</b>. 모든 경로에 "직원에게 보여주기" 상시 노출로 직원에게 연결.</p>
+              <p>브랜드를 몰라도 <b>일반 메뉴판으로 인식</b>.<br>모든 경로에 "직원에게 보여주기" 상시 노출로 직원에게 연결.</p>
             </div>
           </div>
           <div class="mono">design: 미매핑 브랜드 일반 메뉴판 인식 + 직원 연결 경로</div>
@@ -1564,15 +1564,15 @@
           <div class="tsflow">
             <div class="b">
               <div class="lab">발견</div>
-              <p>망이 끊긴 상황에서도 모델 3개를 순차 호출. 규칙 폴백까지 도달하는 데 지연 누적.</p>
+              <p>망이 끊긴 상황에서도 모델 3개를 순차 호출.<br>규칙 폴백까지 도달하는 데 지연 누적.</p>
             </div>
             <div class="b">
               <div class="lab">원인</div>
-              <p>호출 실패를 한 종류로만 처리. 모델이 거절한 경우와 게이트웨이에 닿지 못한 경우가 동일 취급.</p>
+              <p>호출 실패를 한 종류로만 처리.<br>모델이 거절한 경우와 게이트웨이에 닿지 못한 경우가 동일 취급.</p>
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p><code>MindLogicClient</code> 반환을 <code>Result(content, reachable)</code> 2필드로 분리.<br>거절이면 다음 모델, <code>reachable=false</code>면 체인 즉시 중단 후 규칙 기반으로 전환.</p>
+              <p><code>MindLogicClient</code> 반환을 <code>Result(content,<br>reachable)</code> 2필드로 분리.<br>거절이면 다음 모델,<br><code>reachable=false</code>면 체인 즉시 중단 후 규칙 기반으로 전환.</p>
             </div>
           </div>
           <div class="mono">design: MindLogicClient Result(content, reachable) 2-상태 반환</div>
@@ -1590,7 +1590,7 @@
             </div>
             <div class="b res">
               <div class="lab">해결</div>
-              <p>필터 결과가 비면 <b>전체 후보로 복귀</b>. 화면이 비는 상황 자체를 제거.</p>
+              <p>필터 결과가 비면 <b>전체 후보로 복귀</b>.<br>화면이 비는 상황 자체를 제거.</p>
             </div>
           </div>
           <div class="mono">design: RuleEngine 필터 결과 0건 시 전체 후보 복귀</div>
