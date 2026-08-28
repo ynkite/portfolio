@@ -537,17 +537,45 @@ def page_eval(pj, brand):
                ''.join(keep)))
 
 
-def sentence_breaks(html):
+def _mid_break(seg, limit):
+    """한 문장이 아직 길면 이어 주는 자리에서 한 번 더 나눈다.
+
+    「~고 」 「~며 」 처럼 절이 끝나는 곳이나 쉼표 뒤를 고른다.
+    가운데에 가장 가까운 자리를 골라야 두 줄 길이가 고르다.
+    태그 안쪽은 건드리지 않는다.
+    """
+    plain = len(re.sub(r'<[^>]+>', '', seg))
+    if plain <= limit:
+        return seg
+    spots = []
+    for m in re.finditer(r'(?:하고|되고|지고|으로|고|며)\s+|,\s+', seg):
+        k = m.end()
+        if seg.count('<', 0, k) != seg.count('>', 0, k):
+            continue          # 태그 한가운데다
+        head = len(re.sub(r'<[^>]+>', '', seg[:k]))
+        tail = plain - head
+        if head < 12 or tail < 12:
+            continue          # 한쪽이 한 마디만 남으면 끊지 않는다
+        spots.append(k)
+    if not spots:
+        return seg
+    half = len(seg) / 2.0
+    k = min(spots, key=lambda x: abs(x - half))
+    return seg[:k].rstrip() + '<br>' + seg[k:]
+
+
+def sentence_breaks(html, limit=40):
     """한 줄에 안 들어가는 설명은 문장 끝에서 나눈다.
 
-    마침표 뒤에 공백이 오고 다음이 태그나 글자면 그 자리에서 줄을 바꾼다.
+    마침표 뒤에 공백이 오면 그 자리에서 줄을 바꾼다.
     `abc.def()` 처럼 코드 안에 든 마침표는 뒤에 공백이 없으니 걸리지 않는다.
+    끊고도 여전히 긴 문장은 이어 주는 자리에서 한 번 더 나눈다.
     """
     if not html:
         return html
-    out = re.sub(r'(?<=[.])\s+(?=\S)', '<br>', html)
-    return re.sub(r'(<br>)+$', '', out)
-
+    parts = re.split(r'(?<=[.])\s+(?=\S)', html.strip())
+    out = [_mid_break(x, limit) for x in parts]
+    return re.sub(r'(<br>)+$', '', '<br>'.join(out))
 
 def page_trouble(pj):
     """프로젝트 ⑤ — 문제 해결과 배포."""

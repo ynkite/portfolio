@@ -1615,7 +1615,7 @@
     <div class="wrap">
       <div class="step">05 · DEVELOPMENT &amp; EVALUATION</div>
       <h2 class="stitle rv">개발과 평가</h2>
-      <p class="lead rv">평가셋을 돌려 문제를 찾았습니다. 고친 다음 <b>같은 평가셋을 한 번 더</b> 돌렸습니다.<br>돌린 평가셋은 <b>3벌, 138문항</b>입니다. 카드 생성 73 · 세이프티 50 · 벤더 비교 15.<br>모두 로컬 서버에서 받은 응답입니다.</p>
+      <p class="lead rv">평가셋을 돌려 문제를 찾았습니다. 고친 다음 <b>같은 평가셋을 한 번 더</b> 돌렸습니다.<br>돌린 평가셋은 모두 <b>138문항</b>입니다. 카드 생성 73 · 세이프티 50 · 벤더 비교 15.<br>모두 로컬 서버에서 받은 응답입니다.</p>
       <div class="sstep rv">
         <div class="n">05-1</div>
         <h3>평가 기준</h3>
@@ -1623,9 +1623,9 @@
       </div>
       <p class="lead rv">프롬프트에 출력 형식을 지정해 카드 응답을 <b>JSON으로만</b> 받습니다. 응답 앞뒤에 <b>마크다운 코드 블록 표시</b>가 붙어 오면 떼고 읽습니다.<br>한 번에 안 읽히면 <b>제어문자를 허용하도록 설정을 바꿔</b> 다시 읽습니다.<br>몇 건이 걸러지는지 보려고 카드 생성 요청 <b>100건</b>을 로컬 서버에 넣었습니다.</p>
       <div class="dtable rv">
-        <div class="drow"><span class="k">JSON 파싱 성공률</span><span class="v">응답 본문을 그대로 넣어 JSON 으로 읽히는지 본다.<br>응답에 <b>코드 블록 표시</b>가 남아 있으면 실패로 센다</span></div>
+        <div class="drow"><span class="k">JSON 파싱 성공률</span><span class="v">응답 본문을 그대로 JSON 으로 읽어 본다.<br>응답에 <b>코드 블록 표시</b>가 남아 있으면 실패로 처리한다</span></div>
         <div class="drow"><span class="k">스키마 준수율</span><span class="v"><code>conceptContent</code> <code>keyPoints</code> 등 카드 필수 8개 필드가 다 왔는지 대조한다</span></div>
-        <div class="drow"><span class="k">약점 분류 정확도</span><span class="v">리뷰 지적을 묶은 카테고리·언어를 정답 라벨과 맞춰 본다</span></div>
+        <div class="drow"><span class="k">약점 분류 정확도</span><span class="v">리뷰 지적을 묶은 카테고리·언어를 정답 라벨과 대조한다</span></div>
         <div class="drow"><span class="k">세이프티 방어율</span><span class="v">근거 없이 단언하거나 없는 API를 지어내는 답을 걸러 낸 비율</span></div>
         <div class="drow"><span class="k">벤더별 비교</span><span class="v">모델 문자열만 바꿔 같은 코드 15건을 세 벤더에 그대로 실행한다</span></div>
       </div>
