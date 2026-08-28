@@ -4,8 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>정상연 — 백엔드 개발자</title>
-  <meta name="description" content="백엔드 개발자 정상연의 프로젝트 · COGI · TripLinker · 오몽">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%231d1d1f%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2244%22%20font-size%3D%2234%22%20font-family%3D%22system-ui%2Csans-serif%22%20font-weight%3D%22700%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3EJ%3C%2Ftext%3E%3C%2Fsvg%3E">
+  <title>정상연 — 백엔드 · AI 에이전트 개발자</title>
+  <meta name="description" content="백엔드 · AI 에이전트 개발자 정상연의 프로젝트 · COGI · TripLinker · 오몽">
+  <!-- 폰트를 외부에서 받는다. 연결을 미리 열어 두면 첫 글자가 그만큼 빨리 뜬다 -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <style>
@@ -46,7 +49,7 @@
     }
 
     /* 화면이 너무 낮으면 스냅이 콘텐츠를 가둔다. 그때는 그냥 흐르게 둔다 */
-    @media (max-height:660px) {
+    @media (max-height:800px) {
       html {
         scroll-snap-type: none
       }
@@ -194,6 +197,12 @@
       padding: 1px 5px;
       letter-spacing: 0
     }
+
+    /* 랜드마크만 더한다. display:contents 라 배치에는 영향이 없다 */
+    main {
+      display: contents
+    }
+
 
     .wrap {
       max-width: 1000px;
@@ -457,7 +466,7 @@
 
     .abcell .k {
       font-size: 12px;
-      color: var(--muted);
+      color: #68686d;
       display: flex;
       align-items: center;
       gap: 7px
@@ -465,7 +474,10 @@
 
     .abcell .v {
       font-size: 16px;
-      font-weight: 600
+      font-weight: 600;
+      /* 좁은 화면에서 긴 값이 칸을 밀어 내부 스크롤이 생기던 것을 막는다 */
+      min-width: 0;
+      overflow-wrap: anywhere
     }
 
     .abcell .v.tbd {
@@ -527,6 +539,15 @@
       margin: 0 auto
     }
 
+    /* 대표 프로젝트 절은 목업이 주인공이다. 제목 묶음이 세로를 덜 먹게 한다 */
+    .feat .shead {
+      max-width: 960px
+    }
+
+    .feat .shead h2 {
+      font-size: clamp(28px, min(4.4vw, 4.6vh), 50px)
+    }
+
     .shead .kick {
       font-size: 19px;
       font-weight: 600;
@@ -551,7 +572,7 @@
     /* featured */
     /* 스냅 페이지 안에서는 여백을 화면 높이에 맞춰 줄인다 */
     .feat {
-      padding: clamp(26px, 3.6vh, 60px) 0
+      padding: clamp(16px, 2.2vh, 44px) 0
     }
 
     .feat.gray {
@@ -559,14 +580,14 @@
     }
 
     .feat .device {
-      margin-top: clamp(16px, 2.4vh, 36px)
+      margin-top: clamp(12px, 1.6vh, 28px)
     }
 
     /* 목업은 세로가 682px 기준이다. 한 화면에 담아야 하니 화면이 낮으면
        높이 여유만큼 폭을 줄인다 — 폭으로 계산해야 가로세로 비율이 그대로 간다.
        duo 1367×682(2.005) · 브라우저 1015×682(1.488) · 폰 340×682(0.4985) */
     .feat {
-      --mockh: clamp(320px, calc(100vh - 640px), 682px)
+      --mockh: clamp(320px, calc(87vh - 340px), 682px)
     }
 
     /* 브라우저 창 + 완성 폰 목업을 나란히 (COGI).
@@ -721,8 +742,8 @@
     }
 
     .feat .txt {
-      max-width: 900px;
-      margin: clamp(16px, 2.2vh, 32px) auto 0;
+      max-width: 940px;
+      margin: clamp(10px, 1.4vh, 24px) auto 0;
       text-align: center
     }
 
@@ -736,11 +757,11 @@
 
     /* 불릿 한 줄이 접히지 않게 폭을 넉넉히 준다 */
     .feat .tech {
-      margin: clamp(12px, 2vh, 26px) auto 0;
+      margin: clamp(8px, 1.2vh, 18px) auto 0;
       max-width: 900px;
       text-align: left;
       display: grid;
-      gap: clamp(6px, 1vh, 10px)
+      gap: clamp(4px, .7vh, 8px)
     }
 
     .feat .tech li {
@@ -769,7 +790,7 @@
     }
 
     .projbtns {
-      margin-top: clamp(14px, 2.2vh, 32px);
+      margin-top: clamp(10px, 1.4vh, 22px);
       display: flex;
       gap: 12px;
       justify-content: center;
@@ -781,7 +802,7 @@
       align-items: center;
       gap: 8px;
       border-radius: 980px;
-      padding: clamp(9px, 1.4vh, 12px) 22px;
+      padding: clamp(8px, 1.1vh, 11px) 22px;
       font-size: 15px;
       font-weight: 500;
       border: 1px solid var(--line);
@@ -999,12 +1020,14 @@
     }
 
     .fold>summary .ft {
+      display: block;
       font-size: 17px;
       font-weight: 600;
       letter-spacing: -.015em
     }
 
     .fold>summary .fs {
+      display: block;
       font-size: 13.5px;
       color: var(--sub);
       margin-top: 4px
@@ -1143,7 +1166,7 @@
     }
 
     .skcols {
-      margin-top: clamp(18px, 3vh, 40px);
+      margin-top: clamp(14px, 2.2vh, 30px);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1px;
@@ -1159,16 +1182,16 @@
       padding: 28px 26px
     }
 
-    .skcol h4 {
+    .skcol h3 {
       font-size: 14px;
       font-weight: 600;
       color: var(--blue);
-      margin-bottom: 16px
+      margin-bottom: 11px
     }
 
     .skcol .row {
       display: grid;
-      gap: 6px
+      gap: 5px
     }
 
     /* 기술 칩 — 누르면 아래 패널에 활용 수준과 근거가 뜬다.
@@ -1177,7 +1200,7 @@
       font-size: 13.5px;
       background: var(--gray);
       border-radius: 9px;
-      padding: 8px 12px;
+      padding: 6px 12px;
       text-align: left;
       transition: background .3s, transform .1s ease-out
     }
@@ -1207,11 +1230,11 @@
     }
 
     .skpanel {
-      margin-top: 18px;
+      margin-top: 14px;
       border: 1px solid var(--line);
       border-radius: 18px;
       background: #fff;
-      padding: 24px 26px;
+      padding: 18px 24px;
       text-align: left
     }
 
@@ -1318,7 +1341,7 @@
       font-size: 26px
     }
 
-    .acard h4 {
+    .acard h3 {
       font-size: 22px;
       font-weight: 700;
       letter-spacing: -.02em
@@ -1373,7 +1396,7 @@
     .hero h1,
     .shead h2,
     .tile h3,
-    .acard h4 {
+    .acard h3 {
       font-optical-sizing: auto;
       text-wrap: balance
     }
@@ -1799,44 +1822,49 @@
 <body>
   <nav>
     <div class="in"><a class="brand" href="#top">정상연 포트폴리오</a>
-      <div class="lks"><a class="h" href="#skills">스킬</a><a class="h" href="#credits">자격증 · 수상</a><a class="h"
-          href="#work">프로젝트</a><a class="h" href="#more">추가 작업</a>
+      <div class="lks"><a class="h" href="#skills">스킬</a><a class="h" href="#work">프로젝트</a><a class="h"
+          href="#more">추가 작업</a><a class="h" href="#credits">자격증 · 수상</a>
         <span class="sep" aria-hidden="true"></span>
         <a class="ct pdf"
-          href="assets/%EC%9D%B4%EB%A0%A5%EC%84%9C_%EC%A0%95%EC%83%81%EC%97%B0_%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4%EC%82%AC%EC%9D%B4%ED%8A%B8%EC%9A%A9.pdf"
+          href="assets/%EC%9D%B4%EB%A0%A5%EC%84%9C_%EC%A0%95%EC%83%81%EC%97%B0.pdf"
           target="_blank" rel="noopener">이력서 PDF ↗</a>
-        <span class="ct pdf soon" title="준비 중입니다">포트폴리오 PDF</span>
+        <a class="ct pdf"
+          href="assets/%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4_%EC%A0%95%EC%83%81%EC%97%B0_%EC%9A%94%EC%95%BD.pdf"
+          target="_blank" rel="noopener" title="22쪽 요약본입니다">포트폴리오 PDF ↗</a>
       </div>
     </div>
   </nav>
 
   <div class="steps" role="navigation" aria-label="섹션 이동">
-    <a href="#top" data-t="프로필" class="on"></a>
-    <a href="#skills" data-t="스킬"></a>
-    <a href="#credits" data-t="자격증 · 수상"></a>
-    <a href="#work" data-t="COGI"></a>
-    <a href="#triplinker" data-t="TripLinker"></a>
-    <a href="#omong" data-t="오몽"></a>
-    <a href="#more" data-t="추가 작업"></a>
-    <a href="#archiving" data-t="링크 · 연락처"></a>
+    <a href="#top" data-t="프로필" aria-label="프로필" class="on"></a>
+    <a href="#skills" data-t="스킬" aria-label="스킬"></a>
+    <a href="#work" data-t="COGI" aria-label="COGI"></a>
+    <a href="#triplinker" data-t="TripLinker" aria-label="TripLinker"></a>
+    <a href="#omong" data-t="오몽" aria-label="오몽"></a>
+    <a href="#more" data-t="추가 작업" aria-label="추가 작업"></a>
+    <a href="#credits" data-t="자격증 · 수상" aria-label="자격증 · 수상"></a>
+    <a href="#archiving" data-t="링크 · 연락처" aria-label="링크 · 연락처"></a>
   </div>
 
+  <main>
   <!-- PROFILE -->
   <section class="about snap" id="top">
     <div class="hero">
-      <div class="eyebrow">Backend Developer</div>
+      <div class="eyebrow">Backend Developer · AI Agent Engineer</div>
       <h1>정상연</h1>
-      <div class="sub">Java · Spring · Spring AI · AWS</div>
+      <div class="sub">Spring AI · Java · Spring · AWS</div>
     </div>
     <div class="wrap" id="about">
-      <p class="lead rv">인덕대학교 컴퓨터소프트웨어학과에 재학 중입니다.<br>대우능력개발원 KDT 과정에서
-        Java·Spring·AWS·시큐어코딩·Spring AI를 다뤘습니다.<br>팀 프로젝트 COGI와 TripLinker에서 팀장을 맡아 AWS 배포까지 마쳤습니다.</p>
+      <p class="lead rv">AI 기능을 서비스에 붙이고 그 결과를 수치로 확인하는 백엔드 개발자입니다.<br>모델을 새로 학습시키기보다
+        이미 있는 모델을 서비스 안에서 안정적으로 돌리는 일을 주로 해 왔습니다.<br>벤더 호출이 실패해도 화면이 멈추지 않도록 폴백과 응답 검증 계층을 설계했습니다.</p>
+      <!-- 0단계(평가셋 측정)를 끝내면 위 문단 마지막에 이 줄을 붙인다. 그 전에 넣으면 거짓말이 된다.
+           <br>바꾼 뒤에는 평가셋으로 전후를 재서 남겼습니다. -->
       <div class="glabel rv">프로필</div>
       <div class="abgrid rv d1">
         <div class="abcell"><span class="k">이름</span><span class="v">정상연 (Jeong Sangyeon)</span></div>
         <div class="abcell"><span class="k">생년월일</span><span class="v">2001.08.02</span></div>
         <div class="abcell"><span class="k">학력</span><span class="v">인덕대학교 컴퓨터소프트웨어학과</span></div>
-        <a class="abcell" href="#skills"><span class="k">스킬</span><span class="v kw">Java · Spring Boot · Spring AI ·
+        <a class="abcell" href="#skills"><span class="k">스킬</span><span class="v kw">Spring AI · Java · Spring Boot ·
             AWS</span></a>
         <a class="abcell" href="#credits"><span class="k">자격증 · 수상</span><span class="v kw">정보처리산업기사(필기) · 경진대회
             8회</span></a>
@@ -1861,11 +1889,27 @@
       <div class="shead">
         <div class="kick rv">Skills</div>
         <h2 class="rv">스킬</h2>
-        <p class="rv">주력 스킬은 검정으로 표시했고, 각 스킬을 누르면 아래에 설명이 나옵니다.</p>
+        <p class="rv">주력 스킬은 검은색으로 강조했습니다.</p>
       </div>
       <div class="skcols rv d1">
         <div class="skcol">
-          <h4>Backend</h4>
+          <h3>AI · Agent</h3>
+          <div class="row">
+            <button class="sk core" data-sk="springai">Spring AI</button>
+            <button class="sk core" data-sk="router">멀티 LLM 라우팅</button>
+            <button class="sk core" data-sk="fallback">폴백 설계</button>
+            <button class="sk core" data-sk="prompt">프롬프트 설계</button>
+            <button class="sk core" data-sk="vision">비전 인식</button>
+            <button class="sk" data-sk="vstore">VectorStore(MariaDB)</button>
+            <button class="sk" data-sk="rag">RAG</button>
+            <button class="sk" data-sk="embed">임베딩</button>
+            <button class="sk" data-sk="tool">Tool Calling</button>
+            <button class="sk" data-sk="mcp">MCP</button>
+            <button class="sk" data-sk="ollama">Ollama 로컬모델</button>
+          </div>
+        </div>
+        <div class="skcol">
+          <h3>Backend</h3>
           <div class="row">
             <button class="sk core" data-sk="java">Java</button>
             <button class="sk core" data-sk="boot">Spring Boot</button>
@@ -1879,20 +1923,7 @@
           </div>
         </div>
         <div class="skcol">
-          <h4>AI</h4>
-          <div class="row">
-            <button class="sk core" data-sk="springai">Spring AI</button>
-            <button class="sk core" data-sk="llm">LLM 연동</button>
-            <button class="sk core" data-sk="router">멀티 LLM 라우팅</button>
-            <button class="sk core" data-sk="prompt">프롬프트 설계</button>
-            <button class="sk" data-sk="rag">RAG</button>
-            <button class="sk" data-sk="tool">Tool Calling</button>
-            <button class="sk" data-sk="ollama">Ollama 로컬모델</button>
-            <button class="sk" data-sk="mcp">MCP</button>
-          </div>
-        </div>
-        <div class="skcol">
-          <h4>DB · Infra</h4>
+          <h3>DB · Infra</h3>
           <div class="row">
             <button class="sk core" data-sk="mariadb">MariaDB</button>
             <button class="sk core" data-sk="aws">AWS EC2 · RDS</button>
@@ -1906,7 +1937,7 @@
           </div>
         </div>
         <div class="skcol">
-          <h4>Frontend · Etc</h4>
+          <h3>Frontend · Etc</h3>
           <div class="row">
             <button class="sk" data-sk="git">Git · GitHub</button>
             <button class="sk" data-sk="js">JavaScript</button>
@@ -1920,121 +1951,286 @@
       </div>
 
       <div class="skpanel rv d1">
-        <div class="skp on" id="sk-springai"><b>Spring AI<i>중상 · 주력</i></b>
-          <p>ChatClient와 Advisor 기반 프롬프트 관리, Tool Calling을 통한 외부 기능 확장 활용 가능. 비용 효율을 고려한 멀티 LLM 라우팅 구성 및 Ollama 로컬 모델과
-            벡터스토어를
-            엮은 RAG 파이프라인 설계 경험 보유. 대우능력개발원 KDT 과정에서 116시간 이수.</p>
+        <div class="skp on" id="sk-springai"><b>Spring AI<i>주력</i></b>
+          <p>ChatClient와 Advisor로 프롬프트를 관리하고 Tool Calling으로 외부 기능을 붙일 수 있음. 비용을 따져 멀티 LLM 라우팅을 짜고 Ollama 로컬 모델과 벡터스토어를 엮어 RAG 파이프라인을 설계한 경험이 있음. 대우능력개발원 KDT 과정에서 116시간 이수.</p>
         </div>
-        <div class="skp" id="sk-llm"><b>LLM 연동<i>중급 · 주력</i></b>
-          <p>Claude · GPT · Gemini · Groq 네 벤더를 한 인터페이스로 호출하는 계층 설계 및 구현. Anthropic Messages 형식과 OpenAI 호환 형식의 요청·응답 차이를
-            한
-            클래스 안에서 분기 처리, 코드펜스 제거·확장 사고 블록 건너뛰기·JSON 스키마 검증까지 방어 로직 작성. COGI·TripLinker·오몽 세 프로젝트에 적용.</p>
+        <div class="skp" id="sk-router"><b>멀티 LLM 라우팅<i>주력</i></b>
+          <p>플랜별 허용 모델과 토큰 단가를 따로 관리하며 호출이 실패하면 다음 모델로 넘기는 순차 폴백을 구성함. 속도가 중요한 판단에는 빠른 모델을, 품질이 중요한 생성에는 상위 모델을 두는 이원 구성 적용. 벤더 응답의 입력·출력 토큰으로 실사용 비용을 계산하는 로직 구현.</p>
         </div>
-        <div class="skp" id="sk-router"><b>멀티 LLM 라우팅<i>중급 · 주력</i></b>
-          <p>플랜별 허용 모델과 토큰 단가를 분리해 관리하고 호출 실패 시 다음 모델로 넘기는 순차 폴백 구성 가능. 속도가 필요한 판단에는 빠른 모델을, 품질이 필요한 생성에는 상위 모델을 배치하는
-            이원 구성 적용. 벤더 응답을 받아 입력·출력 토큰으로 실사용 비용을 계산하는 로직 구현.</p>
+        <div class="skp" id="sk-prompt"><b>프롬프트 설계<i>주력</i></b>
+          <p>공통 규칙·사용자 수준·모델 티어 세 축을 파일로 나눠 조합하는 프롬프트 빌더를 설계하고 구현. 학습 카드와 퀴즈는 수준 3단계와 모델 티어 3단계를 교차해 9가지 조합으로 생성. 중복 서술은 공통 파일로 모아 규칙 하나를 한 곳에서만 고치도록 정리.</p>
         </div>
-        <div class="skp" id="sk-prompt"><b>프롬프트 설계<i>중급 · 주력</i></b>
-          <p>공통 규칙·사용자 수준·모델 티어 세 축을 파일로 분리해 조합하는 프롬프트 빌더 설계 및 구현. 학습 카드와 퀴즈는 수준 3단계와 모델 티어 3단계를 교차해 9가지 조합으로 생성. 중복 서술을
-            공통 파일로 정리해 규칙 하나를 한 곳에서만 고치도록 정리.</p>
+        <div class="skp" id="sk-rag"><b>RAG</b>
+          <p>임베딩과 벡터스토어를 엮어 검색 증강 생성 파이프라인을 설계할 수 있음. 문서를 청크로 나눠 임베딩한 뒤 유사도 검색 결과를 프롬프트 컨텍스트로 넣는 흐름을 이해함. 대우능력개발원 Spring AI 과정에서 실습.</p>
         </div>
-        <div class="skp" id="sk-rag"><b>RAG<i>중급</i></b>
-          <p>임베딩과 벡터스토어를 엮은 검색 증강 생성 파이프라인 설계 활용 가능. 문서를 청크로 나눠 임베딩한 뒤 유사도 검색 결과를 프롬프트 컨텍스트로 주입하는 흐름 이해. 대우능력개발원 Spring
-            AI 과정에서 실습.</p>
+        <div class="skp" id="sk-tool"><b>Tool Calling</b>
+          <p>모델이 직접 함수를 호출하도록 도구를 등록하고 스키마를 정의하는 방식을 쓸 수 있음. 모델 응답만으로 처리할 수 없는 조회·계산을 서버 메서드에 넘기는 구조를 이해함.</p>
         </div>
-        <div class="skp" id="sk-tool"><b>Tool Calling<i>중급</i></b>
-          <p>모델이 직접 함수를 호출해 외부 기능을 쓰도록 도구를 등록하고 스키마를 정의하는 방식 활용 가능. 모델 응답만으로 처리할 수 없는 조회·계산을 서버 메서드에 위임하는 구조 이해.</p>
+        <div class="skp" id="sk-ollama"><b>Ollama 로컬모델</b>
+          <p>로컬에서 돌리는 오픈 모델을 Spring AI로 연결해 쓸 수 있음. 오몽에서 비전 모델을 provider 추상화 뒤에 두어, 게이트웨이 경로와 로컬 모델 경로를 설정 한 줄로 바꿔 쓰게 구성.</p>
         </div>
-        <div class="skp" id="sk-ollama"><b>Ollama 로컬모델<i>중급</i></b>
-          <p>로컬에서 구동하는 오픈 모델을 Spring AI로 연결해 사용 가능. 오몽에서 비전 모델을 provider 추상화 뒤에 두어, 게이트웨이 경로와 로컬 모델 경로를 설정 한 줄로 바꿔 쓸 수
-            있게
-            구성.</p>
-        </div>
-        <div class="skp" id="sk-mcp"><b>MCP<i>초중급</i></b>
-          <p>Model Context Protocol로 모델과 외부 도구·데이터 소스를 표준 인터페이스로 잇는 방식 학습. 서버가 도구와 리소스를 노출하고 클라이언트가 이를 발견해 호출하는 구조 이해.
-            대우능력개발원
-            Spring AI 과정에서 다룸.</p>
+        <div class="skp" id="sk-mcp"><b>MCP</b>
+          <p>Model Context Protocol로 모델과 외부 도구·데이터 소스를 표준 인터페이스로 잇는 방식을 학습함. 서버가 도구와 리소스를 내놓고 클라이언트가 찾아 호출하는 구조를 이해함. 대우능력개발원 Spring AI 과정에서 다룸.</p>
         </div>
 
-        <div class="skp" id="sk-java"><b>Java<i>중급 · 주력</i></b>
-          <p>객체지향 프로그래밍, 클래스 설계, 상속, 예외 처리, 컬렉션 등 자바 핵심 문법을 실무 수준으로 활용 가능. TripLinker·COGI 등 다수 프로젝트에서 주력 언어 사용.</p>
+        <div class="skp" id="sk-fallback"><b>폴백 설계<i>주력</i></b>
+          <p>1차 모델이 실패해도 화면이 멈추지 않도록 다음 경로를 미리 깔아 두는 설계. Claude · GPT · Gemini · Groq 네 벤더를 한 인터페이스로 호출하고 타임아웃 · 코드 블록 표시 제거 · 스키마
+            검증을 클라이언트 한 곳에 모음. TripLinker는 Claude 실패 시 Groq으로, 오몽은 세 모델을 차례로 시도한 뒤 규칙 기반 결과로 복귀. COGI는 응답 파싱 실패 시 선차감한 크레딧을
+            트랜잭션으로 롤백.</p>
         </div>
-        <div class="skp" id="sk-boot"><b>Spring Boot<i>중급 · 주력</i></b>
-          <p>REST API 설계, 데이터베이스 연동, 빈 관리 등 Spring Boot 기반 백엔드 개발 활용 가능. 팀 프로젝트 팀장으로 전체 아키텍처 설계 주도 경험 보유.</p>
+        <div class="skp" id="sk-vision"><b>비전 인식<i>주력</i></b>
+          <p>이미지를 모델에 넣어 화면 구성 요소를 뽑아내는 작업. 오몽에서 키오스크 화면 사진 한 장으로 메뉴·버튼·가격을 추출. 어느 단계에서 답했는지를 응답에 함께 실어 남기도록 구성.</p>
         </div>
-        <div class="skp" id="sk-security"><b>Spring Security<i>중급 · 주력</i></b>
-          <p>인증·인가 처리와 Filter Chain 구성 활용 가능. JWT 이중 토큰, OAuth 2.0 소셜 로그인, 로그인 실패 횟수 기반 계정 잠금 구현 경험 보유.</p>
+        <div class="skp" id="sk-vstore"><b>VectorStore(MariaDB)</b>
+          <p>Spring AI VectorStore를 MariaDB에 붙여 문서 임베딩을 저장·검색. <code>PdfDocumentReaderConfig</code>로 PDF를 페이지 단위로 청킹해 적재하고 유사도 검색 결과를
+            프롬프트 컨텍스트로 주입하는 흐름까지 구성.</p>
         </div>
-        <div class="skp" id="sk-jpa"><b>Spring Data JPA<i>중급 · 주력</i></b>
-          <p>엔티티 매핑, 연관관계 설정, JPQL 및 쿼리 메서드 작성 활용 가능. 더티 체킹과 트랜잭션 경계를 고려한 도메인 설계 경험 보유.</p>
+        <div class="skp" id="sk-embed"><b>임베딩</b>
+          <p>문서와 질문을 같은 벡터 공간에 올려 의미가 가까운 것을 찾는 단계. 청킹 단위에 따라 검색 결과가 달라지므로, 나누는 기준을 바꿔 가며 비교하는 방식으로 다룸.</p>
         </div>
-        <div class="skp" id="sk-mvc"><b>Spring MVC<i>중급</i></b>
-          <p>컨트롤러·서비스·리포지토리 계층 분리 설계 및 요청 매핑, 예외 처리 활용 가능. JSP·Thymeleaf 뷰 연동과 REST 응답 처리 모두 구현 경험 보유.</p>
+        <div class="skp" id="sk-java"><b>Java<i>주력</i></b>
+          <p>객체지향 프로그래밍과 클래스 설계, 상속, 예외 처리, 컬렉션 등 자바 핵심 문법을 실무 수준으로 사용. TripLinker·COGI 등 여러 프로젝트에서 주력 언어로 씀.</p>
         </div>
-        <div class="skp" id="sk-oauth"><b>OAuth 2.0<i>중급</i></b>
-          <p>소셜 로그인 인증 흐름 이해 및 Spring Security 연동 구현 가능. TripLinker에서 카카오·구글, COGI에서 GitHub·카카오 연동 구현.</p>
+        <div class="skp" id="sk-boot"><b>Spring Boot<i>주력</i></b>
+          <p>REST API 설계와 데이터베이스 연동, 빈 관리 등 Spring Boot 백엔드 개발을 직접 함. 팀 프로젝트 팀장으로 전체 아키텍처 설계를 주도한 경험이 있음.</p>
         </div>
-        <div class="skp" id="sk-php"><b>PHP<i>중급</i></b>
-          <p>서버 사이드 웹 개발과 세션 처리, DB 연동 활용 가능. WindyCamp·PetVillage 쇼핑몰 구현 및 전공 멘토로 후배 프로젝트 지도, 온라인쇼핑몰 개발 경진대회 금상 수상.</p>
+        <div class="skp" id="sk-security"><b>Spring Security<i>주력</i></b>
+          <p>인증·인가 처리와 Filter Chain을 직접 구성함. JWT 이중 토큰, OAuth 2.0 소셜 로그인, 로그인 실패 횟수에 따른 계정 잠금을 구현해 봄.</p>
         </div>
-        <div class="skp" id="sk-laravel"><b>Laravel<i>중급</i></b>
-          <p>MVC 패턴 기반 애플리케이션 구조와 라우팅·ORM 활용 가능. 입양 정보 사이트 PetVillage와 판매 관리 시스템 DEVICE SHOP 구현. Laravel 웹 솔루션 경진대회 금상 수상.</p>
+        <div class="skp" id="sk-jpa"><b>Spring Data JPA<i>주력</i></b>
+          <p>엔티티 매핑과 연관관계 설정, JPQL·쿼리 메서드 작성을 다룸. 더티 체킹과 트랜잭션 경계를 고려해 도메인을 설계한 경험이 있음.</p>
         </div>
-        <div class="skp" id="sk-webflux"><b>Spring WebFlux<i>중급</i></b>
-          <p>동기·비동기 처리 방식의 차이를 이해하고 상황에 맞는 비동기 로직 적용 가능. 반응형 웹의 기초 개념 학습을 통한 응답성 개선 접근 가능.</p>
+        <div class="skp" id="sk-mvc"><b>Spring MVC</b>
+          <p>컨트롤러·서비스·리포지토리로 계층을 나눠 설계하고 요청 매핑과 예외 처리를 구현함. JSP·Thymeleaf 뷰 연동과 REST 응답 처리를 모두 해 봄.</p>
         </div>
-
-        <div class="skp" id="sk-mariadb"><b>MariaDB<i>중급 · 주력</i></b>
-          <p>TripLinker·COGI·WindyCamp 등 다수 프로젝트의 운영 DB로 사용. 인덱스와 제약조건을 고려한 테이블 정의서 작성 및 물리 모델링 수행.</p>
+        <div class="skp" id="sk-oauth"><b>OAuth 2.0</b>
+          <p>소셜 로그인 인증 흐름을 이해하고 Spring Security에 연동해 구현함. TripLinker에서 카카오·구글, COGI에서 GitHub·카카오를 붙임.</p>
         </div>
-        <div class="skp" id="sk-aws"><b>AWS EC2 · RDS<i>중급 · 주력</i></b>
-          <p>EC2 인스턴스에 애플리케이션을 올리고 RDS를 운영 DB로 붙여 서비스 배포·운영 가능. 운영과 로컬 설정을 프로필로 분리해 DB 주소·포트·업로드 경로를 환경마다 다르게 구성.
-            대우능력개발원
-            과정에서 EBS·AMI·S3·IAM·VPC·WAF까지 이수, AWS 서비스 활용능력 경진대회 최우수상 수상.</p>
+        <div class="skp" id="sk-php"><b>PHP</b>
+          <p>서버 사이드 웹 개발과 세션 처리, DB 연동을 직접 함. WindyCamp·PetVillage 쇼핑몰을 구현하고 전공 멘토로 후배 프로젝트를 지도, 온라인쇼핑몰 개발 경진대회 금상 수상.</p>
         </div>
-        <div class="skp" id="sk-dbms"><b>DB 설계<i>중급</i></b>
-          <p>테이블 설계와 정규화, 인덱스·제약조건 설계, 트랜잭션 관리 등 관계형 데이터베이스 설계·운영 활용 가능. TripLinker·COGI의 테이블 정의서와 물리적 모델링 문서를 직접 작성,
-            DBMS 경진대회 금상 수상.</p>
+        <div class="skp" id="sk-laravel"><b>Laravel</b>
+          <p>MVC 구조와 라우팅·ORM을 써서 애플리케이션을 구성함. 입양 정보 사이트 PetVillage와 판매 관리 시스템 DEVICE SHOP 구현. Laravel 웹 솔루션 경진대회 금상 수상.</p>
         </div>
-        <div class="skp" id="sk-mysql"><b>MySQL<i>중급</i></b>
-          <p>테이블 설계, 관계형 데이터 모델링, SQL 작성, 트랜잭션 관리 활용 가능. 조인·서브쿼리·집계 함수를 활용한 조회 쿼리 작성 및 다중 조건 검색·필터링 구현.</p>
-        </div>
-        <div class="skp" id="sk-mybatis"><b>MyBatis<i>중급</i></b>
-          <p>DB 연동, 동적 쿼리 작성, CRUD 구현 활용 가능. TripLinker에서 다중 조건 검색·필터링 기능 직접 구현.</p>
-        </div>
-        <div class="skp" id="sk-redis"><b>Redis<i>초중급</i></b>
-          <p>키 단위 카운터와 만료 시간을 이용한 상태 저장 활용 가능. COGI에서 비로그인 체험 횟수를 Redis 카운터로 제한하고 AI 호출이 모두 실패하면 카운터를 되돌리는 처리 구현.</p>
-        </div>
-        <div class="skp" id="sk-oracle"><b>Oracle<i>초중급</i></b>
-          <p>Oracle 환경에서 SQL 작성과 데이터 조회·삽입·수정·삭제 활용 가능. 기본적인 실행 계획 확인과 쿼리 개선을 교육 과정 실습에서 수행.</p>
-        </div>
-        <div class="skp" id="sk-docker"><b>Docker<i>초중급</i></b>
-          <p>이미지 빌드와 컨테이너 실행, 포트·볼륨 연결 등 기본 사용 가능. 대우능력개발원 AWS 과정에서 컨테이너 배포 실습 이수.</p>
-        </div>
-        <div class="skp" id="sk-linux"><b>Linux<i>초중급</i></b>
-          <p>명령어와 권한 관리, 네트워크 설정, Tomcat 운영, 방화벽 설정 활용 가능. Linux 서버 환경에서 PHP 웹 서비스 개발·운영 수행.</p>
+        <div class="skp" id="sk-webflux"><b>Spring WebFlux</b>
+          <p>동기와 비동기 처리의 차이를 이해하고 상황에 맞는 비동기 로직을 적용해 봄. 반응형 웹의 기초 개념을 학습해 응답성 개선을 검토할 수 있음.</p>
         </div>
 
-        <div class="skp" id="sk-git"><b>Git · GitHub<i>중급</i></b>
-          <p>브랜치 전략과 커밋 단위 관리, Pull Request 기반 코드 리뷰 활용 가능. 팀 프로젝트에서 팀장으로 브랜치 운영 및 리뷰 진행.</p>
+        <div class="skp" id="sk-mariadb"><b>MariaDB<i>주력</i></b>
+          <p>TripLinker·COGI·WindyCamp 등 여러 프로젝트의 운영 DB로 사용. 인덱스와 제약조건을 따져 테이블 정의서를 쓰고 물리 모델링을 수행.</p>
         </div>
-        <div class="skp" id="sk-js"><b>JavaScript<i>초중급</i></b>
-          <p>이벤트 처리와 DOM 조작, 비동기 요청(fetch)을 통한 백엔드 연동 화면 구성 가능. 다수 웹 프로젝트에서 API 연동 및 화면 동작 구현에 사용.</p>
+        <div class="skp" id="sk-aws"><b>AWS EC2 · RDS<i>주력</i></b>
+          <p>EC2 인스턴스에 애플리케이션을 올리고 RDS를 운영 DB로 붙여 서비스를 배포·운영함. 운영과 로컬 설정을 프로필로 나눠 DB 주소·포트·업로드 경로를 환경마다 다르게 구성. 대우능력개발원 과정에서 EBS·AMI·S3·IAM·VPC·WAF까지 이수, AWS 서비스 활용능력 경진대회 최우수상 수상.</p>
         </div>
-        <div class="skp" id="sk-htmlcss"><b>HTML5 · CSS3<i>초중급</i></b>
-          <p>시맨틱 태그를 고려한 문서 구조 작성 가능. Flexbox·Grid 기반 레이아웃과 반응형 스타일링 활용 가능. 다수 웹 프로젝트의 화면 마크업과 포트폴리오 사이트 제작에 사용.</p>
+        <div class="skp" id="sk-dbms"><b>DB 설계</b>
+          <p>테이블 설계와 정규화, 인덱스·제약조건 설계, 트랜잭션 관리 등 관계형 데이터베이스를 설계·운영함. TripLinker·COGI의 테이블 정의서와 물리적 모델링 문서를 직접 작성, DBMS 경진대회 금상 수상.</p>
         </div>
-        <div class="skp" id="sk-figma"><b>Figma<i>초중급</i></b>
-          <p>UI 프로토타입 제작과 와이어프레임 설계 활용 가능. 그래픽 디자인 실무 경험을 바탕으로 디자이너·기획자와의 협업에 사용.</p>
+        <div class="skp" id="sk-mysql"><b>MySQL</b>
+          <p>테이블 설계와 관계형 데이터 모델링, SQL 작성, 트랜잭션 관리를 다룸. 조인·서브쿼리·집계 함수로 조회 쿼리를 쓰고 다중 조건 검색·필터링을 구현.</p>
         </div>
-        <div class="skp" id="sk-react"><b>React (TS)<i>초급</i></b>
-          <p>컴포넌트 구조 설계와 상태 관리, 라우팅 기초 활용 가능. StagePass 개발 및 웹 프론트엔드 경진대회 최우수상 수상, COGI 프론트엔드 화면 구현에 사용.</p>
+        <div class="skp" id="sk-mybatis"><b>MyBatis</b>
+          <p>DB 연동과 동적 쿼리 작성, CRUD를 구현함. TripLinker에서 다중 조건 검색·필터링 기능을 직접 만듦.</p>
         </div>
-        <div class="skp" id="sk-thymeleaf"><b>Thymeleaf<i>초중급</i></b>
-          <p>Spring Boot 연동 서버 사이드 템플릿 엔진으로 동적 HTML 렌더링과 모델 데이터 바인딩 활용 가능. 교육 과정 프로젝트에 적용.</p>
+        <div class="skp" id="sk-redis"><b>Redis</b>
+          <p>키 단위 카운터와 만료 시간으로 상태를 저장할 수 있음. COGI에서 비로그인 체험 횟수를 Redis 카운터로 제한하고 AI 호출이 모두 실패하면 카운터를 되돌리는 처리를 구현.</p>
         </div>
-        <div class="skp" id="sk-python"><b>Python<i>초급</i></b>
-          <p>기본 문법, 파일 처리, 데이터 가공, 간단한 자동화 코드 작성 가능. Analyze Festa에서 데이터 전처리와 예측 모델 구현에 사용, PCA·SARIMA 적용.</p>
+        <div class="skp" id="sk-oracle"><b>Oracle</b>
+          <p>Oracle 환경에서 SQL을 쓰고 데이터를 조회·삽입·수정·삭제함. 기본적인 실행 계획 확인과 쿼리 개선을 교육 과정 실습에서 수행.</p>
+        </div>
+        <div class="skp" id="sk-docker"><b>Docker</b>
+          <p>이미지를 빌드하고 컨테이너를 실행하며 포트·볼륨을 연결하는 기본 작업을 함. 대우능력개발원 AWS 과정에서 컨테이너 배포 실습 이수.</p>
+        </div>
+        <div class="skp" id="sk-linux"><b>Linux</b>
+          <p>명령어와 권한 관리, 네트워크 설정, Tomcat 운영, 방화벽 설정을 다룸. Linux 서버에서 PHP 웹 서비스를 개발·운영함.</p>
+        </div>
+
+        <div class="skp" id="sk-git"><b>Git · GitHub</b>
+          <p>브랜치 전략과 커밋 단위를 관리하고 Pull Request로 코드 리뷰를 진행함. 팀 프로젝트에서 팀장으로 브랜치를 운영하고 리뷰를 맡음.</p>
+        </div>
+        <div class="skp" id="sk-js"><b>JavaScript</b>
+          <p>이벤트 처리와 DOM 조작, fetch 비동기 요청으로 백엔드와 이어지는 화면을 구성함. 여러 웹 프로젝트에서 API 연동과 화면 동작 구현에 사용.</p>
+        </div>
+        <div class="skp" id="sk-htmlcss"><b>HTML5 · CSS3</b>
+          <p>시맨틱 태그를 따져 문서 구조를 작성함. Flexbox·Grid 레이아웃과 반응형 스타일링을 다룸. 여러 웹 프로젝트의 화면 마크업과 이 포트폴리오 사이트 제작에 사용.</p>
+        </div>
+        <div class="skp" id="sk-figma"><b>Figma</b>
+          <p>UI 프로토타입과 와이어프레임을 만듦. 그래픽 디자인 실무 경험을 살려 디자이너·기획자와 협업할 때 사용.</p>
+        </div>
+        <div class="skp" id="sk-react"><b>React (TS)</b>
+          <p>컴포넌트 구조 설계와 상태 관리, 라우팅 기초를 다룸. StagePass 개발로 웹 프론트엔드 경진대회 최우수상 수상, COGI 프론트엔드 화면 구현에 사용.</p>
+        </div>
+        <div class="skp" id="sk-thymeleaf"><b>Thymeleaf</b>
+          <p>Spring Boot와 연동하는 서버 사이드 템플릿 엔진으로 동적 HTML을 렌더링하고 모델 데이터를 바인딩함. 교육 과정 프로젝트에 적용.</p>
+        </div>
+        <div class="skp" id="sk-python"><b>Python</b>
+          <p>기본 문법과 파일 처리, 데이터 가공, 간단한 자동화 코드를 작성함. Analyze Festa에서 데이터 전처리와 예측 모델 구현에 사용, PCA·SARIMA 적용.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED: COGI (web) -->
+  <section class="feat gray snap" id="work" style="--pb:#1c4f8c">
+    <div class="wrap">
+      <div class="shead">
+        <div class="kick rv">Featured · Web</div>
+        <h2 class="rv"><a href="./projects/cogi.html">COGI</a></h2>
+        <p class="rv">GitHub Pull Request를 AI가 리뷰해 반복되는 지적을 약점으로 모읍니다. 모인 약점으로 개념·예제·퀴즈를 만들어 같은 실수를 줄이는 학습 서비스입니다.</p>
+      </div>
+      <div class="device duo rv d1" data-lb="cogi" role="button" tabindex="0" aria-label="COGI 화면 크게 보기">
+        <div class="browser">
+          <div class="bar"><i></i><i></i><i></i><span class="u">43.202.36.123</span></div>
+          <div class="cap"><img src="assets/cogi-dash.png" alt="COGI 대시보드 화면" loading="lazy"></div>
+        </div>
+        <img class="mockimg" src="assets/cogi-dash-m.png" alt="COGI 모바일 대시보드 목업" loading="lazy">
+      </div>
+      <div class="txt rv d1">
+        <ul class="tech">
+          <li><b>AI 연동</b> — 벤더 4곳(Claude · GPT · Gemini · Groq)을 한 클라이언트로 호출, 타임아웃 · 코드 블록 표시 · 스키마 검사를 클라이언트 한 곳에 모음</li>
+          <li><b>약점 통계</b> — 리뷰 지적을 카테고리·언어로 묶어 3회 이상만 집계, 조회 시점에 계산해 쓰기 경합 제거</li>
+          <li><b>학습카드·퀴즈</b> — 약점에서 카드와 퀴즈를 생성, 크레딧을 먼저 차감하고 응답 파싱이 깨지면 트랜잭션으로 롤백</li>
+          <li><b>주간 리포트</b> — 지난주 발생·해결 건수를 집계해 HTML 메일로 발송, 전주 대비 증감을 함께 표기</li>
+          <li><b>사용량·비용</b> — 앱 로그 집계에 벤더 Admin API 조회를 따로 붙임. OpenAI와 Anthropic이 규격이 달라 두 경로로 나눔</li>
+        </ul>
+        <div class="projbtns">
+          <button class="pbtn" data-lb="cogi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <rect x="3" y="4" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="9" r="1.5" />
+              <path d="M21 15l-5-4-8 6" />
+            </svg>미리보기</button>
+          <a class="pbtn" href="https://github.com/Leeuswa/COGI" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="pbtn blue" href="http://43.202.36.123/" target="_blank" rel="noopener">사이트 바로가기 ↗</a>
+          <a class="pbtn dark" href="./projects/cogi.html">상세보기 ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED: TripLinker (web) -->
+  <section class="feat snap" id="triplinker" style="--pb:#a85c28">
+    <div class="wrap">
+      <div class="shead">
+        <div class="kick rv">Featured · Web</div>
+        <h2 class="rv"><a href="./projects/triplinker.html">TripLinker</a></h2>
+        <p class="rv">여행지·날짜·인원·예산을 넣으면 AI가 취향을 분석해 일자별 동선과 예산이 담긴 일정을 생성합니다. 장소는 카카오 로컬 검색 결과에서만 골라 실제로 없는 곳이 일정에 들어가지 않습니다.</p>
+      </div>
+      <div class="device rv d1" data-lb="tl" role="button" tabindex="0" aria-label="TripLinker 화면 크게 보기">
+        <div class="browser">
+          <div class="bar"><i></i><i></i><i></i><span class="u">triplinker.app</span></div>
+          <div class="cap"><img src="assets/triplinker-shot.png" alt="TripLinker 메인 화면" loading="lazy"></div>
+        </div>
+      </div>
+      <div class="txt rv d1">
+        <ul class="tech">
+          <li><b>인증</b> — JWT 이중 토큰(AT 30분·RT 7일), 로그아웃 시 <code>refresh_tokens</code> 행을 삭제해 재발급 차단</li>
+          <li><b>환각 차단</b> — 장소 후보 수집 단계에서는 LLM을 부르지 않고 카카오 검색 결과만 사용</li>
+          <li><b>AI</b> — Spring AI 멀티 LLM, 주 모델(Claude) 실패 시 <code>catch</code>에서 Groq로 전환</li>
+          <li><b>동선 보정</b> — 좌표를 한 번만 조회해 재사용, AI가 넣은 장소는 40km를 넘으면 삭제하고 사용자가 요청한 장소는 알림에 담아 남김</li>
+          <li><b>품질·운영</b> — 테스트 케이스 169건을 문서로 정리·검증, AWS EC2·RDS 배포·운영</li>
+        </ul>
+        <div class="projbtns">
+          <button class="pbtn" data-lb="tl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="9" r="1.5" />
+              <path d="M21 15l-5-4-8 6" />
+            </svg>미리보기</button>
+          <a class="pbtn" href="https://github.com/seolgi100/trip-linker" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="pbtn blue" href="http://43.201.154.80:8081/" target="_blank" rel="noopener">사이트 바로가기 ↗</a>
+          <a class="pbtn dark" href="./projects/triplinker.html">상세보기 ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED: 오몽 (app) -->
+  <section class="feat gray snap" id="omong" style="--pb:#E07B1E">
+    <div class="wrap">
+      <div class="shead">
+        <div class="kick rv">Featured · App</div>
+        <h2 class="rv"><a href="./projects/omong.html">오몽</a></h2>
+        <p class="rv">키오스크 화면을 사진으로 찍으면 메뉴와 가격을 읽어 주문을 대신 만듭니다. 외국인·어르신·시각장애인이 음성과 큰 버튼으로 혼자 주문을 끝내는 도우미입니다.</p>
+      </div>
+      <div class="device rv d1" data-lb="om" role="button" tabindex="0" aria-label="오몽 화면 크게 보기">
+        <img class="mockimg" src="assets/omong-mockup.png" alt="오몽 앱 메인 화면" loading="lazy">
+      </div>
+      <div class="txt rv d1">
+        <ul class="tech">
+          <li><b>화면 인식</b> — 비전 모델이 키오스크 사진에서 메뉴·버튼·가격을 읽어냄. 실패하면 미리 넣어 둔 키오스크 DB로, 그마저 없으면 재촬영 안내로 내려감</li>
+          <li><b>AI 체인</b> — Claude · GPT · Gemini 순으로 시도해 첫 성공을 쓰고, 모두 실패하면 규칙 기반으로 폴백</li>
+          <li><b>모델 추상화</b> — provider를 설정으로 나눠 게이트웨이와 Ollama 로컬 모델을 교체</li>
+          <li><b>접근성</b> — 5개국어 · 음성 안내 · 큰글씨 모드, 어느 화면에서나 직원 호출로 넘어갈 수 있음</li>
+          <li><b>성과</b> — 2박 3일 만에 개발, AI Re-Local 해커톤 아이디어상 · 팀 MVP</li>
+        </ul>
+        <div class="projbtns">
+          <button class="pbtn" data-lb="om"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="9" r="1.5" />
+              <path d="M21 15l-5-4-8 6" />
+            </svg>미리보기</button>
+          <a class="pbtn" href="https://github.com/ynkite/omong" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="pbtn blue" href="https://omong.o-r.kr/" target="_blank" rel="noopener">사이트 바로가기 ↗</a>
+          <a class="pbtn dark" href="./projects/omong.html">상세보기 ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MORE WORK -->
+  <section class="grid-sec snap" id="more">
+    <div class="wrap">
+      <div class="shead">
+        <div class="kick rv">More</div>
+        <h2 class="rv">더 많은 작업</h2>
+      </div>
+      <div class="tiles">
+        <div class="tile rv">
+          <div class="rowtop"><span class="yr">2026.05–06 · 개인</span><span class="badge">최우수상</span></div>
+          <h3>StagePass</h3>
+          <p>콘서트 티켓 예매 SPA.<br>Context API로 전역 상태를 관리하고 useSeats 커스텀 훅으로<br>좌석 로직을 분리했습니다.</p>
+          <div class="st">React 18 · TypeScript · Vite</div>
+          <div class="tbtns"><button class="tbtn" data-lb="stagepass">이미지 보기</button><a class="tbtn"
+              href="https://github.com/ynkite/stage-pass" target="_blank" rel="noopener">GitHub ↗</a></div>
+        </div>
+        <div class="tile rv">
+          <div class="rowtop"><span class="yr">2025.06 · 개인</span><span class="badge">금상</span></div>
+          <h3>WindyCamp</h3>
+          <p>캠핑용품 쇼핑몰.<br>상품·장바구니·주문 흐름을<br>PHP로 직접 설계하고 구현했습니다.</p>
+          <div class="st">PHP · MariaDB</div>
+          <div class="tbtns"><button class="tbtn" data-lb="windycamp">이미지 보기</button><a class="tbtn"
+              href="https://github.com/ynkite/WindyCamp" target="_blank" rel="noopener">GitHub ↗</a></div>
+        </div>
+        <div class="tile rv">
+          <div class="rowtop"><span class="yr">2025.04–05 · 개인</span><span class="badge">프로젝트</span></div>
+          <h3>DEVICE SHOP</h3>
+          <p>전자기기 판매·재고 관리 시스템.<br>Laravel의 MVC와 ORM, 인증을 써서<br>관리 화면을 구성했습니다.</p>
+          <div class="st">PHP · Laravel · MariaDB</div>
+          <div class="tbtns"><button class="tbtn" data-lb="deviceshop">이미지 보기</button><a class="tbtn"
+              href="https://github.com/ynkite/device-shop" target="_blank" rel="noopener">GitHub ↗</a></div>
+        </div>
+        <div class="tile rv">
+          <div class="rowtop"><span class="yr">2025.12 · 개인</span><span class="badge">Laravel 금상</span></div>
+          <h3>PetVillage</h3>
+          <p>반려동물 입양 정보 사이트.<br>Laravel로 공고 등록과 조회 기능을<br>설계하고 만들었습니다.</p>
+          <div class="st">PHP · Laravel · MariaDB</div>
+          <div class="tbtns"><button class="tbtn" data-lb="petvillage">이미지 보기</button><a class="tbtn"
+              href="https://github.com/ynkite/petvillage" target="_blank" rel="noopener">GitHub ↗</a></div>
+        </div>
+        <div class="tile rv">
+          <div class="rowtop"><span class="yr">2025.11–2026.03 · 개인</span><span class="badge">프로젝트</span></div>
+          <h3>Triplan</h3>
+          <p>TripLinker의 전신.<br>CLI로 시작해 Servlet/JSP, Spring+MyBatis로<br>아키텍처를 세 번 다시 설계했습니다.</p>
+          <div class="st">Java · Spring · MyBatis · JSP</div>
+          <div class="tbtns"><button class="tbtn" data-lb="triplan">이미지 보기</button><a class="tbtn"
+              href="https://github.com/ynkite/triplan" target="_blank" rel="noopener">GitHub ↗</a></div>
+        </div>
+        <div class="tile rv">
+          <div class="rowtop"><span class="yr">2025.11–12 · 개인</span><span class="badge">시각화상</span></div>
+          <h3>Analyze Festa</h3>
+          <p>서울시 공공데이터 분석.<br>PCA로 핵심 변수를 찾고<br>SARIMA로 2026년 수요를 예측했습니다.</p>
+          <div class="st">Python · PCA · SARIMA</div>
+          <div class="tbtns"><button class="tbtn" data-lb="festa">이미지 보기</button><a class="tbtn"
+              href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
         </div>
       </div>
     </div>
@@ -2050,10 +2246,10 @@
       <div class="folds rv d1">
         <details class="fold" name="credits">
           <summary>
-            <div>
-              <div class="ft">자격증 5건</div>
-              <div class="fs">정보처리산업기사 필기 합격 · 네트워크관리사 2급 · MOS 2종 · ITQ</div>
-            </div><span class="more"></span>
+            <span>
+              <span class="ft">자격증 5건</span>
+              <span class="fs">정보처리산업기사 필기 합격 · 네트워크관리사 2급 · MOS 2종 · ITQ</span>
+            </span><span class="more"></span>
           </summary>
           <div class="frows">
             <div class="awrow">
@@ -2092,15 +2288,15 @@
               <div class="dt"><span class="pz">최종 합격</span>2015.07</div>
             </div>
           </div>
-          <div class="foldnote">정보처리산업기사는 필기에 붙고 실기 접수를 마친 상태입니다.</div>
+          <div class="foldnote">정보처리산업기사는 필기에 합격했고 실기 접수를 마쳤습니다.</div>
         </details>
 
         <details class="fold" name="credits">
           <summary>
-            <div>
-              <div class="ft">수상 8건</div>
-              <div class="fs">최우수상 2 · 금상 4 · 은상 1 · 시각화상 1 · 해커톤 아이디어상 1</div>
-            </div><span class="more"></span>
+            <span>
+              <span class="ft">수상 8건</span>
+              <span class="fs">최우수상 2 · 금상 4 · 은상 1 · 시각화상 1 · 해커톤 아이디어상 1</span>
+            </span><span class="more"></span>
           </summary>
           <div class="frows">
             <div class="awrow">
@@ -2160,15 +2356,15 @@
               <div class="dt"><span class="pz">은상</span>2024.12</div>
             </div>
           </div>
-          <div class="foldnote">이 밖에 인덕대학교 컴퓨터소프트웨어학과 PHP 쇼핑몰 실무 전공멘토로 뽑혔습니다 (2026.03).</div>
+          <div class="foldnote">이 밖에 인덕대학교 컴퓨터소프트웨어학과에서 PHP 쇼핑몰 실무 전공멘토로 선발됐습니다 (2026.03).</div>
         </details>
 
         <details class="fold" name="credits">
           <summary>
-            <div>
-              <div class="ft">교육 — 대우능력개발원 KDT(2025.11 – 2026.08)</div>
-              <div class="fs">클라우드 기반 Java 웹개발자 시큐어코딩 과정 · 총 1024h</div>
-            </div><span class="more"></span>
+            <span>
+              <span class="ft">교육 — 대우능력개발원 KDT(2025.11 – 2026.08)</span>
+              <span class="fs">클라우드 기반 Java 웹개발자 시큐어코딩 과정 · 총 1024h</span>
+            </span><span class="more"></span>
           </summary>
           <div class="frows">
             <div class="edurow">
@@ -2249,175 +2445,8 @@
               <div class="hr">312h</div>
             </div>
           </div>
-          <div class="foldnote">실무형 프로젝트는 팀을 짜서 요구사항 정리부터 AWS 배포까지 직접 해 보는 과정입니다. 중간 점검마다 받은 피드백을 반영해 고쳤습니다.</div>
+          <div class="foldnote">실무형 프로젝트는 팀을 짜서 요구사항을 정리하고 AWS에 배포하는 일까지 직접 해 보는 과정입니다. 중간 점검마다 받은 피드백을 반영해 고쳤습니다.</div>
         </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURED: COGI (web) -->
-  <section class="feat gray snap" id="work" style="--pb:#1c4f8c">
-    <div class="wrap">
-      <div class="shead">
-        <div class="kick rv">Featured · Web</div>
-        <h2 class="rv"><a href="./projects/cogi.html">COGI</a></h2>
-        <p class="rv">AI가 GitHub PR을 리뷰하고,<br>반복된 지적은 약점으로 모아 학습 카드와 퀴즈로 만들어 주는 서비스입니다.</p>
-      </div>
-      <div class="device duo rv d1">
-        <div class="browser">
-          <div class="bar"><i></i><i></i><i></i><span class="u">43.202.36.123</span></div>
-          <div class="cap"><img src="assets/cogi-dash.png" alt="COGI 대시보드 화면" loading="lazy"></div>
-        </div>
-        <img class="mockimg" src="assets/cogi-dash-m.png" alt="COGI 모바일 대시보드 목업" loading="lazy">
-      </div>
-      <div class="txt rv d1">
-        <ul class="tech">
-          <li><b>AI 연동</b> — 벤더 4곳(Claude · GPT · Gemini · Groq)을 한 클라이언트로 호출, 타임아웃·코드펜스·스키마 방어를 그 안에 모음</li>
-          <li><b>약점 통계</b> — 리뷰 지적을 카테고리·언어로 묶어 3회 이상만 집계, 조회 시점에 계산해 쓰기 경합 제거</li>
-          <li><b>학습카드·퀴즈</b> — 약점에서 카드와 퀴즈를 생성, 크레딧을 먼저 차감하고 응답 파싱이 깨지면 롤백으로 되돌림</li>
-          <li><b>주간 리포트</b> — 지난주 발생·해결 건수를 집계해 HTML 메일로 발송, 전주 대비 증감을 함께 표기</li>
-          <li><b>사용량·비용</b> — 앱 로그 집계에 벤더 Admin API 조회를 따로 붙임. OpenAI와 Anthropic이 규격이 달라 두 경로로 나눔</li>
-        </ul>
-        <div class="projbtns">
-          <button class="pbtn" data-lb="cogi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2">
-              <rect x="3" y="4" width="18" height="14" rx="2" />
-              <circle cx="8.5" cy="9" r="1.5" />
-              <path d="M21 15l-5-4-8 6" />
-            </svg>미리보기</button>
-          <a class="pbtn" href="https://github.com/Leeuswa/COGI" target="_blank" rel="noopener">GitHub ↗</a>
-          <a class="pbtn blue" href="http://43.202.36.123/" target="_blank" rel="noopener">사이트 바로가기 ↗</a>
-          <a class="pbtn dark" href="./projects/cogi.html">상세보기 ↗</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURED: TripLinker (web) -->
-  <section class="feat snap" id="triplinker" style="--pb:#a85c28">
-    <div class="wrap">
-      <div class="shead">
-        <div class="kick rv">Featured · Web</div>
-        <h2 class="rv"><a href="./projects/triplinker.html">TripLinker</a></h2>
-        <p class="rv">AI가 취향을 분석해 일자별 동선과 예산까지 짜 주는 웹 여행 플래너입니다.</p>
-      </div>
-      <div class="device rv d1" data-lb="tl" role="button" tabindex="0" aria-label="TripLinker 화면 크게 보기">
-        <div class="browser">
-          <div class="bar"><i></i><i></i><i></i><span class="u">triplinker.app</span></div>
-          <div class="cap"><img src="assets/triplinker-shot.png" alt="TripLinker 메인 화면" loading="lazy"></div>
-        </div>
-      </div>
-      <div class="txt rv d1">
-        <ul class="tech">
-          <li><b>인증</b> — JWT 이중 토큰(AT 30분·RT 7일), 로그아웃 시 <code>refresh_tokens</code> 행을 삭제해 재발급 차단</li>
-          <li><b>환각 차단</b> — 장소 후보 수집 단계에서는 LLM을 부르지 않고 카카오 검색 결과만 사용</li>
-          <li><b>AI</b> — Spring AI 멀티 LLM, 주 모델(Claude) 실패 시 <code>catch</code>에서 Groq로 전환</li>
-          <li><b>동선 보정</b> — 좌표를 한 번만 조회해 재사용, 40km 넘는 AI 장소는 삭제하고 사용자 요청 장소는 알림으로 남김</li>
-          <li><b>품질·운영</b> — 테스트 케이스 169건을 문서로 정리·검증, AWS EC2·RDS 배포·운영</li>
-        </ul>
-        <div class="projbtns">
-          <button class="pbtn" data-lb="tl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="14" rx="2" />
-              <circle cx="8.5" cy="9" r="1.5" />
-              <path d="M21 15l-5-4-8 6" />
-            </svg>미리보기</button>
-          <a class="pbtn" href="https://github.com/seolgi100/trip-linker" target="_blank" rel="noopener">GitHub ↗</a>
-          <a class="pbtn blue" href="http://43.201.154.80:8081/" target="_blank" rel="noopener">사이트 바로가기 ↗</a>
-          <a class="pbtn dark" href="./projects/triplinker.html">상세보기 ↗</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURED: 오몽 (app) -->
-  <section class="feat gray snap" id="omong" style="--pb:#E07B1E">
-    <div class="wrap">
-      <div class="shead">
-        <div class="kick rv">Featured · App</div>
-        <h2 class="rv"><a href="./projects/omong.html">오몽</a></h2>
-        <p class="rv">누구나 키오스크 주문을 혼자 끝내도록 돕는 배리어프리 서비스입니다.</p>
-      </div>
-      <div class="device rv d1" data-lb="om" role="button" tabindex="0" aria-label="오몽 화면 크게 보기">
-        <img class="mockimg" src="assets/omong-mockup.png" alt="오몽 앱 메인 화면" loading="lazy">
-      </div>
-      <div class="txt rv d1">
-        <ul class="tech">
-          <li><b>화면 인식</b> — 비전 모델이 키오스크 사진에서 메뉴·버튼·가격을 읽어냄. 실패하면 시드된 키오스크 DB, 그다음 재촬영 안내</li>
-          <li><b>AI 체인</b> — Claude · GPT · Gemini 순으로 시도해 첫 성공을 쓰고, 모두 실패하면 규칙 기반으로 폴백</li>
-          <li><b>모델 추상화</b> — provider를 설정으로 나눠 게이트웨이와 Ollama 로컬 모델을 교체</li>
-          <li><b>접근성</b> — 5개국어 · 음성 안내 · 큰글씨 모드, 언제든 직원 연결 안전망</li>
-          <li><b>성과</b> — 2박 3일 만에 개발, AI Re-Local 해커톤 아이디어상 · 팀 MVP</li>
-        </ul>
-        <div class="projbtns">
-          <button class="pbtn" data-lb="om"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="14" rx="2" />
-              <circle cx="8.5" cy="9" r="1.5" />
-              <path d="M21 15l-5-4-8 6" />
-            </svg>미리보기</button>
-          <a class="pbtn" href="https://github.com/ynkite/omong" target="_blank" rel="noopener">GitHub ↗</a>
-          <a class="pbtn blue" href="https://omong.o-r.kr/" target="_blank" rel="noopener">사이트 바로가기 ↗</a>
-          <a class="pbtn dark" href="./projects/omong.html">상세보기 ↗</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MORE WORK -->
-  <section class="grid-sec snap" id="more">
-    <div class="wrap">
-      <div class="shead">
-        <div class="kick rv">More</div>
-        <h2 class="rv">더 많은 작업</h2>
-      </div>
-      <div class="tiles">
-        <div class="tile rv">
-          <div class="rowtop"><span class="yr">2026.05–06 · 개인</span><span class="badge">최우수상</span></div>
-          <h3>StagePass</h3>
-          <p>콘서트 티켓 예매 SPA.<br>Context API로 전역 상태를 관리하고 useSeats 커스텀 훅으로<br>좌석 로직을 분리했습니다.</p>
-          <div class="st">React 18 · TypeScript · Vite</div>
-          <div class="tbtns"><button class="tbtn" data-lb="stagepass">이미지 보기</button><a class="tbtn"
-              href="https://github.com/ynkite/stage-pass" target="_blank" rel="noopener">GitHub ↗</a></div>
-        </div>
-        <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.06 · 개인</span><span class="badge">금상</span></div>
-          <h3>WindyCamp</h3>
-          <p>캠핑용품 쇼핑몰.<br>상품·장바구니·주문 흐름을<br>PHP로 직접 설계하고 구현했습니다.</p>
-          <div class="st">PHP · MariaDB</div>
-          <div class="tbtns"><button class="tbtn" data-lb="windycamp">이미지 보기</button><a class="tbtn"
-              href="https://github.com/ynkite/PHP_vscode" target="_blank" rel="noopener">GitHub ↗</a></div>
-        </div>
-        <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.04–05 · 개인</span><span class="badge">프로젝트</span></div>
-          <h3>DEVICE SHOP</h3>
-          <p>전자기기 판매·재고 관리 시스템.<br>Laravel의 MVC·ORM·인증으로<br>관리 기능을 구성했습니다.</p>
-          <div class="st">PHP · Laravel · MariaDB</div>
-          <div class="tbtns"><button class="tbtn" data-lb="deviceshop">이미지 보기</button><a class="tbtn"
-              href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
-        </div>
-        <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.12 · 개인</span><span class="badge">Laravel 금상</span></div>
-          <h3>PetVillage</h3>
-          <p>반려동물 입양 정보 사이트.<br>Laravel로 입양 공고 등록과 조회를<br>설계하고 개발했습니다.</p>
-          <div class="st">PHP · Laravel · MariaDB</div>
-          <div class="tbtns"><button class="tbtn" data-lb="petvillage">이미지 보기</button><a class="tbtn"
-              href="https://github.com/ynkite/php" target="_blank" rel="noopener">GitHub ↗</a></div>
-        </div>
-        <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.11–2026.03 · 개인</span><span class="badge">프로젝트</span></div>
-          <h3>Triplan</h3>
-          <p>TripLinker의 전신.<br>CLI에서 Servlet/JSP를 거쳐 Spring+MyBatis까지<br>아키텍처를 세 번 재설계했습니다.</p>
-          <div class="st">Java · Spring · MyBatis · JSP</div>
-          <div class="tbtns"><button class="tbtn" data-lb="triplan">이미지 보기</button><a class="tbtn"
-              href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
-        </div>
-        <div class="tile rv">
-          <div class="rowtop"><span class="yr">2025.11–12 · 개인</span><span class="badge">시각화상</span></div>
-          <h3>Analyze Festa</h3>
-          <p>서울시 공공데이터 분석.<br>PCA로 핵심 변수를 찾고<br>SARIMA로 2026년 수요를 예측했습니다.</p>
-          <div class="st">Python · PCA · SARIMA</div>
-          <div class="tbtns"><button class="tbtn" data-lb="festa">이미지 보기</button><a class="tbtn"
-              href="https://github.com/ynkite" target="_blank" rel="noopener">GitHub ↗</a></div>
-        </div>
       </div>
     </div>
   </section>
@@ -2432,31 +2461,33 @@
       <div class="archcards rv d1">
         <a class="acard" href="https://github.com/ynkite" target="_blank" rel="noopener">
           <span class="ic">💻</span>
-          <h4>GitHub</h4>
+          <h3>GitHub</h3>
           <p>프로젝트 소스와 커밋 기록입니다.</p><span class="go">github.com/ynkite ↗</span>
         </a>
         <a class="acard" href="https://my-commit.tistory.com" target="_blank" rel="noopener">
           <span class="ic">✍️</span>
-          <h4>기술 블로그</h4>
+          <h3>기술 블로그</h3>
           <p>트러블슈팅과 학습 정리를 200편 넘게 기록했습니다.</p><span class="go">my-commit.tistory.com ↗</span>
         </a>
         <a class="acard" href="mailto:j.sangyeon6@gmail.com">
           <span class="ic">✉️</span>
-          <h4>이메일</h4>
-          <p>채용 문의는 메일로 주시면 가장 빠릅니다.</p><span class="go">j.sangyeon6@gmail.com ↗</span>
+          <h3>이메일</h3>
+          <p>채용 문의는 메일로 보내 주시면 가장 빨리 확인합니다.</p><span class="go">j.sangyeon6@gmail.com ↗</span>
         </a>
         <a class="acard" href="tel:01042113521">
           <span class="ic">📞</span>
-          <h4>전화</h4>
-          <p>언제든 연락 가능합니다!</p><span class="go">010-4211-3521 ↗</span>
+          <h3>전화</h3>
+          <p>통화가 편하시면 이 번호로 연락 주시면 됩니다.</p><span class="go">010-4211-3521 ↗</span>
         </a>
       </div>
     </div>
-    <div class="foot">© 2026 정상연 · Backend Developer</div>
+    <div class="foot">© 2026 정상연 · Backend Developer · AI Agent Engineer</div>
   </section>
+  </main>
+
 
   <div class="imglb" id="imglb" role="dialog" aria-modal="true" aria-label="확대 이미지"><button class="x"
-      aria-label="닫기">✕</button><img alt=""></div>
+      aria-label="닫기">✕</button><img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></div>
 
   <!-- lightbox -->
   <div class="lb" id="lightbox" role="dialog" aria-modal="true">
@@ -2469,6 +2500,7 @@
     </div>
   </div>
 
+  <script src="assets/scrolllock.js"></script>
   <script>
     const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target) } }), { threshold: .16, rootMargin: '0px 0px 14% 0px' });
     document.querySelectorAll('.rv').forEach(el => io.observe(el));
@@ -2644,7 +2676,7 @@
         ]
       },
       triplan: {
-        title: 'Triplan — 실제 화면', note: 'TripLinker의 전신. CLI에서 Servlet/JSP를 거쳐 Spring+MyBatis까지 구조를 세 번 바꿨습니다.',
+        title: 'Triplan — 실제 화면', note: 'TripLinker의 전신. CLI로 시작해 Servlet/JSP, Spring+MyBatis로 구조를 세 번 바꿨습니다.',
         shots: [
           ['assets/image/triplan-01-main.png', '메인 — Triplan 랜딩'],
           ['assets/image/triplan-02-full.png', '전체 일정 화면']
@@ -2670,9 +2702,12 @@
       } else {
         c.innerHTML = '<div class="shotimg"><img src="' + d.shot + '" alt=""></div>' + live;
       }
-      lb.classList.add('open'); document.body.style.overflow = 'hidden';
+      lb.classList.add('open'); lockScroll();
     }
-    function closeLb() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+    function closeLb() {
+      if (!lb.classList.contains('open')) return;   // 안 열렸는데 풀면 잠금 횟수가 어긋난다
+      lb.classList.remove('open'); unlockScroll();
+    }
 
     // 라이트박스 격자의 사진은 축소돼 보인다. 누르면 원본 크기로 한 단계 더 띄운다
     (function () {
@@ -2686,10 +2721,14 @@
         const ox = s.left + s.width / 2 - b.left, oy = s.top + s.height / 2 - b.top;
         const far = ox < -b.width || ox > b.width * 2 || oy < -b.height || oy > b.height * 2;
         big.style.transformOrigin = far ? '50% 50%' : ox + 'px ' + oy + 'px';
-        ilb.classList.add('open');
+        ilb.classList.add('open'); lockScroll();
       });
-      ilb.addEventListener('click', () => ilb.classList.remove('open'));
-      addEventListener('keydown', e => { if (e.key === 'Escape' && ilb.classList.contains('open')) { e.stopPropagation(); ilb.classList.remove('open'); } }, true);
+      function closeImg() {
+        if (!ilb.classList.contains('open')) return;
+        ilb.classList.remove('open'); unlockScroll();
+      }
+      ilb.addEventListener('click', closeImg);
+      addEventListener('keydown', e => { if (e.key === 'Escape' && ilb.classList.contains('open')) { e.stopPropagation(); closeImg(); } }, true);
     })();
     document.querySelectorAll('[data-lb]').forEach(b => {
       b.addEventListener('click', () => openLb(b.dataset.lb));

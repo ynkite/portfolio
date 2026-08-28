@@ -92,7 +92,7 @@
     var d = docs[key];
     if (!d) return;
     elTitle.textContent = d.label;
-    elSrc.textContent = d.file + '  ·  시트 「' + d.sheet + '」';
+    elSrc.textContent = d.file + (d.sheet ? '  ·  시트 「' + d.sheet + '」' : '');
     elFoot.textContent = '';
     if (d.legend) {                              // WBS 색 = 담당자
       var lg = document.createElement('div');
@@ -140,14 +140,17 @@
     elBody.textContent = '';
     elBody.appendChild(table);
     elBody.scrollTop = 0;
+    // 이미 열려 있는데 또 잠그면 잠금 횟수가 남아 지면이 계속 잠긴다
+    var wasOpen = bg.classList.contains('on');
     bg.classList.add('on');
-    document.body.style.overflow = 'hidden';
+    if (!wasOpen && window.lockScroll) window.lockScroll();
     bg.querySelector('.x').focus();
   }
 
   function close() {
+    if (!bg.classList.contains('on')) return;
     bg.classList.remove('on');
-    document.body.style.overflow = '';
+    if (window.unlockScroll) window.unlockScroll();
     elBody.textContent = '';        // 큰 표를 열어둔 채 방치하지 않는다
   }
 

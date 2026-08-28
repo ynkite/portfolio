@@ -3,7 +3,7 @@
 import io, json, os, re, sys
 from urllib.parse import unquote
 
-RESUME_PDF = 'assets/이력서_정상연_포트폴리오사이트용.pdf'
+RESUME_PDF = 'assets/이력서_정상연.pdf'
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ['index.html', 'projects/cogi.html', 'projects/triplinker.html', 'projects/omong.html']
@@ -64,7 +64,8 @@ for page in PAGES:
     base = os.path.dirname(os.path.join(ROOT, page))
     # <script> 안의 문자열 연결(' + d.shot + ')은 자산 경로가 아니다
     markup = re.sub(r'<script\b.*?</script>', '', s, flags=re.S)
-    for src in re.findall(r'(?:src|href)="((?!https?:|mailto:|tel:|#)[^"]+)"', markup):
+    # data: 는 파일이 아니라 값이다. 파비콘을 이 방식으로 넣어 404 를 없앴다
+    for src in re.findall(r'(?:src|href)="((?!https?:|mailto:|tel:|data:|#)[^"]+)"', markup):
         # 한글 파일명은 URL 인코딩해 두었다. 실제 파일을 찾으려면 되돌려야 한다
         rel = unquote(src.split('#')[0].split('?')[0])
         p = os.path.normpath(os.path.join(base, rel))
@@ -99,9 +100,11 @@ for need in ('id="about"', 'id="skills"', 'id="credits"', 'id="work"', 'id="more
     if need not in idx:
         bad('index.html에 %s 섹션이 없다' % need)
 
-order = [idx.index('id="%s"' % s) for s in ('about', 'skills', 'credits', 'work', 'more', 'archiving')]
+# 자격증·수상은 프로젝트 뒤로 뺐다 (AI-ENGINEER-PLAN). AI 직무에서는 프로젝트가 먼저 보여야 한다
+SECTIONS = ('about', 'skills', 'work', 'more', 'credits', 'archiving')
+order = [idx.index('id="%s"' % s) for s in SECTIONS]
 if order != sorted(order):
-    bad('섹션 순서가 프로필 → 주요 스킬 → 자격증·수상 → 프로젝트 → 추가 작업 → 링크 가 아니다')
+    bad('섹션 순서가 프로필 → 주요 스킬 → 프로젝트 → 추가 작업 → 자격증·수상 → 링크 가 아니다')
 
 if RESUME_PDF not in unquote(idx):
     bad('네비바에 이력서 PDF 링크가 없다')
